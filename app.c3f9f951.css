@@ -489,16 +489,15 @@ input:focus {
   flex-direction: row-reverse;
 }
 
-.frame-collection__item > img {
+.frame-collection__item img {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   box-sizing: content-box;
   padding-right: 2px;
   width: calc(100% - .5rem);
-  height: 100%;
 }
 
-.frame-collection__item--active > img {
+.frame-collection__item--active img {
   border: 2px solid #ff5544;
   padding-top: calc(.25rem - 2px);
   padding-bottom: calc(.25rem - 2px);
@@ -1163,6 +1162,10 @@ a.btn:hover {
   display: none;
 }
 
+.group:hover .group-hover\:flex {
+  display: flex;
+}
+
 .flex-row {
   flex-direction: row;
 }
@@ -1369,6 +1372,10 @@ a.btn:hover {
   opacity: 0.75;
 }
 
+.group:hover .group-hover\:opacity-0 {
+  opacity: 0;
+}
+
 .overflow-scroll {
   overflow: scroll;
 }
@@ -1472,6 +1479,10 @@ a.btn:hover {
   position: absolute;
 }
 
+.relative {
+  position: relative;
+}
+
 .inset-0 {
   top: 0;
   right: 0;
@@ -1510,6 +1521,12 @@ a.btn:hover {
   --text-opacity: 1;
   color: #48accf;
   color: rgba(72, 172, 207, var(--text-opacity));
+}
+
+.text-secondary-600 {
+  --text-opacity: 1;
+  color: #ff5544;
+  color: rgba(255, 85, 68, var(--text-opacity));
 }
 
 .text-warning-500 {
@@ -1639,10 +1656,6 @@ a.btn:hover {
   transition-duration: 150ms;
 }
 
-.cursor-hand-scissor {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24"><path d="M256 480h72.5c4.615 0 9.232-.528 13.722-1.569l123.25-28.57c13.133-3.044 24.995-10.478 33.4-20.933 8.466-10.531 13.128-23.746 13.128-37.21V177.445c0-21.438-11.684-41.333-30.492-51.92l-101.5-57.139c-36.681-20.651-64.548-.478-88.228 28.683l-156.211-60.46c-34.639-13.405-73.672 3.411-87.35 37.709-13.696 34.345 3.326 73.326 38.212 86.829L176 192l-108.5-2.843c-37.22 0-67.5 29.991-67.5 66.855s30.28 66.854 67.5 66.854h102.327c-9.558 28.393 3.681 59.705 31.297 72.775C183.12 434.864 212.126 480 256 480zM364.311 96.271l101.5 57.14c8.753 4.927 14.189 14.137 14.189 24.035v214.272c0 12.91-8.945 24.001-21.754 26.97l-123.25 28.57a28.843 28.843 0 0 1-6.496.742H256c-37.41 0-37.35-55.424 0-55.424a8 8 0 0 0 8-8v-7.143a8 8 0 0 0-8-8h-29c-37.41 0-37.351-55.425 0-55.425h29a8 8 0 0 0 8-8v-7.143a8 8 0 0 0-8-8H67.5c-47.021 0-46.929-69.709 0-69.709H256a8 8 0 0 0 8-8V201.04a8 8 0 0 0-5.112-7.461L97.981 131.305c-43.579-16.867-17.902-81.857 26.037-64.852l172.497 66.761a8.002 8.002 0 0 0 9.098-2.418l22.54-27.757c8.76-10.785 23.966-13.632 36.158-6.768z"/></svg>'), auto;
-}
-
 .border-px-grey-400 {
   border: 1px solid #bdbdbd;
 }
@@ -1657,6 +1670,10 @@ a.btn:hover {
 
 .w-80 {
   width: 20rem;
+}
+
+.element:last-child .last-element\:hidden {
+  display: none;
 }
 
 @media (min-width: 900px) {
@@ -1676,10 +1693,11 @@ a.btn:hover {
 
 @media (min-width: 1200px) {
 
-  .lg\:max-w-3xl {
-    max-width: 48rem;
+  .lg\:max-w-4xl {
+    max-width: 56rem;
   }
 }
+
 @charset "UTF-8";
 
 /*

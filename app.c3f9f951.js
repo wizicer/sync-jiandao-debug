@@ -18821,6 +18821,31 @@ var $author$project$Data$Video$Gif$toUrl = F3(
 			A2($author$project$Data$File$Object$fromPartialKey, friendlyUnionID, gif));
 	});
 var $author$project$View$Icon$videocam = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z');
+var $author$project$View$Icon$link = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z');
+var $author$project$View$Icon$linkOff = function (size) {
+	return A2(
+		$author$project$View$Icon$materialIcon,
+		size,
+		_List_fromArray(
+			[
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M17 7h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.43-.98 2.63-2.31 2.98l1.46 1.46C20.88 15.61 22 13.95 22 12c0-2.76-2.24-5-5-5zm-1 4h-2.19l2 2H16zM2 4.27l3.11 3.11C3.29 8.12 2 9.91 2 12c0 2.76 2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1 0-1.59 1.21-2.9 2.76-3.07L8.73 11H8v2h2.73L13 15.27V17h1.73l4.01 4L20 19.74 3.27 3 2 4.27'),
+						$author$project$View$Icon$fillCurrent
+					]),
+				_List_Nil),
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M0 24V0'),
+						$author$project$View$Icon$fillCurrent
+					]),
+				_List_Nil)
+			]));
+};
 var $author$project$Util$onMouseEnter = function (msg) {
 	return A2(
 		$elm$html$Html$Events$on,
@@ -18840,40 +18865,78 @@ var $author$project$View$Project$viewFrame = F3(
 		var setKeyFrame = _v0.setKeyFrame;
 		var hoverOn = _v0.hoverOn;
 		var hoverOff = _v0.hoverOff;
-		var isSplitting = _v0.isSplitting;
+		var size = 16;
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$classList(
-					_List_fromArray(
-						[
-							_Utils_Tuple2('frame-collection__item w-12 md:w-14', true),
-							_Utils_Tuple2('cursor-hand-scissor', isSplitting),
-							_Utils_Tuple2(
-							'frame-collection__item--active',
-							_Utils_eq(
-								keyFrameID,
-								$author$project$Data$Video$Frame$getIndex(frame)))
-						])),
-					isSplitting ? $elm$html$Html$Events$onClick(
-					splitSection(frame.index)) : $elm$html$Html$Events$onClick(
-					setKeyFrame(frame.index))
+					$elm$html$Html$Attributes$class('flex flex-row-reverse items-stretch justify-start element')
 				]),
 			_List_fromArray(
 				[
 					A2(
-					$elm$html$Html$img,
+					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$src(
-							A3($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid, frame)),
-							$author$project$Util$onMouseEnter(
-							hoverOn(frame)),
-							$author$project$Util$onMouseLeave(
-							hoverOff(frame))
+							$elm$html$Html$Attributes$class('relative btn group ml-1 last-element:hidden')
 						]),
-					_List_Nil)
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('group-hover:opacity-0')
+								]),
+							_List_fromArray(
+								[
+									$author$project$View$Icon$link(size)
+								])),
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick(
+									splitSection(frame.index + 1)),
+									$elm$html$Html$Attributes$class('absolute inset-0 btn text-secondary-600 hidden group-hover:flex')
+								]),
+							_List_fromArray(
+								[
+									$author$project$View$Icon$linkOff(size)
+								]))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$classList(
+							_List_fromArray(
+								[
+									_Utils_Tuple2('frame-collection__item w-12 md:w-14', true),
+									_Utils_Tuple2(
+									'frame-collection__item--active',
+									_Utils_eq(
+										keyFrameID,
+										$author$project$Data$Video$Frame$getIndex(frame)))
+								])),
+							$elm$html$Html$Events$onClick(
+							setKeyFrame(frame.index))
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$img,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$src(
+									A3($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid, frame)),
+									$author$project$Util$onMouseEnter(
+									hoverOn(frame)),
+									$author$project$Util$onMouseLeave(
+									hoverOff(frame))
+								]),
+							_List_Nil)
+						]))
 				]));
 	});
 var $author$project$View$Project$viewAllFrames = F2(
@@ -19221,7 +19284,7 @@ var $author$project$Page$Project$viewBlocks = F4(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('px-4 py-6 max-w-2xl lg:max-w-3xl overflow-y-scroll')
+					$elm$html$Html$Attributes$class('px-4 py-6 max-w-2xl lg:max-w-4xl overflow-y-scroll')
 				]),
 			$elm$core$List$singleton(
 				A3(
