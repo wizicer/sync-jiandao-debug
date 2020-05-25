@@ -189,15 +189,17 @@ module.exports = {
         "preview_project": "预览",
         "export_project": "发布"
       },
+      "prompt": {
+        "successfully_saved": "保存成功",
+        "failed_to_save": "保存失败",
+        "failed_to_export": "发布失败"
+      },
       "left_panel": {
         "save_project_and_leave": "保存并离开",
         "discard_changes_and_leave": "舍弃更改",
         "prompt_unsaved_changes": "您的更改还未保存",
         "stay_on_page": "继续编辑",
-        "successfully_saved": "保存成功",
-        "failed_to_save": "保存失败",
         "exporting_in_progress": "发布中",
-        "failed_to_export": "发布失败",
         "frontend_version": "前端版本",
         "native_client_version": "Native Client 版本",
         "project_size": "当前项目总大小"
@@ -17860,6 +17862,7 @@ var $author$project$Page$Project$viewError = F2(
 						]))
 				]));
 	});
+var $author$project$Page$Project$DismissExportingErrorPrompt = {$: 'DismissExportingErrorPrompt'};
 var $author$project$Page$Project$JumpTo = function (a) {
 	return {$: 'JumpTo', a: a};
 };
@@ -17926,6 +17929,142 @@ var $author$project$Data$Project$Content$allKeyFrames = function (contents) {
 		_List_Nil,
 		$elm$core$Array$toIndexedList(contents));
 };
+var $elm$html$Html$Attributes$classList = function (classes) {
+	return $elm$html$Html$Attributes$class(
+		A2(
+			$elm$core$String$join,
+			' ',
+			A2(
+				$elm$core$List$map,
+				$elm$core$Tuple$first,
+				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
+};
+var $author$project$Translations$ProjectExport$mediaFilesMissing = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project_export.media_files_missing');
+};
+var $author$project$Translations$ProjectExport$sourceFileNotFound = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project_export.source_file_not_found');
+};
+var $author$project$Data$Project$HtmlExport$errorToString = F2(
+	function (trn, error) {
+		if (error.$ === 'MediaFilesMissing') {
+			return $author$project$Translations$ProjectExport$mediaFilesMissing(trn);
+		} else {
+			return $author$project$Translations$ProjectExport$sourceFileNotFound(trn);
+		}
+	});
+var $author$project$View$Alert$viewError = F2(
+	function (attrs, textContent) {
+		return A2(
+			$elm$html$Html$div,
+			_Utils_ap(
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('bg-warning-100 text-warning-700 px-4 py-2 cursor-pointer shadow')
+					]),
+				attrs),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(textContent)
+				]));
+	});
+var $author$project$View$Project$Alert$viewExportingError = F3(
+	function (trn, dismissExportingErrorPrompt, error) {
+		return A2(
+			$author$project$View$Alert$viewError,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(dismissExportingErrorPrompt)
+				]),
+			A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$HtmlExport$errorToString, error));
+	});
+var $author$project$Util$viewIfPresent = F2(
+	function (maybeValue, viewer) {
+		if (maybeValue.$ === 'Just') {
+			var a = maybeValue.a;
+			return viewer(a);
+		} else {
+			return $elm$html$Html$text('');
+		}
+	});
+var $author$project$Translations$Page$Project$Prompt$failedToSave = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.failed_to_save');
+};
+var $author$project$Translations$Page$Project$Prompt$successfullySaved = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.successfully_saved');
+};
+var $author$project$View$Alert$viewSuccess = F2(
+	function (attrs, textContent) {
+		return A2(
+			$elm$html$Html$div,
+			_Utils_ap(
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('bg-grey-700 text-grey-50 px-4 py-2 cursor-pointer shadow')
+					]),
+				attrs),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(textContent)
+				]));
+	});
+var $author$project$View$Project$Alert$viewSavingResult = F3(
+	function (trn, dismissSavingResultPrompt, result) {
+		if (result.$ === 'Ok') {
+			return A2(
+				$author$project$View$Alert$viewSuccess,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(dismissSavingResultPrompt)
+					]),
+				$author$project$Translations$Page$Project$Prompt$successfullySaved(trn));
+		} else {
+			var error = result.a;
+			return A2(
+				$author$project$View$Alert$viewError,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(dismissSavingResultPrompt)
+					]),
+				$author$project$Translations$Page$Project$Prompt$failedToSave(trn));
+		}
+	});
+var $author$project$View$Project$Alert$view = F5(
+	function (trn, dismissSavingResultPrompt, dismissExportingErrorPrompt, exportingError, savingResult) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('absolute inset-0 invisible flex flex-col justify-start items-center')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$classList(
+							_List_fromArray(
+								[
+									_Utils_Tuple2('w-64 flex flex-col justify-start items-stretch py-8 ', true),
+									_Utils_Tuple2(
+									'visible',
+									!(_Utils_eq(exportingError, $elm$core$Maybe$Nothing) && _Utils_eq(savingResult, $elm$core$Maybe$Nothing)))
+								]))
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$author$project$Util$viewIfPresent,
+							savingResult,
+							A2($author$project$View$Project$Alert$viewSavingResult, trn, dismissSavingResultPrompt)),
+							A2(
+							$author$project$Util$viewIfPresent,
+							exportingError,
+							A2($author$project$View$Project$Alert$viewExportingError, trn, dismissExportingErrorPrompt))
+						]))
+				]));
+	});
 var $author$project$Translations$Page$Project$LeftPanel$projectSize = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.project_size');
 };
@@ -17997,15 +18136,6 @@ var $author$project$View$Project$viewFileName = F2(
 					$elm$html$Html$text(' * ')),
 					$elm$html$Html$text(projectName)
 				]));
-	});
-var $author$project$Util$viewIfPresent = F2(
-	function (maybeValue, viewer) {
-		if (maybeValue.$ === 'Just') {
-			var a = maybeValue.a;
-			return viewer(a);
-		} else {
-			return $elm$html$Html$text('');
-		}
 	});
 var $author$project$Translations$Page$Project$LeftPanel$frontendVersion = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.frontend_version');
@@ -18346,16 +18476,6 @@ var $author$project$Page$Project$MovingOver = function (a) {
 	return {$: 'MovingOver', a: a};
 };
 var $author$project$Page$Project$StopMovingSection = {$: 'StopMovingSection'};
-var $elm$html$Html$Attributes$classList = function (classes) {
-	return $elm$html$Html$Attributes$class(
-		A2(
-			$elm$core$String$join,
-			' ',
-			A2(
-				$elm$core$List$map,
-				$elm$core$Tuple$first,
-				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
-};
 var $elm$html$Html$Attributes$draggable = _VirtualDom_attribute('draggable');
 var $author$project$Util$onDragEnd = function (msg) {
 	return A2(
@@ -19350,9 +19470,6 @@ var $author$project$Data$Project$Saving$errorToString = F2(
 	function (trn, error) {
 		return $author$project$Translations$ProjectSaving$sourceFileNotFound(trn);
 	});
-var $author$project$Translations$Page$Project$LeftPanel$failedToSave = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.failed_to_save');
-};
 var $author$project$View$Project$viewAlert = F3(
 	function (viewer, dismissMsg, textContent) {
 		return A2(
@@ -19373,28 +19490,13 @@ var $author$project$View$Project$viewAlert = F3(
 					textContent)
 				]));
 	});
-var $author$project$View$Alert$viewError = F2(
-	function (attrs, textContent) {
-		return A2(
-			$elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('bg-red-100 text-red-600 px-4 py-2 cursor-pointer')
-					]),
-				attrs),
-			_List_fromArray(
-				[
-					$elm$html$Html$text(textContent)
-				]));
-	});
 var $author$project$View$Project$viewSavingError = F3(
 	function (trn, dismissMsg, error) {
 		return A3(
 			$author$project$View$Project$viewAlert,
 			$author$project$View$Alert$viewError,
 			dismissMsg,
-			$author$project$Translations$Page$Project$LeftPanel$failedToSave(trn) + ('：' + A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$Saving$errorToString, error)));
+			$author$project$Translations$Page$Project$Prompt$failedToSave(trn) + ('：' + A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$Saving$errorToString, error)));
 	});
 var $author$project$View$Project$viewConfirmNavigatingAway = F6(
 	function (trn, noOp, stayOnPage, saveAndLeave, savingResult, confirmNavigatingAway) {
@@ -19834,7 +19936,8 @@ var $author$project$Page$Project$viewLoaded = F4(
 					$author$project$Page$Project$StayOnPage,
 					A2($elm$core$Basics$composeL, $author$project$Page$Project$SaveProject, $elm$core$Maybe$Just),
 					substate.savingResult,
-					substate.confirmNavigatingAway)
+					substate.confirmNavigatingAway),
+					A5($author$project$View$Project$Alert$view, trn, $author$project$Page$Project$DismissSavingResultPrompt, $author$project$Page$Project$DismissExportingErrorPrompt, substate.exportingError, substate.savingResult)
 				]));
 	});
 var $author$project$Page$Project$view = F3(
