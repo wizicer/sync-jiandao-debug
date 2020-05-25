@@ -16289,7 +16289,7 @@ var $author$project$Data$File$Type$supportedVideos = _List_fromArray(
 		$author$project$Data$File$Type$Mime('video/quicktime'),
 		$author$project$Data$File$Type$Mime('video/MP2T'),
 		$author$project$Data$File$Type$Ext('flv'),
-		$author$project$Data$File$Type$Ext('avi'),
+		$author$project$Data$File$Type$Mime('video/avi'),
 		$author$project$Data$File$Type$Mime('video/x-ms-wmv')
 	]);
 var $author$project$Data$File$Type$isSupportedVideo = function (file) {
