@@ -183,17 +183,19 @@ module.exports = {
     },
     "project": {
       "page_title": "图文编辑-剪刀兔",
-      "left_panel": {
-        "back_to_portal": "返回视频列表",
+      "nav": {
         "save_project": "保存",
+        "back_to_portal": "返回列表",
+        "preview_project": "预览",
+        "export_project": "发布"
+      },
+      "left_panel": {
         "save_project_and_leave": "保存并离开",
         "discard_changes_and_leave": "舍弃更改",
         "prompt_unsaved_changes": "您的更改还未保存",
         "stay_on_page": "继续编辑",
         "successfully_saved": "保存成功",
         "failed_to_save": "保存失败",
-        "preview_project": "预览",
-        "export_project": "发布",
         "exporting_in_progress": "发布中",
         "failed_to_export": "发布失败",
         "frontend_version": "前端版本",
@@ -17566,7 +17568,7 @@ var $author$project$View$Layout$viewAppbar = A2(
 	$elm$html$Html$div,
 	_List_fromArray(
 		[
-			$elm$html$Html$Attributes$class('w-screen flex flex-row justify-between items-stretch bg-theme-500'),
+			$elm$html$Html$Attributes$class('w-screen flex flex-row justify-between items-stretch bg-theme-600'),
 			A2($elm$html$Html$Attributes$style, 'height', $author$project$View$Layout$appbarHeight)
 		]),
 	_List_fromArray(
@@ -17602,97 +17604,66 @@ var $author$project$View$Layout$viewBody = function (attrs) {
 				]),
 			attrs));
 };
-var $author$project$Page$Project$DismissExportingErrorPrompt = {$: 'DismissExportingErrorPrompt'};
-var $author$project$Page$Project$ExportProject = {$: 'ExportProject'};
-var $author$project$Page$Project$JumpTo = function (a) {
-	return {$: 'JumpTo', a: a};
-};
-var $author$project$Page$Project$NavigateToPortal = {$: 'NavigateToPortal'};
-var $author$project$Page$Project$NoOp = {$: 'NoOp'};
-var $author$project$Page$Project$StartPreviewing = {$: 'StartPreviewing'};
-var $author$project$Page$Project$StayOnPage = {$: 'StayOnPage'};
-var $author$project$Page$Project$StopPreviewing = {$: 'StopPreviewing'};
-var $author$project$Data$Project$Content$allKeyFramesHelp = F2(
-	function (contents, keyFrames) {
-		allKeyFramesHelp:
-		while (true) {
-			if (!contents.b) {
-				return $elm$core$List$reverse(keyFrames);
-			} else {
-				if ((contents.a.b.$ === 'FromSegment') && (!contents.a.b.a)) {
-					var _v1 = contents.a;
-					var index = _v1.a;
-					var _v2 = _v1.b;
-					var segmentContent = _v2.b;
-					var xs = contents.b;
-					return A2(
-						$author$project$Data$Project$Content$allKeyFramesHelp,
-						xs,
-						A2(
-							$elm$core$List$cons,
-							_Utils_Tuple2(
-								index,
-								$author$project$Data$Video$Segment$getKeyFrame(
-									$author$project$Data$Project$SegmentContent$getSegment(segmentContent))),
-							keyFrames));
-				} else {
-					var xs = contents.b;
-					var $temp$contents = xs,
-						$temp$keyFrames = keyFrames;
-					contents = $temp$contents;
-					keyFrames = $temp$keyFrames;
-					continue allKeyFramesHelp;
-				}
-			}
-		}
-	});
-var $elm$core$Array$toIndexedList = function (array) {
-	var len = array.a;
-	var helper = F2(
-		function (entry, _v0) {
-			var index = _v0.a;
-			var list = _v0.b;
-			return _Utils_Tuple2(
-				index - 1,
-				A2(
-					$elm$core$List$cons,
-					_Utils_Tuple2(index, entry),
-					list));
-		});
-	return A3(
-		$elm$core$Array$foldr,
-		helper,
-		_Utils_Tuple2(len - 1, _List_Nil),
-		array).b;
-};
-var $author$project$Data$Project$Content$allKeyFrames = function (contents) {
-	return A3(
-		$author$project$Util$flip,
-		$author$project$Data$Project$Content$allKeyFramesHelp,
-		_List_Nil,
-		$elm$core$Array$toIndexedList(contents));
-};
-var $author$project$Translations$Page$Project$LeftPanel$backToPortal = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.back_to_portal');
-};
-var $elm$html$Html$Attributes$classList = function (classes) {
-	return $elm$html$Html$Attributes$class(
-		A2(
+var $elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
+var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
+var $author$project$View$Icon$fillCurrent = $elm$svg$Svg$Attributes$fill('currentColor');
+var $author$project$View$Icon$noFill = $elm$svg$Svg$Attributes$fill('none');
+var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var $elm$svg$Svg$path = $elm$svg$Svg$trustedNode('path');
+var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
+var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
+var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
+var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
+var $author$project$View$Icon$wrapper = F2(
+	function (viewBox_, size) {
+		var viewBoxStr = A2(
 			$elm$core$String$join,
 			' ',
-			A2(
-				$elm$core$List$map,
-				$elm$core$Tuple$first,
-				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
-};
-var $elm$html$Html$Attributes$boolProperty = F2(
-	function (key, bool) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$bool(bool));
+			A2($elm$core$List$map, $elm$core$String$fromInt, viewBox_));
+		var sizeStr = $elm$core$String$fromInt(size);
+		return $elm$svg$Svg$svg(
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$width(sizeStr),
+					$elm$svg$Svg$Attributes$height(sizeStr),
+					$elm$svg$Svg$Attributes$viewBox(viewBoxStr)
+				]));
 	});
-var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
+var $author$project$View$Icon$materialIcon = F2(
+	function (size, content) {
+		var framing = A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$d('M0 0h24v24H0z'),
+					$author$project$View$Icon$noFill
+				]),
+			_List_Nil);
+		return A3(
+			$author$project$View$Icon$wrapper,
+			_List_fromArray(
+				[0, 0, 24, 24]),
+			size,
+			A2($elm$core$List$cons, framing, content));
+	});
+var $author$project$View$Icon$materialIconSimple = F2(
+	function (size, drawing) {
+		return A2(
+			$author$project$View$Icon$materialIcon,
+			size,
+			_List_fromArray(
+				[
+					A2(
+					$elm$svg$Svg$path,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$d(drawing),
+							$author$project$View$Icon$fillCurrent
+						]),
+					_List_Nil)
+				]));
+	});
+var $author$project$View$Icon$error = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z');
 var $author$project$Translations$Request$Error$badBody = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.error.bad_body');
 };
@@ -17849,40 +17820,114 @@ var $author$project$API$Request$errorToString = F3(
 				return (((statusCode / 100) | 0) === 2) ? $author$project$Translations$Request$Error$badBody(trn) : A2($author$project$API$Request$statusCodeToString, trn, statusCode);
 		}
 	});
-var $author$project$Translations$ProjectExport$mediaFilesMissing = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project_export.media_files_missing');
+var $author$project$Translations$Project$projectNotFound = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project.project_not_found');
 };
-var $author$project$Translations$ProjectExport$sourceFileNotFound = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project_export.source_file_not_found');
-};
-var $author$project$Data$Project$HtmlExport$errorToString = F2(
+var $author$project$Data$Project$errorToString = F2(
 	function (trn, error) {
-		if (error.$ === 'MediaFilesMissing') {
-			return $author$project$Translations$ProjectExport$mediaFilesMissing(trn);
-		} else {
-			return $author$project$Translations$ProjectExport$sourceFileNotFound(trn);
+		return $author$project$Translations$Project$projectNotFound(trn);
+	});
+var $author$project$Page$Project$viewError = F2(
+	function (trn, error) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('w-full h-full flex flex-col justify-center items-center')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('text-red-700 mb-8')
+						]),
+					_List_fromArray(
+						[
+							$author$project$View$Icon$error(64)
+						])),
+					A2(
+					$elm$html$Html$p,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('max-w-lg w-full p-2')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$errorToString, error))
+						]))
+				]));
+	});
+var $author$project$Page$Project$JumpTo = function (a) {
+	return {$: 'JumpTo', a: a};
+};
+var $author$project$Page$Project$NoOp = {$: 'NoOp'};
+var $author$project$Page$Project$StayOnPage = {$: 'StayOnPage'};
+var $author$project$Page$Project$StopPreviewing = {$: 'StopPreviewing'};
+var $author$project$Data$Project$Content$allKeyFramesHelp = F2(
+	function (contents, keyFrames) {
+		allKeyFramesHelp:
+		while (true) {
+			if (!contents.b) {
+				return $elm$core$List$reverse(keyFrames);
+			} else {
+				if ((contents.a.b.$ === 'FromSegment') && (!contents.a.b.a)) {
+					var _v1 = contents.a;
+					var index = _v1.a;
+					var _v2 = _v1.b;
+					var segmentContent = _v2.b;
+					var xs = contents.b;
+					return A2(
+						$author$project$Data$Project$Content$allKeyFramesHelp,
+						xs,
+						A2(
+							$elm$core$List$cons,
+							_Utils_Tuple2(
+								index,
+								$author$project$Data$Video$Segment$getKeyFrame(
+									$author$project$Data$Project$SegmentContent$getSegment(segmentContent))),
+							keyFrames));
+				} else {
+					var xs = contents.b;
+					var $temp$contents = xs,
+						$temp$keyFrames = keyFrames;
+					contents = $temp$contents;
+					keyFrames = $temp$keyFrames;
+					continue allKeyFramesHelp;
+				}
+			}
 		}
 	});
-var $author$project$Translations$Page$Project$LeftPanel$exportProject = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.export_project');
+var $elm$core$Array$toIndexedList = function (array) {
+	var len = array.a;
+	var helper = F2(
+		function (entry, _v0) {
+			var index = _v0.a;
+			var list = _v0.b;
+			return _Utils_Tuple2(
+				index - 1,
+				A2(
+					$elm$core$List$cons,
+					_Utils_Tuple2(index, entry),
+					list));
+		});
+	return A3(
+		$elm$core$Array$foldr,
+		helper,
+		_Utils_Tuple2(len - 1, _List_Nil),
+		array).b;
 };
-var $author$project$Translations$Page$Project$LeftPanel$exportingInProgress = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.exporting_in_progress');
-};
-var $author$project$Translations$Page$Project$LeftPanel$failedToExport = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.failed_to_export');
-};
-var $author$project$Translations$Page$Project$LeftPanel$previewProject = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.preview_project');
+var $author$project$Data$Project$Content$allKeyFrames = function (contents) {
+	return A3(
+		$author$project$Util$flip,
+		$author$project$Data$Project$Content$allKeyFramesHelp,
+		_List_Nil,
+		$elm$core$Array$toIndexedList(contents));
 };
 var $author$project$Translations$Page$Project$LeftPanel$projectSize = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.project_size');
-};
-var $author$project$Translations$Page$Project$LeftPanel$saveProject = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.save_project');
-};
-var $author$project$Translations$Page$Project$LeftPanel$successfullySaved = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.successfully_saved');
 };
 var $elm$core$String$dropRight = F2(
 	function (n, string) {
@@ -17931,41 +17976,6 @@ var $author$project$Data$FileSize$toString = function (fileSize) {
 		}
 	}
 };
-var $author$project$View$Project$viewAlert = F3(
-	function (viewer, dismissMsg, textContent) {
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('px-4 py-2')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					viewer,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('text-sm'),
-							$elm$html$Html$Events$onClick(dismissMsg)
-						]),
-					textContent)
-				]));
-	});
-var $author$project$View$Alert$viewError = F2(
-	function (attrs, textContent) {
-		return A2(
-			$elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('bg-red-100 text-red-600 px-4 py-2 cursor-pointer')
-					]),
-				attrs),
-			_List_fromArray(
-				[
-					$elm$html$Html$text(textContent)
-				]));
-	});
 var $author$project$Util$viewIf = F2(
 	function (condition, content) {
 		return condition ? content : $elm$html$Html$text('');
@@ -17996,39 +18006,6 @@ var $author$project$Util$viewIfPresent = F2(
 		} else {
 			return $elm$html$Html$text('');
 		}
-	});
-var $author$project$Translations$ProjectSaving$sourceFileNotFound = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project_saving.source_file_not_found');
-};
-var $author$project$Data$Project$Saving$errorToString = F2(
-	function (trn, error) {
-		return $author$project$Translations$ProjectSaving$sourceFileNotFound(trn);
-	});
-var $author$project$Translations$Page$Project$LeftPanel$failedToSave = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.failed_to_save');
-};
-var $author$project$View$Project$viewSavingError = F3(
-	function (trn, dismissMsg, error) {
-		return A3(
-			$author$project$View$Project$viewAlert,
-			$author$project$View$Alert$viewError,
-			dismissMsg,
-			$author$project$Translations$Page$Project$LeftPanel$failedToSave(trn) + ('：' + A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$Saving$errorToString, error)));
-	});
-var $author$project$View$Alert$viewSuccess = F2(
-	function (attrs, textContent) {
-		return A2(
-			$elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('bg-theme-50 text-grey-900 px-4 py-2 cursor-pointer')
-					]),
-				attrs),
-			_List_fromArray(
-				[
-					$elm$html$Html$text(textContent)
-				]));
 	});
 var $author$project$Translations$Page$Project$LeftPanel$frontendVersion = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.frontend_version');
@@ -18109,6 +18086,13 @@ var $author$project$View$Project$viewVersions = F2(
 				]));
 	});
 var $author$project$Data$File$Object$Local = {$: 'Local'};
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
 var $elm$html$Html$Attributes$autoplay = $elm$html$Html$Attributes$boolProperty('autoplay');
 var $elm$html$Html$Attributes$controls = $elm$html$Html$Attributes$boolProperty('controls');
 var $author$project$Data$File$Object$baseToString = function (base) {
@@ -18156,30 +18140,13 @@ var $author$project$View$Project$viewVideo = function (uuid) {
 				_List_Nil)
 			]));
 };
-var $author$project$View$Project$viewAuxiliary = F2(
-	function (trn, params) {
-		var _v0 = params;
-		var uuid = _v0.uuid;
-		var projectName = _v0.projectName;
-		var isProjectModified = _v0.isProjectModified;
-		var isExportingInProgress = _v0.isExportingInProgress;
-		var versions = _v0.versions;
-		var savingResult = _v0.savingResult;
-		var exportingError = _v0.exportingError;
-		var projectSize = _v0.projectSize;
-		var _v1 = params;
-		var navigateToPortal = _v1.navigateToPortal;
-		var saveProject = _v1.saveProject;
-		var dismissSavingResultPrompt = _v1.dismissSavingResultPrompt;
-		var startPreviewing = _v1.startPreviewing;
-		var exportProject = _v1.exportProject;
-		var dismissExportingErrorPrompt = _v1.dismissExportingErrorPrompt;
-		var noOp = _v1.noOp;
+var $author$project$View$Project$viewAuxiliary = F6(
+	function (trn, uuid, projectName, isModified, versions, projectSize) {
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('px-4 py-6 w-80 flex-shrink-0')
+					$elm$html$Html$Attributes$class('px-4 py-6 w-80 flex-shrink-0 overflow-y-auto')
 				]),
 			_List_fromArray(
 				[
@@ -18191,28 +18158,7 @@ var $author$project$View$Project$viewAuxiliary = F2(
 						]),
 					_List_fromArray(
 						[
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('w-full bg-theme-100 text-theme-600 px-4 py-1')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('cursor-pointer'),
-											$elm$html$Html$Events$onClick(navigateToPortal)
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Translations$Page$Project$LeftPanel$backToPortal(trn))
-										]))
-								])),
-							A2($author$project$View$Project$viewFileName, isProjectModified, projectName),
+							A2($author$project$View$Project$viewFileName, isModified, projectName),
 							A2(
 							$elm$html$Html$div,
 							_List_fromArray(
@@ -18222,92 +18168,7 @@ var $author$project$View$Project$viewAuxiliary = F2(
 							_List_fromArray(
 								[
 									$author$project$View$Project$viewVideo(uuid)
-								])),
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('px-4 py-2 flex flex-row justify-end')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$button,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('btn btn--secondary w-14 h-6 mr-4 text-sm'),
-											$elm$html$Html$Events$onClick(saveProject)
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Translations$Page$Project$LeftPanel$saveProject(trn))
-										])),
-									A2(
-									$elm$html$Html$button,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('btn btn--teal w-14 h-6 mr-4 text-sm'),
-											$elm$html$Html$Events$onClick(startPreviewing)
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Translations$Page$Project$LeftPanel$previewProject(trn))
-										])),
-									function () {
-									var _v2 = isExportingInProgress ? _Utils_Tuple2(
-										noOp,
-										$author$project$Translations$Page$Project$LeftPanel$exportingInProgress(trn)) : _Utils_Tuple2(
-										exportProject,
-										$author$project$Translations$Page$Project$LeftPanel$exportProject(trn));
-									var action = _v2.a;
-									var label = _v2.b;
-									return A2(
-										$elm$html$Html$button,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$classList(
-												_List_fromArray(
-													[
-														_Utils_Tuple2('btn btn--theme w-14 h-6 text-sm', true),
-														_Utils_Tuple2('cursor-wait', isExportingInProgress)
-													])),
-												$elm$html$Html$Events$onClick(action),
-												$elm$html$Html$Attributes$disabled(isExportingInProgress)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text(label)
-											]));
-								}()
-								])),
-							function () {
-							if (savingResult.$ === 'Just') {
-								if (savingResult.a.$ === 'Ok') {
-									return A3(
-										$author$project$View$Project$viewAlert,
-										$author$project$View$Alert$viewSuccess,
-										dismissSavingResultPrompt,
-										$author$project$Translations$Page$Project$LeftPanel$successfullySaved(trn));
-								} else {
-									var error = savingResult.a.a;
-									return A3($author$project$View$Project$viewSavingError, trn, dismissSavingResultPrompt, error);
-								}
-							} else {
-								return $elm$html$Html$text('');
-							}
-						}(),
-							A2(
-							$author$project$Util$viewIfPresent,
-							exportingError,
-							function (error) {
-								return A3(
-									$author$project$View$Project$viewAlert,
-									$author$project$View$Alert$viewError,
-									dismissExportingErrorPrompt,
-									$author$project$Translations$Page$Project$LeftPanel$failedToExport(trn) + ('：' + A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$HtmlExport$errorToString, error)));
-							})
+								]))
 						])),
 					A2($author$project$View$Project$viewVersions, trn, versions),
 					A2(
@@ -18485,6 +18346,16 @@ var $author$project$Page$Project$MovingOver = function (a) {
 	return {$: 'MovingOver', a: a};
 };
 var $author$project$Page$Project$StopMovingSection = {$: 'StopMovingSection'};
+var $elm$html$Html$Attributes$classList = function (classes) {
+	return $elm$html$Html$Attributes$class(
+		A2(
+			$elm$core$String$join,
+			' ',
+			A2(
+				$elm$core$List$map,
+				$elm$core$Tuple$first,
+				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
+};
 var $elm$html$Html$Attributes$draggable = _VirtualDom_attribute('draggable');
 var $author$project$Util$onDragEnd = function (msg) {
 	return A2(
@@ -18504,76 +18375,6 @@ var $author$project$Util$onDrop = function (msg) {
 		'drop',
 		$elm$json$Json$Decode$succeed(
 			_Utils_Tuple2(msg, true)));
-};
-var $author$project$Page$Project$StartMovingSection = function (a) {
-	return {$: 'StartMovingSection', a: a};
-};
-var $elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
-var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
-var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
-var $elm$svg$Svg$path = $elm$svg$Svg$trustedNode('path');
-var $elm$svg$Svg$Attributes$transform = _VirtualDom_attribute('transform');
-var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
-var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
-var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
-var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
-var $author$project$View$Icon$wrapper = F2(
-	function (viewBox_, size) {
-		var viewBoxStr = A2(
-			$elm$core$String$join,
-			' ',
-			A2($elm$core$List$map, $elm$core$String$fromInt, viewBox_));
-		var sizeStr = $elm$core$String$fromInt(size);
-		return $elm$svg$Svg$svg(
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Attributes$width(sizeStr),
-					$elm$svg$Svg$Attributes$height(sizeStr),
-					$elm$svg$Svg$Attributes$viewBox(viewBoxStr)
-				]));
-	});
-var $author$project$View$Icon$customDrag = function (size) {
-	return A3(
-		$author$project$View$Icon$wrapper,
-		_List_fromArray(
-			[0, 0, 1024, 1024]),
-		size,
-		_List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M827.505255 195.268312C652.829957 20.593014 369.558335 20.593014 194.883037 195.269335 20.202623 369.94975 20.201599 653.220349 194.876897 827.895647c174.681438 174.681438 457.952037 174.679391 632.632451 0C1002.18567 653.220349 1002.18567 369.94975 827.505255 195.268312zM352.449679 703.530175l-63.700811 0L288.748868 319.832306l63.700811 0L352.449679 703.530175zM543.467177 703.530175l-63.700811 0L479.766366 319.832306l63.700811 0L543.467177 703.530175zM735.848743 703.530175l-63.700811 0L672.147932 319.832306l63.700811 0L735.848743 703.530175z'),
-						$elm$svg$Svg$Attributes$fill('#e1e2f1'),
-						$elm$svg$Svg$Attributes$transform('rotate(90 512 512)')
-					]),
-				_List_Nil)
-			]));
-};
-var $author$project$Page$Project$viewDragger = function (index) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('mr-4 w-8')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('btn w-full py-2 cursor-move mt-8'),
-						$elm$html$Html$Events$onMouseDown(
-						$author$project$Page$Project$StartMovingSection(index)),
-						$elm$html$Html$Events$onMouseUp($author$project$Page$Project$StopMovingSection)
-					]),
-				_List_fromArray(
-					[
-						$author$project$View$Icon$customDrag(32)
-					]))
-			]));
 };
 var $author$project$Page$Project$ToggleContentVisibility = function (a) {
 	return {$: 'ToggleContentVisibility', a: a};
@@ -18620,9 +18421,6 @@ var $author$project$Page$Project$viewHiddenContent = F2(
 						]))
 				]));
 	});
-var $author$project$Page$Project$AddPlainTextAfter = function (a) {
-	return {$: 'AddPlainTextAfter', a: a};
-};
 var $author$project$Page$Project$EditPlainText = F2(
 	function (a, b) {
 		return {$: 'EditPlainText', a: a, b: b};
@@ -18636,24 +18434,7 @@ var $author$project$Page$Project$PreEdit = function (a) {
 var $author$project$Page$Project$RemoveContent = function (a) {
 	return {$: 'RemoveContent', a: a};
 };
-var $author$project$View$Icon$customCross = function (size) {
-	return A3(
-		$author$project$View$Icon$wrapper,
-		_List_fromArray(
-			[0, 0, 1024, 1024]),
-		size,
-		_List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M896 217.6L601.6 512l294.4 294.4-89.6 89.6L512 601.6 217.6 896 128 806.4 422.4 512 128 217.6 217.6 128 512 422.4 806.4 128 896 217.6z'),
-						$elm$svg$Svg$Attributes$fill('#c33e23')
-					]),
-				_List_Nil)
-			]));
-};
+var $author$project$View$Icon$deleteForever = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z');
 var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $author$project$View$Trix$onBlur = function (tagger) {
 	return A2(
@@ -18734,26 +18515,10 @@ var $author$project$View$Trix$phantom = F2(
 				]),
 			_List_Nil);
 	});
-var $author$project$View$Icon$fillCurrent = $elm$svg$Svg$Attributes$fill('currentColor');
-var $author$project$View$Icon$noFill = $elm$svg$Svg$Attributes$fill('none');
-var $author$project$View$Icon$materialIcon = F2(
-	function (size, content) {
-		var framing = A2(
-			$elm$svg$Svg$path,
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Attributes$d('M0 0h24v24H0z'),
-					$author$project$View$Icon$noFill
-				]),
-			_List_Nil);
-		return A3(
-			$author$project$View$Icon$wrapper,
-			_List_fromArray(
-				[0, 0, 24, 24]),
-			size,
-			A2($elm$core$List$cons, framing, content));
-	});
-var $author$project$View$Icon$add = function (size) {
+var $author$project$Page$Project$AddPlainTextAfter = function (a) {
+	return {$: 'AddPlainTextAfter', a: a};
+};
+var $author$project$View$Icon$postAdd = function (size) {
 	return A2(
 		$author$project$View$Icon$materialIcon,
 		size,
@@ -18763,40 +18528,54 @@ var $author$project$View$Icon$add = function (size) {
 				$elm$svg$Svg$path,
 				_List_fromArray(
 					[
-						$elm$svg$Svg$Attributes$d('M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'),
+						$elm$svg$Svg$Attributes$d('M17 19.22H5V7h7V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h-2v7.22z'),
+						$author$project$View$Icon$fillCurrent
+					]),
+				_List_Nil),
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M19 2h-2v3h-3c.01.01 0 2 0 2h3v2.99c.01.01 2 0 2 0V7h3V5h-3V2zM7 9h8v2H7zM7 12v2h8v-2h-3zM7 15h8v2H7z'),
 						$author$project$View$Icon$fillCurrent
 					]),
 				_List_Nil)
 			]));
 };
-var $author$project$Translations$Page$Project$RightPanel$newTextualContent = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.new_textual_content');
+var $author$project$Page$Project$viewAddPlainText = function (index) {
+	return A2(
+		$elm$html$Html$button,
+		_List_fromArray(
+			[
+				$elm$html$Html$Events$onClick(
+				$author$project$Page$Project$AddPlainTextAfter(index)),
+				$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2')
+			]),
+		_List_fromArray(
+			[
+				$author$project$View$Icon$postAdd(24)
+			]));
 };
-var $author$project$View$Project$viewAddPlainText = F2(
-	function (trn, msg) {
-		return A2(
-			$elm$html$Html$button,
-			_List_fromArray(
-				[
-					$elm$html$Html$Events$onClick(msg),
-					$elm$html$Html$Attributes$class('btn btn--white py-1 w-full justify-start')
-				]),
-			_List_fromArray(
-				[
-					$author$project$View$Icon$add(24),
-					A2(
-					$elm$html$Html$span,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('ml-2')
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text(
-							$author$project$Translations$Page$Project$RightPanel$newTextualContent(trn))
-						]))
-				]));
-	});
+var $author$project$Page$Project$StartMovingSection = function (a) {
+	return {$: 'StartMovingSection', a: a};
+};
+var $author$project$View$Icon$dragHandle = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M20 9H4v2h16V9zM4 15h16v-2H4v2z');
+var $author$project$Page$Project$viewDragHandle = function (index) {
+	return A2(
+		$elm$html$Html$button,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain w-full cursor-move'),
+				$elm$html$Html$Events$onMouseDown(
+				$author$project$Page$Project$StartMovingSection(index)),
+				$elm$html$Html$Events$onMouseUp($author$project$Page$Project$StopMovingSection)
+			]),
+		_List_fromArray(
+			[
+				$author$project$View$Icon$dragHandle(32)
+			]));
+};
+var $author$project$View$Icon$delete = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z');
 var $author$project$Page$Project$viewToggleContentVisibility = function (index) {
 	return A2(
 		$elm$html$Html$button,
@@ -18804,15 +18583,15 @@ var $author$project$Page$Project$viewToggleContentVisibility = function (index) 
 			[
 				$elm$html$Html$Events$onClick(
 				$author$project$Page$Project$ToggleContentVisibility(index)),
-				$elm$html$Html$Attributes$class('btn btn--white px-2 h-6 text-red-600')
+				$elm$html$Html$Attributes$class('btn btn--white text-warning-500 p-2')
 			]),
 		_List_fromArray(
 			[
-				$author$project$View$Icon$customCross(24)
+				$author$project$View$Icon$delete(24)
 			]));
 };
-var $author$project$Page$Project$viewPlainText = F3(
-	function (trn, index, content) {
+var $author$project$Page$Project$viewPlainText = F2(
+	function (index, content) {
 		var _v0 = _Utils_Tuple2(
 			'phantom-' + $elm$core$String$fromInt(index),
 			'toolbar-' + $elm$core$String$fromInt(index));
@@ -18824,31 +18603,20 @@ var $author$project$Page$Project$viewPlainText = F3(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('w-full')
+						$elm$html$Html$Attributes$class('w-12')
 					]),
 				_List_fromArray(
 					[
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('h-8 flex flex-row justify-end items-center')
-							]),
-						_List_fromArray(
-							[
-								$author$project$Util$isInFactBlankString(content) ? A2(
-								$elm$html$Html$button,
-								_List_fromArray(
-									[
-										$elm$html$Html$Events$onClick(
-										$author$project$Page$Project$RemoveContent(index)),
-										$elm$html$Html$Attributes$class('btn btn--white px-2 h-6 text-red-600')
-									]),
-								_List_fromArray(
-									[
-										$author$project$View$Icon$customCross(24)
-									])) : $author$project$Page$Project$viewToggleContentVisibility(index)
-							])),
+						$author$project$Page$Project$viewDragHandle(index)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('plain-text')
+					]),
+				_List_fromArray(
+					[
 						A2($author$project$View$Trix$phantom, phantomID, content),
 						$author$project$View$Trix$editor(
 						{
@@ -18857,11 +18625,29 @@ var $author$project$Page$Project$viewPlainText = F3(
 							phantomID: phantomID,
 							startEditing: $author$project$Page$Project$PreEdit(index),
 							toolbarID: toolbarID
-						}),
-						A2(
-						$author$project$View$Project$viewAddPlainText,
-						trn,
-						$author$project$Page$Project$AddPlainTextAfter(index))
+						})
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('w-10 flex flex-col h-full justify-between items-center')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Page$Project$viewAddPlainText(index),
+						$author$project$Util$isInFactBlankString(content) ? A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(
+								$author$project$Page$Project$RemoveContent(index)),
+								$elm$html$Html$Attributes$class('btn btn--white p-2 text-warning-500')
+							]),
+						_List_fromArray(
+							[
+								$author$project$View$Icon$deleteForever(24)
+							])) : $author$project$Page$Project$viewToggleContentVisibility(index)
 					])),
 				A2(
 				$elm$html$Html$div,
@@ -18898,37 +18684,88 @@ var $author$project$Page$Project$SplitSection = F2(
 var $author$project$Page$Project$StopPreviewingAsCover = function (a) {
 	return {$: 'StopPreviewingAsCover', a: a};
 };
-var $author$project$View$Icon$movie = function (size) {
-	return A2(
-		$author$project$View$Icon$materialIcon,
-		size,
-		_List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z')
-					]),
-				_List_Nil)
-			]));
-};
-var $author$project$View$Spinner$skChase = A2(
-	$elm$html$Html$div,
-	_List_fromArray(
-		[
-			$elm$html$Html$Attributes$class('sk-chase w-6 h-6')
-		]),
-	A2(
-		$elm$core$List$repeat,
-		6,
+var $author$project$Util$formatTimeInSeconds = function (time) {
+	var toPaddedString = A2(
+		$elm$core$Basics$composeR,
+		$elm$core$String$fromInt,
 		A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('sk-chase-dot')
-				]),
-			_List_Nil)));
+			$elm$core$String$padLeft,
+			2,
+			_Utils_chr('0')));
+	var go = F2(
+		function (n, ns) {
+			go:
+			while (true) {
+				var _v0 = _Utils_Tuple2(
+					$elm$core$List$length(ns) >= 2,
+					n);
+				if (_v0.a) {
+					if (!_v0.b) {
+						return ns;
+					} else {
+						var hour = _v0.b;
+						return A2($elm$core$List$cons, hour, ns);
+					}
+				} else {
+					var $temp$n = (n / 60) | 0,
+						$temp$ns = A2($elm$core$List$cons, n % 60, ns);
+					n = $temp$n;
+					ns = $temp$ns;
+					continue go;
+				}
+			}
+		});
+	return A2(
+		$elm$core$String$join,
+		':',
+		A2(
+			$elm$core$List$map,
+			toPaddedString,
+			A2(go, (time / 1000) | 0, _List_Nil)));
+};
+var $elm_community$list_extra$List$Extra$minimumBy = F2(
+	function (f, ls) {
+		var minBy = F2(
+			function (x, _v1) {
+				var y = _v1.a;
+				var fy = _v1.b;
+				var fx = f(x);
+				return (_Utils_cmp(fx, fy) < 0) ? _Utils_Tuple2(x, fx) : _Utils_Tuple2(y, fy);
+			});
+		if (ls.b) {
+			if (!ls.b.b) {
+				var l_ = ls.a;
+				return $elm$core$Maybe$Just(l_);
+			} else {
+				var l_ = ls.a;
+				var ls_ = ls.b;
+				return $elm$core$Maybe$Just(
+					A3(
+						$elm$core$List$foldl,
+						minBy,
+						_Utils_Tuple2(
+							l_,
+							f(l_)),
+						ls_).a);
+			}
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$Data$Video$Segment$getStartingTime = function (_v0) {
+	var keyFrame = _v0.a;
+	var others = _v0.b;
+	var _v1 = A2($elm_community$list_extra$List$Extra$minimumBy, $author$project$Data$Video$Frame$getTime, others);
+	if (_v1.$ === 'Nothing') {
+		return $author$project$Data$Video$Frame$getTime(keyFrame);
+	} else {
+		var frame = _v1.a;
+		return A2(
+			$elm$core$Basics$min,
+			$author$project$Data$Video$Frame$getTime(keyFrame),
+			$author$project$Data$Video$Frame$getTime(frame));
+	}
+};
 var $author$project$Data$File$Object$relativeTo = F2(
 	function (padPath, _v0) {
 		var path = _v0.a;
@@ -18956,6 +18793,34 @@ var $author$project$Data$Video$Frame$getUrl = F3(
 			base,
 			A2($author$project$Data$File$Object$fromPartialKey, friendlyUnionID, frame));
 	});
+var $author$project$View$Spinner$skChase = A2(
+	$elm$html$Html$div,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('sk-chase w-6 h-6')
+		]),
+	A2(
+		$elm$core$List$repeat,
+		6,
+		A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('sk-chase-dot')
+				]),
+			_List_Nil)));
+var $author$project$Data$Video$Gif$toFileSizeStr = function (_v0) {
+	var fileSize = _v0.fileSize;
+	return $author$project$Data$FileSize$toString(fileSize);
+};
+var $author$project$Data$Video$Gif$toUrl = F3(
+	function (base, friendlyUnionID, gif) {
+		return A2(
+			$author$project$Data$File$Object$toUrl,
+			base,
+			A2($author$project$Data$File$Object$fromPartialKey, friendlyUnionID, gif));
+	});
+var $author$project$View$Icon$videocam = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z');
 var $author$project$Util$onMouseEnter = function (msg) {
 	return A2(
 		$elm$html$Html$Events$on,
@@ -19019,7 +18884,7 @@ var $author$project$View$Project$viewAllFrames = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('frame-collection w-1/2')
+					$elm$html$Html$Attributes$class('frame-collection')
 				]),
 			A2(
 				$elm$core$List$map,
@@ -19030,22 +18895,7 @@ var $author$project$Page$Project$MergeSections = F3(
 	function (a, b, c) {
 		return {$: 'MergeSections', a: a, b: b, c: c};
 	});
-var $author$project$View$Icon$arrowUpward = function (size) {
-	return A2(
-		$author$project$View$Icon$materialIcon,
-		size,
-		_List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z'),
-						$author$project$View$Icon$fillCurrent
-					]),
-				_List_Nil)
-			]));
-};
+var $author$project$View$Icon$arrowUpward = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z');
 var $author$project$Page$Project$viewMergeButton = function (between) {
 	if (between.$ === 'Control') {
 		var index = between.a.index;
@@ -19062,7 +18912,7 @@ var $author$project$Page$Project$viewMergeButton = function (between) {
 						[
 							$elm$html$Html$Events$onClick(
 							A3($author$project$Page$Project$MergeSections, index, indexFrom, segmentContent)),
-							$elm$html$Html$Attributes$class('btn btn--white px-2 h-6 ml-6')
+							$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2')
 						]),
 					_List_fromArray(
 						[
@@ -19073,190 +18923,6 @@ var $author$project$Page$Project$viewMergeButton = function (between) {
 		return $elm$html$Html$text('');
 	}
 };
-var $elm$core$Basics$round = _Basics_round;
-var $author$project$Util$formatTime = function (time) {
-	var toPaddedString = A2(
-		$elm$core$Basics$composeR,
-		$elm$core$String$fromInt,
-		A2(
-			$elm$core$String$padLeft,
-			2,
-			_Utils_chr('0')));
-	var go = F2(
-		function (n, ns) {
-			go:
-			while (true) {
-				var _v0 = _Utils_Tuple2(
-					$elm$core$List$length(ns) >= 2,
-					n);
-				if (_v0.a) {
-					if (!_v0.b) {
-						return ns;
-					} else {
-						var hour = _v0.b;
-						return A2($elm$core$List$cons, hour, ns);
-					}
-				} else {
-					var $temp$n = (n / 60) | 0,
-						$temp$ns = A2($elm$core$List$cons, n % 60, ns);
-					n = $temp$n;
-					ns = $temp$ns;
-					continue go;
-				}
-			}
-		});
-	var centiseconds = $elm$core$Basics$round((time % 1000) / 10);
-	return A2(
-		$elm$core$String$join,
-		':',
-		A2(
-			$elm$core$List$map,
-			toPaddedString,
-			A2(go, (time / 1000) | 0, _List_Nil))) + ('.' + toPaddedString(centiseconds));
-};
-var $elm_community$list_extra$List$Extra$minimumBy = F2(
-	function (f, ls) {
-		var minBy = F2(
-			function (x, _v1) {
-				var y = _v1.a;
-				var fy = _v1.b;
-				var fx = f(x);
-				return (_Utils_cmp(fx, fy) < 0) ? _Utils_Tuple2(x, fx) : _Utils_Tuple2(y, fy);
-			});
-		if (ls.b) {
-			if (!ls.b.b) {
-				var l_ = ls.a;
-				return $elm$core$Maybe$Just(l_);
-			} else {
-				var l_ = ls.a;
-				var ls_ = ls.b;
-				return $elm$core$Maybe$Just(
-					A3(
-						$elm$core$List$foldl,
-						minBy,
-						_Utils_Tuple2(
-							l_,
-							f(l_)),
-						ls_).a);
-			}
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $author$project$Data$Video$Segment$getStartingTime = function (_v0) {
-	var keyFrame = _v0.a;
-	var others = _v0.b;
-	var _v1 = A2($elm_community$list_extra$List$Extra$minimumBy, $author$project$Data$Video$Frame$getTime, others);
-	if (_v1.$ === 'Nothing') {
-		return $author$project$Data$Video$Frame$getTime(keyFrame);
-	} else {
-		var frame = _v1.a;
-		return A2(
-			$elm$core$Basics$min,
-			$author$project$Data$Video$Frame$getTime(keyFrame),
-			$author$project$Data$Video$Frame$getTime(frame));
-	}
-};
-var $author$project$Data$Video$Gif$toFileSizeStr = function (_v0) {
-	var fileSize = _v0.fileSize;
-	return $author$project$Data$FileSize$toString(fileSize);
-};
-var $author$project$Data$Video$Gif$toUrl = F3(
-	function (base, friendlyUnionID, gif) {
-		return A2(
-			$author$project$Data$File$Object$toUrl,
-			base,
-			A2($author$project$Data$File$Object$fromPartialKey, friendlyUnionID, gif));
-	});
-var $author$project$View$Project$viewSegmentCover = F2(
-	function (trn, _v0) {
-		var segment = _v0.segment;
-		var uuid = _v0.uuid;
-		var showGif = _v0.showGif;
-		var frameToPreview = _v0.frameToPreview;
-		var actions = _v0.actions;
-		var addPlainText = _v0.addPlainText;
-		var seekTime = _v0.seekTime;
-		var time = $author$project$Data$Video$Segment$getStartingTime(segment);
-		var keyFrameUrl = A3(
-			$author$project$Data$Video$Frame$getUrl,
-			$author$project$Data$File$Object$Local,
-			uuid,
-			$author$project$Data$Video$Segment$getKeyFrame(segment));
-		var allFrames = $author$project$Data$Video$Segment$getAllFrames(segment);
-		var coverMedia = function () {
-			var _v2 = _Utils_Tuple2(showGif, frameToPreview);
-			if (_v2.a.$ === 'Nothing') {
-				if (_v2.b.$ === 'Nothing') {
-					var _v3 = _v2.a;
-					var _v4 = _v2.b;
-					return keyFrameUrl;
-				} else {
-					var _v5 = _v2.a;
-					var frame = _v2.b.a;
-					return A2($elm$core$List$member, frame, allFrames) ? A3($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid, frame) : keyFrameUrl;
-				}
-			} else {
-				var gif = _v2.a.a;
-				return A3($author$project$Data$Video$Gif$toUrl, $author$project$Data$File$Object$Local, uuid, gif);
-			}
-		}();
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('w-1/2')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('h-8 flex flex-row justify-between items-center')
-						]),
-					_List_fromArray(
-						[
-							function () {
-							if (showGif.$ === 'Nothing') {
-								return A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Events$onClick(
-											seekTime(time)),
-											$elm$html$Html$Attributes$class('cursor-pointer')
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Util$formatTime(time))
-										]));
-							} else {
-								var gif = showGif.a;
-								return $elm$html$Html$text(
-									$author$project$Data$Video$Gif$toFileSizeStr(gif));
-							}
-						}(),
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('flex flex-row-reverse justify-start items-center -mx-2')
-								]),
-							actions)
-						])),
-					A2(
-					$elm$html$Html$img,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$src(coverMedia),
-							$elm$html$Html$Attributes$class('w-full object-contain select-none my-2')
-						]),
-					_List_Nil),
-					A2($author$project$View$Project$viewAddPlainText, trn, addPlainText)
-				]));
-	});
 var $author$project$Page$Project$StartSplittingSection = function (a) {
 	return {$: 'StartSplittingSection', a: a};
 };
@@ -19287,7 +18953,7 @@ var $author$project$Page$Project$viewSplitButton = F2(
 					$elm$html$Html$Attributes$classList(
 					_List_fromArray(
 						[
-							_Utils_Tuple2('h-8 btn btn--white px-3', true),
+							_Utils_Tuple2('btn btn--theme btn--textual-plain p-2', true),
 							_Utils_Tuple2('bg-grey-100 shadow-inner', isSplittingSection)
 						])),
 					isSplittingSection ? $elm$html$Html$Events$onClick($author$project$Page$Project$StopSplittingSection) : $elm$html$Html$Events$onClick(
@@ -19298,76 +18964,171 @@ var $author$project$Page$Project$viewSplitButton = F2(
 					$author$project$View$Icon$cut(21)
 				]));
 	});
-var $author$project$Page$Project$viewSegmentContent = F6(
-	function (trn, uuid, _v0, index, content, between) {
+var $author$project$Page$Project$viewSegmentContent = F5(
+	function (uuid, _v0, index, content, between) {
 		var pendingGifJobs = _v0.pendingGifJobs;
 		var splittingSection = _v0.splittingSection;
 		var frameToPreview = _v0.frameToPreview;
-		var showGif = function () {
-			if (content.$ === 'GifFromVideo') {
-				var gif = content.a;
-				return $elm$core$Maybe$Just(gif);
-			} else {
-				return $elm$core$Maybe$Nothing;
-			}
-		}();
 		var segment = $author$project$Data$Project$SegmentContent$getSegment(content);
-		var isSplittingSection = _Utils_eq(
-			splittingSection,
-			$elm$core$Maybe$Just(index));
-		var _v1 = function () {
-			var _v2 = _Utils_Tuple2(
-				showGif,
+		var viewGifBtn = function () {
+			var _v7 = _Utils_Tuple2(
+				content,
 				A2(
 					$elm$core$Set$member,
 					$author$project$Data$Video$Segment$getTimeInterval(segment),
 					pendingGifJobs));
-			if (_v2.a.$ === 'Nothing') {
-				if (_v2.b) {
-					var _v3 = _v2.a;
-					return _Utils_Tuple2($author$project$Page$Project$NoOp, $author$project$View$Spinner$skChase);
+			if (_v7.a.$ === 'FrameSequence') {
+				if (_v7.b) {
+					var _v8 = _v7.a;
+					return A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('btn p-2')
+							]),
+						_List_fromArray(
+							[$author$project$View$Spinner$skChase]));
 				} else {
-					var _v4 = _v2.a;
-					return _Utils_Tuple2(
-						$author$project$Page$Project$ConvertToGif(index),
-						$elm$html$Html$text('GIF'));
+					var _v9 = _v7.a;
+					return A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(
+								$author$project$Page$Project$ConvertToGif(index)),
+								$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2')
+							]),
+						_List_fromArray(
+							[
+								$author$project$View$Icon$videocam(24)
+							]));
 				}
 			} else {
-				return _Utils_Tuple2(
-					$author$project$Page$Project$RevertGif(index),
-					$author$project$View$Icon$movie(24));
+				var _v10 = _v7.a;
+				return A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick(
+							$author$project$Page$Project$RevertGif(index)),
+							$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2')
+						]),
+					_List_fromArray(
+						[
+							$author$project$View$Icon$videocam(24)
+						]));
 			}
 		}();
-		var action = _v1.a;
-		var label = _v1.b;
+		var keyFrameUrl = A2(
+			$elm$core$Basics$composeR,
+			$author$project$Data$Video$Segment$getKeyFrame,
+			A2($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid));
+		var isSplittingSection = _Utils_eq(
+			splittingSection,
+			$elm$core$Maybe$Just(index));
+		var coverUrl = function () {
+			var _v2 = _Utils_Tuple2(content, frameToPreview);
+			if (_v2.a.$ === 'FrameSequence') {
+				if (_v2.b.$ === 'Nothing') {
+					var _v3 = _v2.a;
+					var _v4 = _v2.b;
+					return keyFrameUrl(segment);
+				} else {
+					var _v5 = _v2.a;
+					var frame = _v2.b.a;
+					return A2(
+						$elm$core$List$member,
+						frame,
+						$author$project$Data$Video$Segment$getAllFrames(segment)) ? A3($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid, frame) : A3(
+						$author$project$Data$Video$Frame$getUrl,
+						$author$project$Data$File$Object$Local,
+						uuid,
+						$author$project$Data$Video$Segment$getKeyFrame(segment));
+				}
+			} else {
+				var _v6 = _v2.a;
+				var gif = _v6.a;
+				return A3($author$project$Data$Video$Gif$toUrl, $author$project$Data$File$Object$Local, uuid, gif);
+			}
+		}();
 		return _List_fromArray(
 			[
 				A2(
-				$author$project$View$Project$viewSegmentCover,
-				trn,
-				{
-					actions: _List_fromArray(
-						[
-							$author$project$Page$Project$viewToggleContentVisibility(index),
-							A2($author$project$Page$Project$viewSplitButton, isSplittingSection, index),
-							A2(
-							$elm$html$Html$button,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('btn btn--white w-12 h-6 font-bold'),
-									$elm$html$Html$Events$onClick(action)
-								]),
-							_List_fromArray(
-								[label])),
-							$author$project$Page$Project$viewMergeButton(between)
-						]),
-					addPlainText: $author$project$Page$Project$AddPlainTextAfter(index),
-					frameToPreview: frameToPreview,
-					seekTime: $author$project$Page$Project$SeekTime,
-					segment: segment,
-					showGif: showGif,
-					uuid: uuid
-				}),
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('flex flex-col justify-start items-center w-12')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Page$Project$viewDragHandle(index),
+						function () {
+						if (content.$ === 'FrameSequence') {
+							return A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Events$onClick(
+										$author$project$Page$Project$SeekTime(
+											$author$project$Data$Video$Segment$getStartingTime(segment))),
+										$elm$html$Html$Attributes$class('cursor-pointer text-xs')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										$author$project$Util$formatTimeInSeconds(
+											$author$project$Data$Video$Segment$getStartingTime(segment)))
+									]));
+						} else {
+							var gif = content.a;
+							return $elm$html$Html$text(
+								$author$project$Data$Video$Gif$toFileSizeStr(gif));
+						}
+					}()
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('flex-1 p-1')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$img,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$src(coverUrl),
+								$elm$html$Html$Attributes$class('w-full object-contain select-none my-2')
+							]),
+						_List_Nil)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('w-10 flex flex-col h-full justify-between items-center')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$author$project$Page$Project$viewMergeButton(between),
+								viewGifBtn,
+								$author$project$Page$Project$viewAddPlainText(index),
+								A2($author$project$Page$Project$viewSplitButton, isSplittingSection, index)
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$author$project$Page$Project$viewToggleContentVisibility(index)
+							]))
+					])),
 				A2(
 				$author$project$View$Project$viewAllFrames,
 				segment,
@@ -19423,26 +19184,31 @@ var $author$project$Page$Project$viewBlock = F5(
 					attrs)),
 			_List_fromArray(
 				[
-					$author$project$Page$Project$viewDragger(index),
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('w-full flex flex-row justify-between items-start')
-						]),
 					function () {
-						if (content.$ === 'FromSegment') {
-							var segmentContent = content.b;
-							return A6($author$project$Page$Project$viewSegmentContent, trn, uuid, substate, index, segmentContent, between);
+					if (content.$ === 'FromSegment') {
+						var segmentContent = content.b;
+						return A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('w-full flex flex-row justify-between items-start')
+								]),
+							A5($author$project$Page$Project$viewSegmentContent, uuid, substate, index, segmentContent, between));
+					} else {
+						if (content.c.$ === 'PlainText') {
+							var plainText = content.c.a;
+							return A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('w-full flex flex-row justify-start items-start')
+									]),
+								A2($author$project$Page$Project$viewPlainText, index, plainText));
 						} else {
-							if (content.c.$ === 'PlainText') {
-								var plainText = content.c.a;
-								return A3($author$project$Page$Project$viewPlainText, trn, index, plainText);
-							} else {
-								return _List_Nil;
-							}
+							return $elm$html$Html$text('');
 						}
-					}())
+					}
+				}()
 				]));
 	});
 var $author$project$Page$Project$viewBlocks = F4(
@@ -19455,7 +19221,7 @@ var $author$project$Page$Project$viewBlocks = F4(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('px-4 py-6 max-w-2xl lg:max-w-3xl h-full overflow-y-scroll')
+					$elm$html$Html$Attributes$class('px-4 py-6 max-w-2xl lg:max-w-3xl overflow-y-scroll')
 				]),
 			$elm$core$List$singleton(
 				A3(
@@ -19513,6 +19279,59 @@ var $author$project$View$Layout$viewOverlay = F4(
 						attrs),
 					content)
 				]));
+	});
+var $author$project$Translations$ProjectSaving$sourceFileNotFound = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project_saving.source_file_not_found');
+};
+var $author$project$Data$Project$Saving$errorToString = F2(
+	function (trn, error) {
+		return $author$project$Translations$ProjectSaving$sourceFileNotFound(trn);
+	});
+var $author$project$Translations$Page$Project$LeftPanel$failedToSave = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.failed_to_save');
+};
+var $author$project$View$Project$viewAlert = F3(
+	function (viewer, dismissMsg, textContent) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('px-4 py-2')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					viewer,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('text-sm'),
+							$elm$html$Html$Events$onClick(dismissMsg)
+						]),
+					textContent)
+				]));
+	});
+var $author$project$View$Alert$viewError = F2(
+	function (attrs, textContent) {
+		return A2(
+			$elm$html$Html$div,
+			_Utils_ap(
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('bg-red-100 text-red-600 px-4 py-2 cursor-pointer')
+					]),
+				attrs),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(textContent)
+				]));
+	});
+var $author$project$View$Project$viewSavingError = F3(
+	function (trn, dismissMsg, error) {
+		return A3(
+			$author$project$View$Project$viewAlert,
+			$author$project$View$Alert$viewError,
+			dismissMsg,
+			$author$project$Translations$Page$Project$LeftPanel$failedToSave(trn) + ('：' + A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$Saving$errorToString, error)));
 	});
 var $author$project$View$Project$viewConfirmNavigatingAway = F6(
 	function (trn, noOp, stayOnPage, saveAndLeave, savingResult, confirmNavigatingAway) {
@@ -19829,43 +19648,115 @@ var $author$project$View$Project$viewSectionNav = F3(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('w-12 absolute right-0 inset-y-0 overflow-y-auto opacity-25 hover:opacity-75 transition-opacity ease-in duration-150')
+					$elm$html$Html$Attributes$class('w-12 overflow-y-auto opacity-25 hover:opacity-75 transition-opacity ease-in duration-150')
 				]),
 			A2(
 				$elm$core$List$map,
 				A2($author$project$View$Project$viewSectionNavItem, jumpTo, uuid),
 				frames));
 	});
+var $author$project$Page$Project$ExportProject = {$: 'ExportProject'};
+var $author$project$Page$Project$NavigateToPortal = {$: 'NavigateToPortal'};
+var $author$project$Page$Project$StartPreviewing = {$: 'StartPreviewing'};
+var $author$project$View$Icon$accountBox = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M3 5v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2zm12 4c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3zm-9 8c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1H6v-1z');
+var $author$project$Translations$Page$Project$Nav$backToPortal = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.back_to_portal');
+};
+var $author$project$View$Icon$cloudUpload = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3zM8 13h2.55v3h2.9v-3H16l-4-4z');
+var $author$project$Translations$Page$Project$Nav$exportProject = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.export_project');
+};
+var $author$project$View$Icon$lowPriority = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M14 5h8v2h-8zm0 5.5h8v2h-8zm0 5.5h8v2h-8zM2 11.5C2 15.08 4.92 18 8.5 18H9v2l3-3-3-3v2h-.5C6.02 16 4 13.98 4 11.5S6.02 7 8.5 7H12V5H8.5C4.92 5 2 7.92 2 11.5z');
+var $author$project$Translations$Page$Project$Nav$previewProject = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.preview_project');
+};
+var $author$project$View$Icon$save = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z');
+var $author$project$Translations$Page$Project$Nav$saveProject = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.save_project');
+};
+var $author$project$View$Icon$visibility = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M12 6c3.79 0 7.17 2.13 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5C4.83 8.13 8.21 6 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5c1.38 0 2.5 1.12 2.5 2.5S13.38 14 12 14s-2.5-1.12-2.5-2.5S10.62 9 12 9m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z');
+var $author$project$Page$Project$viewSidenav = function (trn) {
+	var viewNavItem = function (_v0) {
+		var label = _v0.a;
+		var icon = _v0.b;
+		var action = _v0.c;
+		return A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(action),
+					$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain flex flex-col items-center my-2')
+				]),
+			_List_fromArray(
+				[
+					icon(32),
+					$elm$html$Html$text(label)
+				]));
+	};
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('w-18 py-8 flex flex-col justify-between items-stretch bg-grey-200')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('flex flex-col items-center')
+					]),
+				A2(
+					$elm$core$List$map,
+					viewNavItem,
+					_List_fromArray(
+						[
+							_Utils_Tuple3(
+							$author$project$Translations$Page$Project$Nav$saveProject(trn),
+							$author$project$View$Icon$save,
+							$author$project$Page$Project$SaveProject($elm$core$Maybe$Nothing)),
+							_Utils_Tuple3(
+							$author$project$Translations$Page$Project$Nav$previewProject(trn),
+							$author$project$View$Icon$visibility,
+							$author$project$Page$Project$StartPreviewing),
+							_Utils_Tuple3(
+							$author$project$Translations$Page$Project$Nav$exportProject(trn),
+							$author$project$View$Icon$cloudUpload,
+							$author$project$Page$Project$ExportProject),
+							_Utils_Tuple3(
+							$author$project$Translations$Page$Project$Nav$backToPortal(trn),
+							$author$project$View$Icon$lowPriority,
+							$author$project$Page$Project$NavigateToPortal)
+						]))),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('flex flex-col items-center')
+					]),
+				A2(
+					$elm$core$List$map,
+					viewNavItem,
+					_List_fromArray(
+						[
+							_Utils_Tuple3('', $author$project$View$Icon$accountBox, $author$project$Page$Project$NoOp)
+						])))
+			]));
+};
 var $author$project$Page$Project$viewLoaded = F4(
 	function (trn, versions, project, substate) {
+		var isModified = !_Utils_eq(substate.lastSaved, project);
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('absolute inset-0 flex flex-row justify-center bg-grey-100')
+					$elm$html$Html$Attributes$class('h-full flex flex-row justify-between items-stretch bg-grey-100')
 				]),
 			_List_fromArray(
 				[
-					A2(
-					$author$project$View$Project$viewAuxiliary,
-					trn,
-					{
-						dismissExportingErrorPrompt: $author$project$Page$Project$DismissExportingErrorPrompt,
-						dismissSavingResultPrompt: $author$project$Page$Project$DismissSavingResultPrompt,
-						exportProject: $author$project$Page$Project$ExportProject,
-						exportingError: substate.exportingError,
-						isExportingInProgress: substate.isExportingInProgress,
-						isProjectModified: !_Utils_eq(substate.lastSaved, project),
-						navigateToPortal: $author$project$Page$Project$NavigateToPortal,
-						noOp: $author$project$Page$Project$NoOp,
-						projectName: project.name,
-						projectSize: substate.projectSize,
-						saveProject: $author$project$Page$Project$SaveProject($elm$core$Maybe$Nothing),
-						savingResult: substate.savingResult,
-						startPreviewing: $author$project$Page$Project$StartPreviewing,
-						uuid: project.uuid,
-						versions: versions
-					}),
+					$author$project$Page$Project$viewSidenav(trn),
+					A6($author$project$View$Project$viewAuxiliary, trn, project.uuid, project.name, isModified, versions, substate.projectSize),
 					A4($author$project$Page$Project$viewBlocks, trn, project.uuid, substate, project.workingData),
 					A3(
 					$author$project$View$Project$viewSectionNav,
@@ -19910,7 +19801,7 @@ var $author$project$Page$Project$view = F3(
 								return A4($author$project$Page$Project$viewLoaded, trn, versions, project.present, substate);
 							default:
 								var error = model.a;
-								return $elm$html$Html$text('');
+								return A2($author$project$Page$Project$viewError, trn, error);
 						}
 					}()
 					]))
@@ -20200,57 +20091,13 @@ var $author$project$Page$Project$Portal$SelectProject = F2(
 	function (a, b) {
 		return {$: 'SelectProject', a: a, b: b};
 	});
-var $author$project$View$Icon$checkBox = function (size) {
-	return A2(
-		$author$project$View$Icon$materialIcon,
-		size,
-		_List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'),
-						$author$project$View$Icon$fillCurrent
-					]),
-				_List_Nil)
-			]));
-};
-var $author$project$View$Icon$checkBoxOutlineBlank = function (size) {
-	return A2(
-		$author$project$View$Icon$materialIcon,
-		size,
-		_List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z'),
-						$author$project$View$Icon$fillCurrent
-					]),
-				_List_Nil)
-			]));
-};
+var $author$project$View$Icon$checkBox = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z');
+var $author$project$View$Icon$checkBoxOutlineBlank = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z');
 var $author$project$Translations$Processing$Preset$custom = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'processing.preset.custom');
 };
-var $author$project$View$Icon$deleteOutline = function (size) {
-	return A2(
-		$author$project$View$Icon$materialIcon,
-		size,
-		_List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4'),
-						$elm$svg$Svg$Attributes$fill('#b71c1c')
-					]),
-				_List_Nil)
-			]));
-};
+var $author$project$View$Icon$deleteOutline = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4');
+var $author$project$View$Icon$editOutline = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z');
 var $author$project$Data$Video$Processing$Preset$match = F2(
 	function (availablePresets, params) {
 		match:
@@ -20298,25 +20145,8 @@ var $author$project$Util$onClickWithCtrlKey = function (tagger) {
 			tagger,
 			A2($elm$json$Json$Decode$field, 'ctrlKey', $elm$json$Json$Decode$bool)));
 };
-var $author$project$View$Icon$penFancy = function (size) {
-	return A3(
-		$author$project$View$Icon$wrapper,
-		_List_fromArray(
-			[0, 0, 512, 512]),
-		size,
-		_List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M424.86 0c-23.45 0-46.85 9.64-63.71 28.72L169.93 240 84.1 268.62a34.005 34.005 0 0 0-21.5 21.5L0 478l33.99 34 187.79-62.62a33.967 33.967 0 0 0 21.49-21.5L271.88 342l211.19-191.3C544.5 96.38 500.08 0 424.86 0zM199.97 406.05L92.79 441.79l50-50.02c.4.02.74.23 1.14.23 13.25 0 23.99-10.75 23.99-24 0-13.26-10.74-24-23.99-24-13.25 0-23.99 10.74-23.99 24 0 .41.21.74.23 1.14l-50 50.02 35.72-107.22 79.2-26.41 1.81-.61 40.06 40.07-.61 1.81-26.38 79.25zm250.9-290.93l-192 173.92-36-36.02L397.1 60.51C404.23 52.44 414.09 48 424.86 48c20.23 0 39.6 18.13 38.92 40.12-.31 10.32-4.75 19.77-12.91 27z'),
-						$author$project$View$Icon$fillCurrent
-					]),
-				_List_Nil)
-			]));
-};
 var $elm$core$Basics$pow = _Basics_pow;
+var $elm$core$Basics$round = _Basics_round;
 var $author$project$Util$truncateDecimal = F2(
 	function (n, k) {
 		return $elm$core$Basics$round(
@@ -20392,53 +20222,42 @@ var $author$project$Page$Project$Portal$PickSubtitleFor = function (a) {
 var $author$project$Page$Project$Portal$ReviewSubtitle = function (a) {
 	return {$: 'ReviewSubtitle', a: a};
 };
-var $author$project$Translations$Page$ProjectPortal$withSubtitleBadge = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.with_subtitle_badge');
-};
-var $author$project$Translations$Page$ProjectPortal$withoutSubtitleBadge = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.without_subtitle_badge');
-};
-var $author$project$Page$Project$Portal$viewSubtitleBadge = F3(
-	function (trn, uuid, hasSubtitle) {
-		return hasSubtitle ? A2(
+var $author$project$View$Icon$subtitles = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z');
+var $author$project$Page$Project$Portal$viewSubtitleBadge = F2(
+	function (uuid, hasSubtitle) {
+		return A2(
 			$elm$html$Html$span,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('mx-2 px-1 text-xs bg-secondary-400 text-white tracking-wide font-light'),
-					$author$project$Util$onClickStopPropagation(
-					$author$project$Page$Project$Portal$ReviewSubtitle(uuid))
-				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text(
-					$author$project$Translations$Page$ProjectPortal$withSubtitleBadge(trn))
-				])) : A2(
-			$elm$html$Html$span,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('flex-shrink-0 mx-2 px-1 text-xs bg-grey-100 text-grey-500 font-light'),
-					$author$project$Util$onClickStopPropagation(
+					$elm$html$Html$Attributes$classList(
+					_List_fromArray(
+						[
+							_Utils_Tuple2('project-concise__subtitle-badge', true),
+							_Utils_Tuple2('is-active', hasSubtitle)
+						])),
+					hasSubtitle ? $author$project$Util$onClickStopPropagation(
+					$author$project$Page$Project$Portal$ReviewSubtitle(uuid)) : $author$project$Util$onClickStopPropagation(
 					$author$project$Page$Project$Portal$PickSubtitleFor(uuid))
 				]),
 			_List_fromArray(
 				[
-					$elm$html$Html$text(
-					$author$project$Translations$Page$ProjectPortal$withoutSubtitleBadge(trn))
+					$author$project$View$Icon$subtitles(24)
 				]));
 	});
 var $author$project$Page$Project$Portal$viewProject = F4(
 	function (trn, availablePresets, isSelected, project) {
 		var makeSelection = $author$project$Util$onClickWithCtrlKey(
 			$author$project$Page$Project$Portal$SelectProject(project.uuid));
-		var invertColourWhenSelected = function (className) {
-			return isSelected ? $elm$html$Html$Attributes$class('text-white') : $elm$html$Html$Attributes$class(className);
-		};
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('py-2 flex flex-row items-stretch justify-between relative'),
-					isSelected ? $elm$html$Html$Attributes$class('bg-theme-400') : $elm$html$Html$Attributes$class('bg-white')
+					$elm$html$Html$Attributes$classList(
+					_List_fromArray(
+						[
+							_Utils_Tuple2('project-concise', true),
+							_Utils_Tuple2('is-active', isSelected)
+						]))
 				]),
 			_List_fromArray(
 				[
@@ -20446,9 +20265,8 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('flex-shrink-0 px-4 py-1 self-start cursor-pointer'),
-							invertColourWhenSelected('text-grey-600'),
-							makeSelection
+							makeSelection,
+							$elm$html$Html$Attributes$class('checkbox')
 						]),
 					_List_fromArray(
 						[
@@ -20458,7 +20276,7 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('flex-1 overflow-x-auto flex flex-col justify-between items-start cursor-pointer'),
+							$elm$html$Html$Attributes$class('project-concise__body'),
 							makeSelection
 						]),
 					_List_fromArray(
@@ -20467,7 +20285,7 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('flex flex-row justify-start items-center w-full')
+									$elm$html$Html$Attributes$class('project-concise__name--wrapper')
 								]),
 							_List_fromArray(
 								[
@@ -20475,8 +20293,7 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 									$elm$html$Html$div,
 									_List_fromArray(
 										[
-											$elm$html$Html$Attributes$class('overflow-x-auto font-bold text-base py-1'),
-											invertColourWhenSelected('text-grey-900')
+											$elm$html$Html$Attributes$class('project-concise__name')
 										]),
 									_List_fromArray(
 										[
@@ -20491,14 +20308,13 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 													$elm$html$Html$text(project.name)
 												]))
 										])),
-									A3($author$project$Page$Project$Portal$viewSubtitleBadge, trn, project.uuid, project.hasSubtitle)
+									A2($author$project$Page$Project$Portal$viewSubtitleBadge, project.uuid, project.hasSubtitle)
 								])),
 							A2(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('font-normal text-base py-1'),
-									invertColourWhenSelected('text-grey-600')
+									$elm$html$Html$Attributes$class('project-concise__status')
 								]),
 							_List_fromArray(
 								[
@@ -20527,10 +20343,22 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('w-16 flex flex-row-reverse justify-between -mx-1')
+									$elm$html$Html$Attributes$class('project-concise__actions')
 								]),
 							_List_fromArray(
 								[
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('project-concise__delete'),
+											$elm$html$Html$Events$onClick(
+											$author$project$Page$Project$Portal$DeleteProject(project.uuid))
+										]),
+									_List_fromArray(
+										[
+											$author$project$View$Icon$deleteOutline(24)
+										])),
 									A2(
 									$author$project$Util$viewIf,
 									_Utils_eq(project.status, $author$project$Data$Project$Concise$Processed),
@@ -20538,35 +20366,21 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 										$elm$html$Html$a,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('py-1 px-1'),
+												$elm$html$Html$Attributes$class('project-concise__edit'),
 												$author$project$Route$linkTo(
-												$author$project$Route$Project(project.uuid)),
-												invertColourWhenSelected('text-grey-800')
+												$author$project$Route$Project(project.uuid))
 											]),
 										_List_fromArray(
 											[
-												$author$project$View$Icon$penFancy(24)
-											]))),
-									A2(
-									$elm$html$Html$span,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('py-1 px-1 cursor-pointer'),
-											$elm$html$Html$Events$onClick(
-											$author$project$Page$Project$Portal$DeleteProject(project.uuid))
-										]),
-									_List_fromArray(
-										[
-											$author$project$View$Icon$deleteOutline(24)
-										]))
+												$author$project$View$Icon$editOutline(24)
+											])))
 								])),
 							A2(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('cursor-pointer'),
-									invertColourWhenSelected('text-grey-600'),
-									makeSelection
+									makeSelection,
+									$elm$html$Html$Attributes$class('project-concise__preset-name')
 								]),
 							_List_fromArray(
 								[
@@ -20638,6 +20452,7 @@ var $author$project$Page$Project$Portal$viewProjectCollection = F4(
 				isSelected,
 				projects));
 	});
+var $author$project$View$Icon$add = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z');
 var $author$project$Translations$Page$ProjectPortal$addFilesEmptyState = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.add_files_empty_state');
 };
@@ -20834,22 +20649,7 @@ var $author$project$Translations$Page$ProjectPortal$choosePresets = function (tr
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.choose_presets');
 };
 var $elm$html$Html$header = _VirtualDom_node('header');
-var $author$project$View$Icon$loop = function (size) {
-	return A2(
-		$author$project$View$Icon$materialIcon,
-		size,
-		_List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z'),
-						$author$project$View$Icon$fillCurrent
-					]),
-				_List_Nil)
-			]));
-};
+var $author$project$View$Icon$loop = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z');
 var $author$project$Translations$Page$ProjectPortal$startProcessing = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.start_processing');
 };
@@ -21060,7 +20860,7 @@ var $author$project$Page$Project$Portal$viewPreset = F4(
 							$elm$html$Html$Attributes$class('btn w-16 h-8 text-sm'),
 							_Utils_eq(
 							currentPreset,
-							$elm$core$Maybe$Just(targetPreset)) ? $elm$html$Html$Attributes$class('btn--teal') : $elm$html$Html$Attributes$class('btn--white'),
+							$elm$core$Maybe$Just(targetPreset)) ? $elm$html$Html$Attributes$class('btn--secondary') : $elm$html$Html$Attributes$class('btn--white'),
 							$elm$html$Html$Events$onClick(
 							A2($author$project$Page$Project$Portal$SetProcessingPreset, uuid, targetPreset))
 						]),
@@ -21339,7 +21139,7 @@ var $author$project$Page$Project$Portal$viewReviewSubtitle = F2(
 								[
 									$elm$html$Html$Events$onClick(
 									$author$project$Page$Project$Portal$PickSubtitleFor(uuid)),
-									$elm$html$Html$Attributes$class('btn btn--secondary w-20 h-8 mx-4')
+									$elm$html$Html$Attributes$class('btn btn--theme w-20 h-8 mx-4')
 								]),
 							_List_fromArray(
 								[
@@ -21352,7 +21152,7 @@ var $author$project$Page$Project$Portal$viewReviewSubtitle = F2(
 								[
 									$elm$html$Html$Events$onClick(
 									$author$project$Page$Project$Portal$RemoveSubtitleFor(uuid)),
-									$elm$html$Html$Attributes$class('btn btn--warning w-20 h-8 mx-4')
+									$elm$html$Html$Attributes$class('btn btn--warning btn--outlined w-20 h-8 mx-4')
 								]),
 							_List_fromArray(
 								[
