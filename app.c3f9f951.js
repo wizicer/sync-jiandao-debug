@@ -172,14 +172,21 @@ module.exports = {
       "add_files_empty_state": "点击添加视频或字幕文件",
       "choose_presets": "选择视频处理预设",
       "start_processing": "开始",
+      "remove_picked_video": "删除",
       "batch_remove_picked_videos": "删除",
+      "abort_removal_of_picked_videos": "返回",
       "with_subtitle_badge": "sub",
       "without_subtitle_badge": "添加字幕",
       "prompt_already_uploaded_subtitle": "您已上传过该视频的字幕",
       "replace_subtitle": "更换",
       "remove_subtitle": "移除",
       "keep_current_subtitle": "返回",
-      "search_box_placeholder": "搜索"
+      "search_box_placeholder": "搜索",
+      "btn_review_subtitle": "更换或移除字幕",
+      "btn_add_subtitle": "添加字幕",
+      "btn_delete_project": "删除项目",
+      "btn_edit_project": "进入项目",
+      "deletion_confirmation": "你确定要删除吗？"
     },
     "project": {
       "page_title": "图文编辑-剪刀兔",
@@ -208,7 +215,13 @@ module.exports = {
         "hidden_content": "已删除",
         "restore_hidden_content": "恢复",
         "new_textual_content": "新增文本",
-        "project_size_label": "总大小："
+        "project_size_label": "总大小：",
+        "btn_drag_handle": "拖动",
+        "btn_convert_to_gif": "转换成GIF",
+        "btn_revert_back_to_frames": "转换成主图",
+        "btn_add_text": "添加文字段落",
+        "btn_delete": "删除",
+        "btn_merge": "合并至上个段落"
       }
     }
   },
@@ -12187,7 +12200,7 @@ var $author$project$Request$Video$Preset$listAll = function (handler) {
 		});
 };
 var $author$project$Page$Project$Portal$init = _Utils_Tuple2(
-	{availablePresets: $krisajenkins$remotedata$RemoteData$NotAsked, expertMode: false, importingError: $elm$core$Maybe$Nothing, isDisplayingUploader: false, items: _List_Nil, paramsToExport: $elm$core$Maybe$Nothing, projects: $krisajenkins$remotedata$RemoteData$NotAsked, reviewingSubtitle: $elm$core$Maybe$Nothing, searchStr: '', selectedProjects: $elm$core$Set$empty},
+	{availablePresets: $krisajenkins$remotedata$RemoteData$NotAsked, expertMode: false, importingError: $elm$core$Maybe$Nothing, isDisplayingUploader: false, items: _List_Nil, paramsToExport: $elm$core$Maybe$Nothing, pendingDeletion: $elm$core$Maybe$Nothing, projects: $krisajenkins$remotedata$RemoteData$NotAsked, reviewingSubtitle: $elm$core$Maybe$Nothing, searchStr: '', selectedProjects: $elm$core$Set$empty},
 	$elm$core$Platform$Cmd$batch(
 		_List_fromArray(
 			[
@@ -13568,8 +13581,27 @@ var $author$project$Port$connectSocket = _Platform_outgoingPort(
 	function ($) {
 		return $elm$json$Json$Encode$null;
 	});
+var $author$project$Page$Project$isLoaded = function (model) {
+	if (model.$ === 'Loaded') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $author$project$Page$Project$Portal$isLoaded = function (_v0) {
+	var availablePresets = _v0.availablePresets;
+	var projects = _v0.projects;
+	var _v1 = _Utils_Tuple2(availablePresets, projects);
+	if ((_v1.a.$ === 'Success') && (_v1.b.$ === 'Success')) {
+		return true;
+	} else {
+		return false;
+	}
+};
 var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
+var $elm$browser$Browser$Navigation$reload = _Browser_reload(false);
+var $author$project$Route$reload = $elm$browser$Browser$Navigation$reload;
 var $author$project$Data$NativeClient$Disconnected = {$: 'Disconnected'};
 var $author$project$Data$NativeClient$Incompatible = {$: 'Incompatible'};
 var $author$project$Data$NativeClient$PlatformError = function (a) {
@@ -13703,7 +13735,6 @@ var $author$project$Page$Project$initLoaded = function (project) {
 			pendingGifJobs: $elm$core$Set$empty,
 			projectSize: $elm$core$Maybe$Nothing,
 			savingResult: $elm$core$Maybe$Nothing,
-			splittingSection: $elm$core$Maybe$Nothing,
 			textBeingEdited: $elm$core$Maybe$Nothing,
 			userContentIndexToAssign: 1 + $author$project$Data$Project$Content$maxAssignedIndex(
 				$elm$core$Array$toList(project.workingData))
@@ -15190,23 +15221,6 @@ var $author$project$Page$Project$updateLoaded = F4(
 						{
 							workingData: A5($author$project$Data$Project$Content$mergeElements, true, toIndex, fromIndex, segmentContent, present.workingData)
 						})) : _Utils_Tuple3(project, substate, $elm$core$Platform$Cmd$none);
-			case 'StartSplittingSection':
-				var index = msg.a;
-				return _Utils_Tuple3(
-					project,
-					_Utils_update(
-						substate,
-						{
-							splittingSection: $elm$core$Maybe$Just(index)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'StopSplittingSection':
-				return _Utils_Tuple3(
-					project,
-					_Utils_update(
-						substate,
-						{splittingSection: $elm$core$Maybe$Nothing}),
-					$elm$core$Platform$Cmd$none);
 			case 'SplitSection':
 				var index = msg.a;
 				var frameIndex = msg.b;
@@ -15243,17 +15257,10 @@ var $author$project$Page$Project$updateLoaded = F4(
 								$elm$core$Array$push,
 								before,
 								$author$project$Data$Project$Content$fromSegment(second)));
-						return A2(
-							updateState,
-							$author$project$Data$UndoList$new,
-							_Utils_Tuple3(
-								_Utils_update(
-									present,
-									{workingData: updatedWorkingData}),
-								_Utils_update(
-									substate,
-									{splittingSection: $elm$core$Maybe$Nothing}),
-								$elm$core$Platform$Cmd$none));
+						return pushState(
+							_Utils_update(
+								present,
+								{workingData: updatedWorkingData}));
 					} else {
 						return _Utils_Tuple3(project, substate, $elm$core$Platform$Cmd$none);
 					}
@@ -17191,6 +17198,21 @@ var $author$project$Page$Project$Portal$update = F2(
 							selectedProjects: A3($author$project$Util$updateSelection, uuid, isSelectingMultiple, model.selectedProjects)
 						}),
 					$elm$core$Platform$Cmd$none);
+			case 'ConfirmDeletion':
+				var deletion = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							pendingDeletion: $elm$core$Maybe$Just(deletion)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'StopConfirmation':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{pendingDeletion: $elm$core$Maybe$Nothing}),
+					$elm$core$Platform$Cmd$none);
 			case 'DeleteProject':
 				var uuid = msg.a;
 				return _Utils_Tuple2(
@@ -17458,13 +17480,34 @@ var $author$project$Main$update = F2(
 			case 'NativeClientVersionInfoRequested':
 				if (msg.a.$ === 'Ok') {
 					var meta = msg.a.a;
+					var newStatus = $author$project$Data$NativeClient$statusFromMeta(meta);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{
-								nativeClientStatus: $author$project$Data$NativeClient$statusFromMeta(meta)
-							}),
-						$author$project$Port$connectSocket(_Utils_Tuple0));
+							{nativeClientStatus: newStatus}),
+						$elm$core$Platform$Cmd$batch(
+							_List_fromArray(
+								[
+									$author$project$Port$connectSocket(_Utils_Tuple0),
+									function () {
+									var _v2 = _Utils_Tuple2(
+										$author$project$Data$NativeClient$isStatusNormal(newStatus),
+										$author$project$Data$NativeClient$isStatusNormal(model.nativeClientStatus));
+									if (_v2.a && (!_v2.b)) {
+										switch (currentPage.$) {
+											case 'Project':
+												var subModel = currentPage.a;
+												return $author$project$Page$Project$isLoaded(subModel) ? $elm$core$Platform$Cmd$none : $author$project$Route$reload;
+											case 'ProjectPortal':
+												return $author$project$Page$Project$Portal$isLoaded(model.projectPortal) ? $elm$core$Platform$Cmd$none : $author$project$Route$reload;
+											default:
+												return $elm$core$Platform$Cmd$none;
+										}
+									} else {
+										return $elm$core$Platform$Cmd$none;
+									}
+								}()
+								])));
 				} else {
 					var error = msg.a.a;
 					return _Utils_Tuple2(
@@ -17477,9 +17520,9 @@ var $author$project$Main$update = F2(
 				}
 			case 'ProjectPortalMsg':
 				var subMsg = msg.a;
-				var _v2 = A2($author$project$Page$Project$Portal$update, subMsg, model.projectPortal);
-				var pageModel = _v2.a;
-				var pageCmd = _v2.b;
+				var _v4 = A2($author$project$Page$Project$Portal$update, subMsg, model.projectPortal);
+				var pageModel = _v4.a;
+				var pageCmd = _v4.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -17489,9 +17532,9 @@ var $author$project$Main$update = F2(
 				var subMsg = msg.a;
 				if (currentPage.$ === 'Project') {
 					var subModel = currentPage.a;
-					var _v4 = A3($author$project$Page$Project$update, model.key, subMsg, subModel);
-					var pageModel = _v4.a;
-					var pageCmd = _v4.b;
+					var _v6 = A3($author$project$Page$Project$update, model.key, subMsg, subModel);
+					var pageModel = _v6.a;
+					var pageCmd = _v6.b;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -17843,17 +17886,17 @@ var $author$project$Page$Project$viewError = F2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('text-red-700 mb-8')
+							$elm$html$Html$Attributes$class('text-warning-700 mb-8')
 						]),
 					_List_fromArray(
 						[
-							$author$project$View$Icon$error(64)
+							$author$project$View$Icon$error(96)
 						])),
 					A2(
 					$elm$html$Html$p,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('max-w-lg w-full p-2')
+							$elm$html$Html$Attributes$class('p-2 text-lg')
 						]),
 					_List_fromArray(
 						[
@@ -17960,7 +18003,7 @@ var $author$project$View$Alert$viewError = F2(
 			_Utils_ap(
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('bg-warning-100 text-warning-700 px-4 py-2 cursor-pointer shadow')
+						$elm$html$Html$Attributes$class('bg-warning-100 text-warning-700 px-6 py-3 cursor-pointer shadow')
 					]),
 				attrs),
 			_List_fromArray(
@@ -18000,7 +18043,7 @@ var $author$project$View$Alert$viewSuccess = F2(
 			_Utils_ap(
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('bg-grey-700 text-grey-50 px-4 py-2 cursor-pointer shadow')
+						$elm$html$Html$Attributes$class('bg-grey-700 text-grey-50 px-6 py-3 cursor-pointer shadow')
 					]),
 				attrs),
 			_List_fromArray(
@@ -18309,7 +18352,7 @@ var $author$project$View$Project$viewAuxiliary = F6(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('flex flex-col justify-around items-center bg-white shadow my-4 p-2')
+									$elm$html$Html$Attributes$class('flex flex-col justify-around items-center text-grey-700 bg-white shadow my-4 p-2')
 								]),
 							_List_fromArray(
 								[
@@ -18638,6 +18681,9 @@ var $author$project$View$Trix$phantom = F2(
 var $author$project$Page$Project$AddPlainTextAfter = function (a) {
 	return {$: 'AddPlainTextAfter', a: a};
 };
+var $author$project$Translations$Page$Project$RightPanel$btnAddText = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_add_text');
+};
 var $author$project$View$Icon$postAdd = function (size) {
 	return A2(
 		$author$project$View$Icon$materialIcon,
@@ -18662,56 +18708,71 @@ var $author$project$View$Icon$postAdd = function (size) {
 				_List_Nil)
 			]));
 };
-var $author$project$Page$Project$viewAddPlainText = function (index) {
-	return A2(
-		$elm$html$Html$button,
-		_List_fromArray(
-			[
-				$elm$html$Html$Events$onClick(
-				$author$project$Page$Project$AddPlainTextAfter(index)),
-				$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2')
-			]),
-		_List_fromArray(
-			[
-				$author$project$View$Icon$postAdd(24)
-			]));
-};
+var $author$project$Page$Project$viewAddPlainText = F2(
+	function (trn, index) {
+		return A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(
+					$author$project$Page$Project$AddPlainTextAfter(index)),
+					$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
+					$elm$html$Html$Attributes$title(
+					$author$project$Translations$Page$Project$RightPanel$btnAddText(trn))
+				]),
+			_List_fromArray(
+				[
+					$author$project$View$Icon$postAdd(24)
+				]));
+	});
 var $author$project$Page$Project$StartMovingSection = function (a) {
 	return {$: 'StartMovingSection', a: a};
 };
+var $author$project$Translations$Page$Project$RightPanel$btnDragHandle = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_drag_handle');
+};
 var $author$project$View$Icon$dragHandle = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M20 9H4v2h16V9zM4 15h16v-2H4v2z');
-var $author$project$Page$Project$viewDragHandle = function (index) {
-	return A2(
-		$elm$html$Html$button,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain w-full cursor-move'),
-				$elm$html$Html$Events$onMouseDown(
-				$author$project$Page$Project$StartMovingSection(index)),
-				$elm$html$Html$Events$onMouseUp($author$project$Page$Project$StopMovingSection)
-			]),
-		_List_fromArray(
-			[
-				$author$project$View$Icon$dragHandle(32)
-			]));
+var $author$project$Page$Project$viewDragHandle = F2(
+	function (trn, index) {
+		return A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain w-full cursor-move'),
+					$elm$html$Html$Attributes$title(
+					$author$project$Translations$Page$Project$RightPanel$btnDragHandle(trn)),
+					$elm$html$Html$Events$onMouseDown(
+					$author$project$Page$Project$StartMovingSection(index)),
+					$elm$html$Html$Events$onMouseUp($author$project$Page$Project$StopMovingSection)
+				]),
+			_List_fromArray(
+				[
+					$author$project$View$Icon$dragHandle(32)
+				]));
+	});
+var $author$project$Translations$Page$Project$RightPanel$btnDelete = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_delete');
 };
 var $author$project$View$Icon$delete = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z');
-var $author$project$Page$Project$viewToggleContentVisibility = function (index) {
-	return A2(
-		$elm$html$Html$button,
-		_List_fromArray(
-			[
-				$elm$html$Html$Events$onClick(
-				$author$project$Page$Project$ToggleContentVisibility(index)),
-				$elm$html$Html$Attributes$class('btn btn--white text-warning-500 p-2')
-			]),
-		_List_fromArray(
-			[
-				$author$project$View$Icon$delete(24)
-			]));
-};
-var $author$project$Page$Project$viewPlainText = F2(
-	function (index, content) {
+var $author$project$Page$Project$viewToggleContentVisibility = F2(
+	function (trn, index) {
+		return A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(
+					$author$project$Page$Project$ToggleContentVisibility(index)),
+					$elm$html$Html$Attributes$class('btn btn--white text-warning-400 p-2'),
+					$elm$html$Html$Attributes$title(
+					$author$project$Translations$Page$Project$RightPanel$btnDelete(trn))
+				]),
+			_List_fromArray(
+				[
+					$author$project$View$Icon$delete(24)
+				]));
+	});
+var $author$project$Page$Project$viewPlainText = F3(
+	function (trn, index, content) {
 		var _v0 = _Utils_Tuple2(
 			'phantom-' + $elm$core$String$fromInt(index),
 			'toolbar-' + $elm$core$String$fromInt(index));
@@ -18727,7 +18788,7 @@ var $author$project$Page$Project$viewPlainText = F2(
 					]),
 				_List_fromArray(
 					[
-						$author$project$Page$Project$viewDragHandle(index)
+						A2($author$project$Page$Project$viewDragHandle, trn, index)
 					])),
 				A2(
 				$elm$html$Html$div,
@@ -18745,17 +18806,27 @@ var $author$project$Page$Project$viewPlainText = F2(
 							phantomID: phantomID,
 							startEditing: $author$project$Page$Project$PreEdit(index),
 							toolbarID: toolbarID
-						})
+						}),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('hidden')
+							]),
+						_List_fromArray(
+							[
+								$author$project$View$Trix$hiddenToolbar(toolbarID)
+							]))
 					])),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('w-10 flex flex-col h-full justify-between items-center')
+						$elm$html$Html$Attributes$class('w-10 flex flex-col h-full justify-start items-center')
 					]),
 				_List_fromArray(
 					[
-						$author$project$Page$Project$viewAddPlainText(index),
+						A2($author$project$Page$Project$viewAddPlainText, trn, index),
 						$author$project$Util$isInFactBlankString(content) ? A2(
 						$elm$html$Html$button,
 						_List_fromArray(
@@ -18767,17 +18838,7 @@ var $author$project$Page$Project$viewPlainText = F2(
 						_List_fromArray(
 							[
 								$author$project$View$Icon$deleteForever(24)
-							])) : $author$project$Page$Project$viewToggleContentVisibility(index)
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('hidden')
-					]),
-				_List_fromArray(
-					[
-						$author$project$View$Trix$hiddenToolbar(toolbarID)
+							])) : A2($author$project$Page$Project$viewToggleContentVisibility, trn, index)
 					]))
 			]);
 	});
@@ -18803,6 +18864,12 @@ var $author$project$Page$Project$SplitSection = F2(
 	});
 var $author$project$Page$Project$StopPreviewingAsCover = function (a) {
 	return {$: 'StopPreviewingAsCover', a: a};
+};
+var $author$project$Translations$Page$Project$RightPanel$btnConvertToGif = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_convert_to_gif');
+};
+var $author$project$Translations$Page$Project$RightPanel$btnRevertBackToFrames = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_revert_back_to_frames');
 };
 var $author$project$Util$formatTimeInSeconds = function (time) {
 	var toPaddedString = A2(
@@ -18941,6 +19008,7 @@ var $author$project$Data$Video$Gif$toUrl = F3(
 			A2($author$project$Data$File$Object$fromPartialKey, friendlyUnionID, gif));
 	});
 var $author$project$View$Icon$videocam = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z');
+var $author$project$View$Icon$videocamOff = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z');
 var $author$project$View$Icon$link = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z');
 var $author$project$View$Icon$linkOff = function (size) {
 	return A2(
@@ -18998,7 +19066,7 @@ var $author$project$View$Project$viewFrame = F3(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('relative btn group ml-1 last-element:hidden')
+							$elm$html$Html$Attributes$class('relative btn group ml-1 last-element:hidden text-grey-600')
 						]),
 					_List_fromArray(
 						[
@@ -19079,78 +19147,42 @@ var $author$project$Page$Project$MergeSections = F3(
 		return {$: 'MergeSections', a: a, b: b, c: c};
 	});
 var $author$project$View$Icon$arrowUpward = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z');
-var $author$project$Page$Project$viewMergeButton = function (between) {
-	if (between.$ === 'Control') {
-		var index = between.a.index;
-		var merge = between.a.merge;
-		return A2(
-			$author$project$Util$viewIfPresent,
-			merge,
-			function (_v1) {
-				var indexFrom = _v1.a;
-				var segmentContent = _v1.b;
-				return A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onClick(
-							A3($author$project$Page$Project$MergeSections, index, indexFrom, segmentContent)),
-							$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2')
-						]),
-					_List_fromArray(
-						[
-							$author$project$View$Icon$arrowUpward(24)
-						]));
-			});
-	} else {
-		return $elm$html$Html$text('');
-	}
+var $author$project$Translations$Page$Project$RightPanel$btnMerge = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_merge');
 };
-var $author$project$Page$Project$StartSplittingSection = function (a) {
-	return {$: 'StartSplittingSection', a: a};
-};
-var $author$project$Page$Project$StopSplittingSection = {$: 'StopSplittingSection'};
-var $author$project$View$Icon$cut = function (size) {
-	return A3(
-		$author$project$View$Icon$wrapper,
-		_List_fromArray(
-			[0, 0, 448, 512]),
-		size,
-		_List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M263.39 256L445.66 73.37c3.12-3.12 3.12-8.19 0-11.31-18.74-18.74-49.14-18.74-67.88 0L223.82 216.35l-43.1-43.18C187.92 159.71 192 144.33 192 128c0-53.02-42.98-96-96-96S0 74.98 0 128s42.98 96 96 96c16.31 0 31.66-4.07 45.11-11.24L184.26 256l-43.15 43.24C127.66 292.07 112.31 288 96 288c-53.02 0-96 42.98-96 96s42.98 96 96 96 96-42.98 96-96c0-16.33-4.08-31.71-11.28-45.17l43.1-43.18 153.95 154.29c18.74 18.74 49.14 18.74 67.88 0 3.12-3.12 3.12-8.19 0-11.31L263.39 256zM96 176c-26.47 0-48-21.53-48-48s21.53-48 48-48 48 21.53 48 48-21.53 48-48 48zm0 256c-26.47 0-48-21.53-48-48s21.53-48 48-48 48 21.53 48 48-21.53 48-48 48z')
-					]),
-				_List_Nil)
-			]));
-};
-var $author$project$Page$Project$viewSplitButton = F2(
-	function (isSplittingSection, index) {
-		return A2(
-			$elm$html$Html$button,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$classList(
-					_List_fromArray(
-						[
-							_Utils_Tuple2('btn btn--theme btn--textual-plain p-2', true),
-							_Utils_Tuple2('bg-grey-100 shadow-inner', isSplittingSection)
-						])),
-					isSplittingSection ? $elm$html$Html$Events$onClick($author$project$Page$Project$StopSplittingSection) : $elm$html$Html$Events$onClick(
-					$author$project$Page$Project$StartSplittingSection(index))
-				]),
-			_List_fromArray(
-				[
-					$author$project$View$Icon$cut(21)
-				]));
+var $author$project$Page$Project$viewMergeButton = F2(
+	function (trn, between) {
+		if (between.$ === 'Control') {
+			var index = between.a.index;
+			var merge = between.a.merge;
+			return A2(
+				$author$project$Util$viewIfPresent,
+				merge,
+				function (_v1) {
+					var indexFrom = _v1.a;
+					var segmentContent = _v1.b;
+					return A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(
+								A3($author$project$Page$Project$MergeSections, index, indexFrom, segmentContent)),
+								$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
+								$elm$html$Html$Attributes$title(
+								$author$project$Translations$Page$Project$RightPanel$btnMerge(trn))
+							]),
+						_List_fromArray(
+							[
+								$author$project$View$Icon$arrowUpward(24)
+							]));
+				});
+		} else {
+			return $elm$html$Html$text('');
+		}
 	});
-var $author$project$Page$Project$viewSegmentContent = F5(
-	function (uuid, _v0, index, content, between) {
+var $author$project$Page$Project$viewSegmentContent = F6(
+	function (trn, uuid, _v0, index, content, between) {
 		var pendingGifJobs = _v0.pendingGifJobs;
-		var splittingSection = _v0.splittingSection;
 		var frameToPreview = _v0.frameToPreview;
 		var segment = $author$project$Data$Project$SegmentContent$getSegment(content);
 		var viewGifBtn = function () {
@@ -19179,7 +19211,9 @@ var $author$project$Page$Project$viewSegmentContent = F5(
 							[
 								$elm$html$Html$Events$onClick(
 								$author$project$Page$Project$ConvertToGif(index)),
-								$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2')
+								$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
+								$elm$html$Html$Attributes$title(
+								$author$project$Translations$Page$Project$RightPanel$btnConvertToGif(trn))
 							]),
 						_List_fromArray(
 							[
@@ -19194,11 +19228,13 @@ var $author$project$Page$Project$viewSegmentContent = F5(
 						[
 							$elm$html$Html$Events$onClick(
 							$author$project$Page$Project$RevertGif(index)),
-							$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2')
+							$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
+							$elm$html$Html$Attributes$title(
+							$author$project$Translations$Page$Project$RightPanel$btnRevertBackToFrames(trn))
 						]),
 					_List_fromArray(
 						[
-							$author$project$View$Icon$videocam(24)
+							$author$project$View$Icon$videocamOff(24)
 						]));
 			}
 		}();
@@ -19206,9 +19242,6 @@ var $author$project$Page$Project$viewSegmentContent = F5(
 			$elm$core$Basics$composeR,
 			$author$project$Data$Video$Segment$getKeyFrame,
 			A2($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid));
-		var isSplittingSection = _Utils_eq(
-			splittingSection,
-			$elm$core$Maybe$Just(index));
 		var coverUrl = function () {
 			var _v2 = _Utils_Tuple2(content, frameToPreview);
 			if (_v2.a.$ === 'FrameSequence') {
@@ -19244,36 +19277,28 @@ var $author$project$Page$Project$viewSegmentContent = F5(
 					]),
 				_List_fromArray(
 					[
-						$author$project$Page$Project$viewDragHandle(index),
-						function () {
-						if (content.$ === 'FrameSequence') {
-							return A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Events$onClick(
-										$author$project$Page$Project$SeekTime(
-											$author$project$Data$Video$Segment$getStartingTime(segment))),
-										$elm$html$Html$Attributes$class('cursor-pointer text-xs')
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text(
-										$author$project$Util$formatTimeInSeconds(
-											$author$project$Data$Video$Segment$getStartingTime(segment)))
-									]));
-						} else {
-							var gif = content.a;
-							return $elm$html$Html$text(
-								$author$project$Data$Video$Gif$toFileSizeStr(gif));
-						}
-					}()
+						A2($author$project$Page$Project$viewDragHandle, trn, index),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(
+								$author$project$Page$Project$SeekTime(
+									$author$project$Data$Video$Segment$getStartingTime(segment))),
+								$elm$html$Html$Attributes$class('cursor-pointer text-grey-600 text-xs')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text(
+								$author$project$Util$formatTimeInSeconds(
+									$author$project$Data$Video$Segment$getStartingTime(segment)))
+							]))
 					])),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('flex-1 p-1')
+						$elm$html$Html$Attributes$class('flex-1 p-1 relative')
 					]),
 				_List_fromArray(
 					[
@@ -19284,33 +19309,40 @@ var $author$project$Page$Project$viewSegmentContent = F5(
 								$elm$html$Html$Attributes$src(coverUrl),
 								$elm$html$Html$Attributes$class('w-full object-contain select-none my-2')
 							]),
-						_List_Nil)
+						_List_Nil),
+						function () {
+						if (content.$ === 'FrameSequence') {
+							return $elm$html$Html$text('');
+						} else {
+							var gif = content.a;
+							return A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('absolute bg-grey-800 text-grey-50 opacity-50 hover:opacity-100 py-1 px-2 text-sm'),
+										A2($elm$html$Html$Attributes$style, 'right', '.5rem'),
+										A2($elm$html$Html$Attributes$style, 'top', '1rem')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										$author$project$Data$Video$Gif$toFileSizeStr(gif))
+									]));
+						}
+					}()
 					])),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('w-10 flex flex-col h-full justify-between items-center')
+						$elm$html$Html$Attributes$class('w-10 flex flex-col h-full justify-start items-center')
 					]),
 				_List_fromArray(
 					[
-						A2(
-						$elm$html$Html$div,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$author$project$Page$Project$viewMergeButton(between),
-								viewGifBtn,
-								$author$project$Page$Project$viewAddPlainText(index),
-								A2($author$project$Page$Project$viewSplitButton, isSplittingSection, index)
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$author$project$Page$Project$viewToggleContentVisibility(index)
-							]))
+						A2($author$project$Page$Project$viewMergeButton, trn, between),
+						viewGifBtn,
+						A2($author$project$Page$Project$viewAddPlainText, trn, index),
+						A2($author$project$Page$Project$viewToggleContentVisibility, trn, index)
 					])),
 				A2(
 				$author$project$View$Project$viewAllFrames,
@@ -19318,7 +19350,6 @@ var $author$project$Page$Project$viewSegmentContent = F5(
 				{
 					hoverOff: $author$project$Page$Project$StopPreviewingAsCover,
 					hoverOn: $author$project$Page$Project$PreviewAsCover,
-					isSplitting: isSplittingSection,
 					setKeyFrame: $author$project$Page$Project$SetKeyFrame(index),
 					splitSection: $author$project$Page$Project$SplitSection(index),
 					uuid: uuid
@@ -19376,7 +19407,7 @@ var $author$project$Page$Project$viewBlock = F5(
 								[
 									$elm$html$Html$Attributes$class('w-full flex flex-row justify-between items-start')
 								]),
-							A5($author$project$Page$Project$viewSegmentContent, uuid, substate, index, segmentContent, between));
+							A6($author$project$Page$Project$viewSegmentContent, trn, uuid, substate, index, segmentContent, between));
 					} else {
 						if (content.c.$ === 'PlainText') {
 							var plainText = content.c.a;
@@ -19386,7 +19417,7 @@ var $author$project$Page$Project$viewBlock = F5(
 									[
 										$elm$html$Html$Attributes$class('w-full flex flex-row justify-start items-start')
 									]),
-								A2($author$project$Page$Project$viewPlainText, index, plainText));
+								A3($author$project$Page$Project$viewPlainText, trn, index, plainText));
 						} else {
 							return $elm$html$Html$text('');
 						}
@@ -19850,6 +19881,7 @@ var $author$project$Page$Project$viewSidenav = function (trn) {
 			_List_fromArray(
 				[
 					$elm$html$Html$Events$onClick(action),
+					$elm$html$Html$Attributes$title(label),
 					$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain flex flex-col items-center my-2')
 				]),
 			_List_fromArray(
@@ -19862,7 +19894,7 @@ var $author$project$Page$Project$viewSidenav = function (trn) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('w-18 py-8 flex flex-col justify-between items-stretch bg-grey-200')
+				$elm$html$Html$Attributes$class('nav w-18 py-8 flex flex-col justify-between items-stretch bg-grey-200')
 			]),
 		_List_fromArray(
 			[
@@ -20250,13 +20282,22 @@ var $author$project$Translations$Page$ProjectPortal$searchBoxPlaceholder = funct
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.search_box_placeholder');
 };
 var $author$project$Page$Project$Portal$projectCollectionID = 'picked-videos';
-var $author$project$Page$Project$Portal$DeleteProject = function (a) {
-	return {$: 'DeleteProject', a: a};
+var $author$project$Page$Project$Portal$ConfirmDeletion = function (a) {
+	return {$: 'ConfirmDeletion', a: a};
+};
+var $toastal$either$Either$Left = function (a) {
+	return {$: 'Left', a: a};
 };
 var $author$project$Page$Project$Portal$SelectProject = F2(
 	function (a, b) {
 		return {$: 'SelectProject', a: a, b: b};
 	});
+var $author$project$Translations$Page$ProjectPortal$btnDeleteProject = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.btn_delete_project');
+};
+var $author$project$Translations$Page$ProjectPortal$btnEditProject = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.btn_edit_project');
+};
 var $author$project$View$Icon$checkBox = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z');
 var $author$project$View$Icon$checkBoxOutlineBlank = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z');
 var $author$project$Translations$Processing$Preset$custom = function (translations) {
@@ -20388,9 +20429,18 @@ var $author$project$Page$Project$Portal$PickSubtitleFor = function (a) {
 var $author$project$Page$Project$Portal$ReviewSubtitle = function (a) {
 	return {$: 'ReviewSubtitle', a: a};
 };
+var $author$project$Translations$Page$ProjectPortal$btnAddSubtitle = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.btn_add_subtitle');
+};
+var $author$project$Translations$Page$ProjectPortal$btnReviewSubtitle = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.btn_review_subtitle');
+};
 var $author$project$View$Icon$subtitles = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z');
-var $author$project$Page$Project$Portal$viewSubtitleBadge = F2(
-	function (uuid, hasSubtitle) {
+var $author$project$Page$Project$Portal$viewSubtitleBadge = F3(
+	function (trn, uuid, hasSubtitle) {
+		var _v0 = hasSubtitle ? _Utils_Tuple2($author$project$Page$Project$Portal$ReviewSubtitle, $author$project$Translations$Page$ProjectPortal$btnReviewSubtitle) : _Utils_Tuple2($author$project$Page$Project$Portal$PickSubtitleFor, $author$project$Translations$Page$ProjectPortal$btnAddSubtitle);
+		var action = _v0.a;
+		var titleStr = _v0.b;
 		return A2(
 			$elm$html$Html$span,
 			_List_fromArray(
@@ -20401,9 +20451,10 @@ var $author$project$Page$Project$Portal$viewSubtitleBadge = F2(
 							_Utils_Tuple2('project-concise__subtitle-badge', true),
 							_Utils_Tuple2('is-active', hasSubtitle)
 						])),
-					hasSubtitle ? $author$project$Util$onClickStopPropagation(
-					$author$project$Page$Project$Portal$ReviewSubtitle(uuid)) : $author$project$Util$onClickStopPropagation(
-					$author$project$Page$Project$Portal$PickSubtitleFor(uuid))
+					$author$project$Util$onClickStopPropagation(
+					action(uuid)),
+					$elm$html$Html$Attributes$title(
+					titleStr(trn))
 				]),
 			_List_fromArray(
 				[
@@ -20474,7 +20525,7 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 													$elm$html$Html$text(project.name)
 												]))
 										])),
-									A2($author$project$Page$Project$Portal$viewSubtitleBadge, project.uuid, project.hasSubtitle)
+									A3($author$project$Page$Project$Portal$viewSubtitleBadge, trn, project.uuid, project.hasSubtitle)
 								])),
 							A2(
 							$elm$html$Html$div,
@@ -20517,9 +20568,12 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 									$elm$html$Html$button,
 									_List_fromArray(
 										[
-											$elm$html$Html$Attributes$class('project-concise__delete'),
 											$elm$html$Html$Events$onClick(
-											$author$project$Page$Project$Portal$DeleteProject(project.uuid))
+											$author$project$Page$Project$Portal$ConfirmDeletion(
+												$toastal$either$Either$Left(project.uuid))),
+											$elm$html$Html$Attributes$class('project-concise__delete'),
+											$elm$html$Html$Attributes$title(
+											$author$project$Translations$Page$ProjectPortal$btnDeleteProject(trn))
 										]),
 									_List_fromArray(
 										[
@@ -20534,7 +20588,9 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 											[
 												$elm$html$Html$Attributes$class('project-concise__edit'),
 												$author$project$Route$linkTo(
-												$author$project$Route$Project(project.uuid))
+												$author$project$Route$Project(project.uuid)),
+												$elm$html$Html$Attributes$title(
+												$author$project$Translations$Page$ProjectPortal$btnEditProject(trn))
 											]),
 										_List_fromArray(
 											[
@@ -20712,6 +20768,97 @@ var $author$project$Page$Project$Portal$viewCollectionPanel = F5(
 					A4($author$project$Page$Project$Portal$viewProjectCollection, trn, availablePresets, selectedProjects, itemsToDisplay)
 				]));
 	});
+var $author$project$Page$Project$Portal$BatchDeleteProjects = {$: 'BatchDeleteProjects'};
+var $author$project$Page$Project$Portal$DeleteProject = function (a) {
+	return {$: 'DeleteProject', a: a};
+};
+var $author$project$Page$Project$Portal$StopConfirmation = {$: 'StopConfirmation'};
+var $author$project$Translations$Page$ProjectPortal$abortRemovalOfPickedVideos = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.abort_removal_of_picked_videos');
+};
+var $author$project$Translations$Page$ProjectPortal$batchRemovePickedVideos = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.batch_remove_picked_videos');
+};
+var $author$project$Translations$Page$ProjectPortal$deletionConfirmation = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.deletion_confirmation');
+};
+var $author$project$Translations$Page$ProjectPortal$removePickedVideo = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.remove_picked_video');
+};
+var $author$project$Page$Project$Portal$viewDeletionConfirmation = F2(
+	function (trn, deletion) {
+		return A4(
+			$author$project$View$Layout$viewOverlay,
+			$author$project$Page$Project$Portal$NoOp,
+			$author$project$Page$Project$Portal$StopConfirmation,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('bg-white shadow h-48 w-full max-w-md flex flex-col items-center justify-around')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$h3,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$Translations$Page$ProjectPortal$deletionConfirmation(trn))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('w-full flex flex-row justify-around items-center')
+						]),
+					_List_fromArray(
+						[
+							function () {
+							if (deletion.$ === 'Left') {
+								var uuid = deletion.a;
+								return A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Events$onClick(
+											$author$project$Page$Project$Portal$DeleteProject(uuid)),
+											$elm$html$Html$Attributes$class('btn btn--warning w-20 h-8')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$Page$ProjectPortal$removePickedVideo(trn))
+										]));
+							} else {
+								return A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$BatchDeleteProjects),
+											$elm$html$Html$Attributes$class('btn btn--warning w-20 h-8')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$Page$ProjectPortal$batchRemovePickedVideos(trn))
+										]));
+							}
+						}(),
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$StopConfirmation),
+									$elm$html$Html$Attributes$class('btn btn--light-grey w-20 h-8')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									$author$project$Translations$Page$ProjectPortal$abortRemovalOfPickedVideos(trn))
+								]))
+						]))
+				]));
+	});
 var $author$project$Page$Project$Portal$CancelExportingParams = {$: 'CancelExportingParams'};
 var $author$project$Page$Project$Portal$ExportParams = function (a) {
 	return {$: 'ExportParams', a: a};
@@ -20794,13 +20941,15 @@ var $author$project$Page$Project$Portal$viewExportParams = A2(
 						]))
 				]))
 		]));
-var $author$project$Page$Project$Portal$BatchDeleteProjects = {$: 'BatchDeleteProjects'};
 var $author$project$Page$Project$Portal$DismissImportingError = {$: 'DismissImportingError'};
 var $author$project$Page$Project$Portal$ParamsMsg = F3(
 	function (a, b, c) {
 		return {$: 'ParamsMsg', a: a, b: b, c: c};
 	});
 var $author$project$Page$Project$Portal$ParamsRequested = {$: 'ParamsRequested'};
+var $toastal$either$Either$Right = function (a) {
+	return {$: 'Right', a: a};
+};
 var $author$project$Page$Project$Portal$StartExportingParams = function (a) {
 	return {$: 'StartExportingParams', a: a};
 };
@@ -20808,9 +20957,6 @@ var $author$project$Page$Project$Portal$StartOver = function (a) {
 	return {$: 'StartOver', a: a};
 };
 var $author$project$Page$Project$Portal$StartProcessingVideos = {$: 'StartProcessingVideos'};
-var $author$project$Translations$Page$ProjectPortal$batchRemovePickedVideos = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.batch_remove_picked_videos');
-};
 var $author$project$Translations$Page$ProjectPortal$choosePresets = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.choose_presets');
 };
@@ -21226,7 +21372,9 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
-									$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$BatchDeleteProjects),
+									$elm$html$Html$Events$onClick(
+									$author$project$Page$Project$Portal$ConfirmDeletion(
+										$toastal$either$Either$Right(_Utils_Tuple0))),
 									$elm$html$Html$Attributes$class('btn btn--warning w-20 h-8')
 								]),
 							_List_fromArray(
@@ -21387,7 +21535,11 @@ var $author$project$Page$Project$Portal$view = F2(
 					A2(
 					$author$project$Util$viewIfPresent,
 					model.reviewingSubtitle,
-					$author$project$Page$Project$Portal$viewReviewSubtitle(trn))
+					$author$project$Page$Project$Portal$viewReviewSubtitle(trn)),
+					A2(
+					$author$project$Util$viewIfPresent,
+					model.pendingDeletion,
+					$author$project$Page$Project$Portal$viewDeletionConfirmation(trn))
 				]);
 		} else {
 			return _List_Nil;
@@ -21671,7 +21823,7 @@ var $author$project$Main$view = function (model) {
 };
 var $author$project$Main$main = $elm$browser$Browser$application(
 	{init: $author$project$Main$init, onUrlChange: $author$project$Main$onUrlChange, onUrlRequest: $author$project$Main$onUrlRequest, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
-_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Data.NativeClient.Meta":{"args":[],"type":"{ version : Data.Version.Version, isCompatible : Basics.Bool }"},"Data.Version.Version":{"args":[],"type":"{ major : Basics.Int, minor : Basics.Int, patch : Basics.Int, buildNo : Basics.Int }"},"Data.Project.Concise.Concise":{"args":[],"type":"{ uuid : String.String, name : String.String, hasSubtitle : Basics.Bool, params : Data.Video.Processing.Params.Params, status : Data.Project.Concise.Status }"},"Data.Video.Frame.Frame":{"args":[],"type":"{ index : Basics.Int, localObjectKey : Data.File.Object.Key, time : Basics.Int }"},"Data.Video.Gif.Gif":{"args":[],"type":"{ localObjectKey : Data.File.Object.Key, fileSize : Data.FileSize.FileSize }"},"Data.Video.Processing.Params.Params":{"args":[],"type":"{ granularity : Data.Video.Processing.Params.Granularity, differentTypeMinDifference : Basics.Int, sameTypeMaxDifference : Basics.Int, similarTypeMaxDifference : Basics.Int, smoothTypeMinValue : Basics.Int, isSameCombined : Basics.Bool, shortNoneCombiningMaxDurationInMs : Basics.Int }"},"Data.Video.Processing.Preset.Preset":{"args":[],"type":"{ name : String.String, description : Maybe.Maybe String.String, params : Data.Video.Processing.Params.Params }"},"Data.Project.Project":{"args":[],"type":"{ uuid : String.String, name : String.String, workingData : Array.Array Data.Project.Content.Content }"},"Data.Project.Concise.StatusUpdate":{"args":[],"type":"{ uuid : String.String, status : Data.Project.Concise.Status }"},"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"},"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"SetRoute":["Maybe.Maybe Route.Route"],"ClickedLink":["Browser.UrlRequest"],"RequestMetaOfNativeClient":[],"NativeClientVersionInfoRequested":["Result.Result (API.Request.Error Data.NativeClient.MetaError) Data.NativeClient.Meta"],"ProjectPortalMsg":["Page.Project.Portal.Msg"],"ProjectMsg":["Page.Project.Msg"],"WebsocketClosed":["Basics.Int"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"API.Request.Error":{"args":["e"],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int","e"],"BadBody":["Basics.Int","Json.Decode.Error"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Data.NativeClient.MetaError":{"args":[],"tags":{"MalformedVersionNumber":[]}},"Page.Project.Msg":{"args":[],"tags":{"LoadProject":["String.String"],"ProjectLoaded":["Result.Result (API.Request.Error Data.Project.Error) Data.Project.Project"],"ConvertToGif":["Basics.Int"],"GifProcessed":["( Basics.Int, Basics.Int )","Result.Result (API.Request.Error Data.Video.Gif.Error) Data.Video.Gif.Gif"],"RevertGif":["Basics.Int"],"AddPlainTextAfter":["Basics.Int"],"ToggleContentVisibility":["Basics.Int"],"RemoveContent":["Basics.Int"],"PreEdit":["Basics.Int"],"EditPlainText":["Basics.Int","String.String"],"FinishEditing":["Basics.Int"],"PreviewAsCover":["Data.Video.Frame.Frame"],"StopPreviewingAsCover":["Data.Video.Frame.Frame"],"MergeSections":["Basics.Int","Basics.Int","Data.Project.SegmentContent.SegmentContent"],"StartSplittingSection":["Basics.Int"],"StopSplittingSection":[],"SplitSection":["Basics.Int","Basics.Int"],"StartMovingSection":["Basics.Int"],"StopMovingSection":[],"MoveSection":["Basics.Int","Basics.Int"],"MovingOver":["Basics.Int"],"SetKeyFrame":["Basics.Int","Basics.Int"],"StartPreviewing":[],"StopPreviewing":[],"SaveProject":["Maybe.Maybe Route.Route"],"ProjectSaved":["Maybe.Maybe Route.Route","Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"DismissSavingResultPrompt":[],"ExportProject":[],"ProjectExported":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.File.Object.Base"],"DismissExportingErrorPrompt":[],"SeekTime":["Basics.Int"],"RequestProjectSize":[],"ProjectSizeRequested":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.FileSize.FileSize"],"UndoProject":[],"RedoProject":[],"JumpTo":["Basics.Int"],"NavigateToPortal":[],"StayOnPage":[],"ChangeBeforeUnloadPrompt":[],"NoOp":[]}},"Page.Project.Portal.Msg":{"args":[],"tags":{"ToggleExpertMode":[],"PresetsLoaded":["RemoteData.WebData (List.List Data.Video.Processing.Preset.Preset)"],"ProjectsLoaded":["RemoteData.WebData (List.List Data.Project.Concise.Concise)"],"PickFiles":[],"FilesSelected":["File.File","List.List File.File"],"UploadVideo":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","String.String"],"VideoUploading":["String.String","Http.Progress"],"VideoUploaded":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","Result.Result Http.Error Data.Project.Concise.Concise"],"PickSubtitleFor":["String.String"],"SubtitleSelected":["String.String","File.File"],"SubtitleLoaded":["String.String","String.String","String.String"],"SubtitleUploaded":["String.String","Result.Result (API.Request.Error Data.Project.Concise.SubtitleError) Data.Project.Concise.Concise"],"OpenUploader":[],"CloseUploader":[],"ReviewSubtitle":["String.String"],"StopReviewingSubtitle":[],"RemoveSubtitleFor":["String.String"],"SelectProject":["String.String","Basics.Bool"],"DeleteProject":["String.String"],"BatchDeleteProjects":[],"ProjectsDeleted":["Set.Set String.String","Result.Result Http.Error ()"],"StartProcessingVideos":[],"VideoProcessingStarted":["Set.Set String.String","Result.Result (API.Request.Error Data.Project.Concise.ProcessingError) ()"],"ProcessingStatusUpdate":["Result.Result Json.Decode.Error Data.Project.Concise.StatusUpdate"],"StartOver":["String.String"],"SetProcessingPreset":["String.String","Data.Video.Processing.Preset.Preset"],"ProjectUpdated":["Result.Result (API.Request.Error Data.Project.Concise.UpdateError) Data.Project.Concise.Concise"],"ParamsMsg":["String.String","Data.Video.Processing.Params.Params","View.Video.Processing.Params.Msg"],"StartExportingParams":["Data.Video.Processing.Params.Params"],"CancelExportingParams":[],"ExportParams":["String.String"],"ParamsRequested":[],"ParamsSelected":["File.File"],"ParamsLoaded":["String.String"],"DismissImportingError":[],"SetSearchStr":["String.String"],"NoOp":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Route.Route":{"args":[],"tags":{"Home":[],"ProjectPortal":[],"Project":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Data.File.Object.Base":{"args":[],"tags":{"Local":[],"Remote":["Url.Url"]}},"Data.Project.Content.Content":{"args":[],"tags":{"FromSegment":["Basics.Bool","Data.Project.SegmentContent.SegmentContent"],"FromUser":["Basics.Int","Basics.Bool","Data.Project.UserContent.UserContent"]}},"Data.Project.Error":{"args":[],"tags":{"ProjectNotFound":[]}},"Data.Project.HtmlExport.Error":{"args":[],"tags":{"MediaFilesMissing":["List.List Data.File.Object.Key"],"SourceFileNotFound":[]}},"Data.Project.Saving.Error":{"args":[],"tags":{"SourceFileNotFound":[]}},"Data.Video.Gif.Error":{"args":[],"tags":{"IntervalTooSmall":[],"SourceFileNotFound":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Json.Decode.Error":{"args":[],"tags":{"Field":["String.String","Json.Decode.Error"],"Index":["Basics.Int","Json.Decode.Error"],"OneOf":["List.List Json.Decode.Error"],"Failure":["String.String","Json.Decode.Value"]}},"File.File":{"args":[],"tags":{"File":[]}},"Data.FileSize.FileSize":{"args":[],"tags":{"Bit":["Basics.Int"],"Byte":["Basics.Float"],"Kibibyte":["Basics.Float"],"Mebibyte":["Basics.Float"]}},"Data.Video.Processing.Params.Granularity":{"args":[],"tags":{"Rough":[],"Medium":[],"Detailed":[]}},"Data.File.Object.Key":{"args":[],"tags":{"Key":["List.List String.String"]}},"List.List":{"args":["a"],"tags":{}},"View.Video.Processing.Params.Msg":{"args":[],"tags":{"SetGranularity":["Data.Video.Processing.Params.Granularity"],"SetDifferentTypeMinDifference":["Basics.Int"],"SetSameTypeMaxDifference":["Basics.Int"],"SetSimilarTypeMaxDifference":["Basics.Int"],"SetSmoothTypeMinValue":["Basics.Int"],"SetIsSameCombined":["Basics.Bool"],"SetShortNoneCombiningMaxDurationInMs":["Basics.Int"],"NoOp":[]}},"Data.Project.Concise.ProcessingError":{"args":[],"tags":{"FileNotFound":[],"CannotDecodeVideo":[],"BadParameters":[],"OtherProcessingError":["String.String"]}},"Http.Progress":{"args":[],"tags":{"Sending":["{ sent : Basics.Int, size : Basics.Int }"],"Receiving":["{ received : Basics.Int, size : Maybe.Maybe Basics.Int }"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Loading":[],"Failure":["e"],"Success":["a"]}},"Data.Project.SegmentContent.SegmentContent":{"args":[],"tags":{"FrameSequence":["Data.Video.Segment.Segment","Maybe.Maybe Data.Video.Gif.Gif"],"GifFromVideo":["Data.Video.Gif.Gif","Data.Video.Segment.Segment"]}},"Set.Set":{"args":["t"],"tags":{"Set_elm_builtin":["Dict.Dict t ()"]}},"Data.Project.Concise.Status":{"args":[],"tags":{"Uploaded":[],"Processing":["Basics.Float"],"Processed":[],"FailedToProcess":["API.Request.Error Data.Project.Concise.ProcessingError"]}},"String.String":{"args":[],"tags":{"String":[]}},"Data.Uploader.Media.Subtitle":{"args":[],"tags":{"Subtitle":["Basics.Int","File.File"]}},"Data.Project.Concise.SubtitleError":{"args":[],"tags":{"InvalidSubtitle":[]}},"Data.Project.Concise.UpdateError":{"args":[],"tags":{"InvalidParams":[]}},"Data.Uploader.Media.Video":{"args":[],"tags":{"Video":["File.File"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}},"Data.Video.Segment.Segment":{"args":[],"tags":{"Segment":["Data.Video.Frame.Frame","List.List Data.Video.Frame.Frame"]}},"Data.Project.UserContent.UserContent":{"args":[],"tags":{"PlainText":["String.String"],"Picture":["Data.File.Object.Key"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}}}}})}});}(this));
+_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Data.NativeClient.Meta":{"args":[],"type":"{ version : Data.Version.Version, isCompatible : Basics.Bool }"},"Data.Version.Version":{"args":[],"type":"{ major : Basics.Int, minor : Basics.Int, patch : Basics.Int, buildNo : Basics.Int }"},"Data.Project.Concise.Concise":{"args":[],"type":"{ uuid : String.String, name : String.String, hasSubtitle : Basics.Bool, params : Data.Video.Processing.Params.Params, status : Data.Project.Concise.Status }"},"Data.Video.Frame.Frame":{"args":[],"type":"{ index : Basics.Int, localObjectKey : Data.File.Object.Key, time : Basics.Int }"},"Data.Video.Gif.Gif":{"args":[],"type":"{ localObjectKey : Data.File.Object.Key, fileSize : Data.FileSize.FileSize }"},"Data.Video.Processing.Params.Params":{"args":[],"type":"{ granularity : Data.Video.Processing.Params.Granularity, differentTypeMinDifference : Basics.Int, sameTypeMaxDifference : Basics.Int, similarTypeMaxDifference : Basics.Int, smoothTypeMinValue : Basics.Int, isSameCombined : Basics.Bool, shortNoneCombiningMaxDurationInMs : Basics.Int }"},"Data.Video.Processing.Preset.Preset":{"args":[],"type":"{ name : String.String, description : Maybe.Maybe String.String, params : Data.Video.Processing.Params.Params }"},"Data.Project.Project":{"args":[],"type":"{ uuid : String.String, name : String.String, workingData : Array.Array Data.Project.Content.Content }"},"Data.Project.Concise.StatusUpdate":{"args":[],"type":"{ uuid : String.String, status : Data.Project.Concise.Status }"},"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"},"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"SetRoute":["Maybe.Maybe Route.Route"],"ClickedLink":["Browser.UrlRequest"],"RequestMetaOfNativeClient":[],"NativeClientVersionInfoRequested":["Result.Result (API.Request.Error Data.NativeClient.MetaError) Data.NativeClient.Meta"],"ProjectPortalMsg":["Page.Project.Portal.Msg"],"ProjectMsg":["Page.Project.Msg"],"WebsocketClosed":["Basics.Int"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"API.Request.Error":{"args":["e"],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int","e"],"BadBody":["Basics.Int","Json.Decode.Error"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Data.NativeClient.MetaError":{"args":[],"tags":{"MalformedVersionNumber":[]}},"Page.Project.Msg":{"args":[],"tags":{"LoadProject":["String.String"],"ProjectLoaded":["Result.Result (API.Request.Error Data.Project.Error) Data.Project.Project"],"ConvertToGif":["Basics.Int"],"GifProcessed":["( Basics.Int, Basics.Int )","Result.Result (API.Request.Error Data.Video.Gif.Error) Data.Video.Gif.Gif"],"RevertGif":["Basics.Int"],"AddPlainTextAfter":["Basics.Int"],"ToggleContentVisibility":["Basics.Int"],"RemoveContent":["Basics.Int"],"PreEdit":["Basics.Int"],"EditPlainText":["Basics.Int","String.String"],"FinishEditing":["Basics.Int"],"PreviewAsCover":["Data.Video.Frame.Frame"],"StopPreviewingAsCover":["Data.Video.Frame.Frame"],"MergeSections":["Basics.Int","Basics.Int","Data.Project.SegmentContent.SegmentContent"],"SplitSection":["Basics.Int","Basics.Int"],"StartMovingSection":["Basics.Int"],"StopMovingSection":[],"MoveSection":["Basics.Int","Basics.Int"],"MovingOver":["Basics.Int"],"SetKeyFrame":["Basics.Int","Basics.Int"],"StartPreviewing":[],"StopPreviewing":[],"SaveProject":["Maybe.Maybe Route.Route"],"ProjectSaved":["Maybe.Maybe Route.Route","Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"DismissSavingResultPrompt":[],"ExportProject":[],"ProjectExported":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.File.Object.Base"],"DismissExportingErrorPrompt":[],"SeekTime":["Basics.Int"],"RequestProjectSize":[],"ProjectSizeRequested":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.FileSize.FileSize"],"UndoProject":[],"RedoProject":[],"JumpTo":["Basics.Int"],"NavigateToPortal":[],"StayOnPage":[],"ChangeBeforeUnloadPrompt":[],"NoOp":[]}},"Page.Project.Portal.Msg":{"args":[],"tags":{"ToggleExpertMode":[],"PresetsLoaded":["RemoteData.WebData (List.List Data.Video.Processing.Preset.Preset)"],"ProjectsLoaded":["RemoteData.WebData (List.List Data.Project.Concise.Concise)"],"PickFiles":[],"FilesSelected":["File.File","List.List File.File"],"UploadVideo":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","String.String"],"VideoUploading":["String.String","Http.Progress"],"VideoUploaded":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","Result.Result Http.Error Data.Project.Concise.Concise"],"PickSubtitleFor":["String.String"],"SubtitleSelected":["String.String","File.File"],"SubtitleLoaded":["String.String","String.String","String.String"],"SubtitleUploaded":["String.String","Result.Result (API.Request.Error Data.Project.Concise.SubtitleError) Data.Project.Concise.Concise"],"OpenUploader":[],"CloseUploader":[],"ReviewSubtitle":["String.String"],"StopReviewingSubtitle":[],"RemoveSubtitleFor":["String.String"],"SelectProject":["String.String","Basics.Bool"],"ConfirmDeletion":["Either.Either String.String ()"],"StopConfirmation":[],"DeleteProject":["String.String"],"BatchDeleteProjects":[],"ProjectsDeleted":["Set.Set String.String","Result.Result Http.Error ()"],"StartProcessingVideos":[],"VideoProcessingStarted":["Set.Set String.String","Result.Result (API.Request.Error Data.Project.Concise.ProcessingError) ()"],"ProcessingStatusUpdate":["Result.Result Json.Decode.Error Data.Project.Concise.StatusUpdate"],"StartOver":["String.String"],"SetProcessingPreset":["String.String","Data.Video.Processing.Preset.Preset"],"ProjectUpdated":["Result.Result (API.Request.Error Data.Project.Concise.UpdateError) Data.Project.Concise.Concise"],"ParamsMsg":["String.String","Data.Video.Processing.Params.Params","View.Video.Processing.Params.Msg"],"StartExportingParams":["Data.Video.Processing.Params.Params"],"CancelExportingParams":[],"ExportParams":["String.String"],"ParamsRequested":[],"ParamsSelected":["File.File"],"ParamsLoaded":["String.String"],"DismissImportingError":[],"SetSearchStr":["String.String"],"NoOp":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Route.Route":{"args":[],"tags":{"Home":[],"ProjectPortal":[],"Project":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Data.File.Object.Base":{"args":[],"tags":{"Local":[],"Remote":["Url.Url"]}},"Data.Project.Content.Content":{"args":[],"tags":{"FromSegment":["Basics.Bool","Data.Project.SegmentContent.SegmentContent"],"FromUser":["Basics.Int","Basics.Bool","Data.Project.UserContent.UserContent"]}},"Either.Either":{"args":["a","b"],"tags":{"Left":["a"],"Right":["b"]}},"Data.Project.Error":{"args":[],"tags":{"ProjectNotFound":[]}},"Data.Project.HtmlExport.Error":{"args":[],"tags":{"MediaFilesMissing":["List.List Data.File.Object.Key"],"SourceFileNotFound":[]}},"Data.Project.Saving.Error":{"args":[],"tags":{"SourceFileNotFound":[]}},"Data.Video.Gif.Error":{"args":[],"tags":{"IntervalTooSmall":[],"SourceFileNotFound":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Json.Decode.Error":{"args":[],"tags":{"Field":["String.String","Json.Decode.Error"],"Index":["Basics.Int","Json.Decode.Error"],"OneOf":["List.List Json.Decode.Error"],"Failure":["String.String","Json.Decode.Value"]}},"File.File":{"args":[],"tags":{"File":[]}},"Data.FileSize.FileSize":{"args":[],"tags":{"Bit":["Basics.Int"],"Byte":["Basics.Float"],"Kibibyte":["Basics.Float"],"Mebibyte":["Basics.Float"]}},"Data.Video.Processing.Params.Granularity":{"args":[],"tags":{"Rough":[],"Medium":[],"Detailed":[]}},"Data.File.Object.Key":{"args":[],"tags":{"Key":["List.List String.String"]}},"List.List":{"args":["a"],"tags":{}},"View.Video.Processing.Params.Msg":{"args":[],"tags":{"SetGranularity":["Data.Video.Processing.Params.Granularity"],"SetDifferentTypeMinDifference":["Basics.Int"],"SetSameTypeMaxDifference":["Basics.Int"],"SetSimilarTypeMaxDifference":["Basics.Int"],"SetSmoothTypeMinValue":["Basics.Int"],"SetIsSameCombined":["Basics.Bool"],"SetShortNoneCombiningMaxDurationInMs":["Basics.Int"],"NoOp":[]}},"Data.Project.Concise.ProcessingError":{"args":[],"tags":{"FileNotFound":[],"CannotDecodeVideo":[],"BadParameters":[],"OtherProcessingError":["String.String"]}},"Http.Progress":{"args":[],"tags":{"Sending":["{ sent : Basics.Int, size : Basics.Int }"],"Receiving":["{ received : Basics.Int, size : Maybe.Maybe Basics.Int }"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Loading":[],"Failure":["e"],"Success":["a"]}},"Data.Project.SegmentContent.SegmentContent":{"args":[],"tags":{"FrameSequence":["Data.Video.Segment.Segment","Maybe.Maybe Data.Video.Gif.Gif"],"GifFromVideo":["Data.Video.Gif.Gif","Data.Video.Segment.Segment"]}},"Set.Set":{"args":["t"],"tags":{"Set_elm_builtin":["Dict.Dict t ()"]}},"Data.Project.Concise.Status":{"args":[],"tags":{"Uploaded":[],"Processing":["Basics.Float"],"Processed":[],"FailedToProcess":["API.Request.Error Data.Project.Concise.ProcessingError"]}},"String.String":{"args":[],"tags":{"String":[]}},"Data.Uploader.Media.Subtitle":{"args":[],"tags":{"Subtitle":["Basics.Int","File.File"]}},"Data.Project.Concise.SubtitleError":{"args":[],"tags":{"InvalidSubtitle":[]}},"Data.Project.Concise.UpdateError":{"args":[],"tags":{"InvalidParams":[]}},"Data.Uploader.Media.Video":{"args":[],"tags":{"Video":["File.File"]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}},"Data.Video.Segment.Segment":{"args":[],"tags":{"Segment":["Data.Video.Frame.Frame","List.List Data.Video.Frame.Frame"]}},"Data.Project.UserContent.UserContent":{"args":[],"tags":{"PlainText":["String.String"],"Picture":["Data.File.Object.Key"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}}}}})}});}(this));
 },{}],"js/app.js":[function(require,module,exports) {
 "use strict";
 
