@@ -22050,7 +22050,28 @@ var RichTextPreview = /*#__PURE__*/function (_HTMLElement) {
   return RichTextPreview;
 }( /*#__PURE__*/_wrapNativeSuper(HTMLElement));
 
-customElements.define('rich-text-preview', RichTextPreview);
+customElements.define('rich-text-preview', RichTextPreview); // Analytics 
+
+var previousHref = document.location.href;
+
+window.onload = function () {
+  var body = document.querySelector('body');
+  var observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      if (document.location.href != previousHref) {
+        previousHref = document.location.href;
+
+        _czc.push(['_trackPageview', location.pathname]);
+      }
+    });
+  });
+  var config = {
+    childList: true,
+    subtree: true
+  };
+  observer.observe(body, config);
+};
+
 var _default = {
   app: app
 };
