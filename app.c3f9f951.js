@@ -11317,10 +11317,19 @@ var $ChristophP$elm_i18next$I18Next$Translations = function (a) {
 	return {$: 'Translations', a: a};
 };
 var $ChristophP$elm_i18next$I18Next$initialTranslations = $ChristophP$elm_i18next$I18Next$Translations($elm$core$Dict$empty);
-var $author$project$Flags$empty = {translations: $ChristophP$elm_i18next$I18Next$initialTranslations};
-var $author$project$Flags$Flags = function (translations) {
-	return {translations: translations};
-};
+var $author$project$Flags$empty = {hostname: '', translations: $ChristophP$elm_i18next$I18Next$initialTranslations};
+var $author$project$Flags$Flags = F2(
+	function (translations, hostname) {
+		return {hostname: hostname, translations: translations};
+	});
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom = $elm$json$Json$Decode$map2($elm$core$Basics$apR);
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
+	function (key, valDecoder, decoder) {
+		return A2(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom,
+			A2($elm$json$Json$Decode$field, key, valDecoder),
+			decoder);
+	});
 var $ChristophP$elm_i18next$I18Next$flattenTranslationsHelp = F3(
 	function (initialValue, namespace, dict) {
 		return A3(
@@ -11390,10 +11399,55 @@ var $ChristophP$elm_i18next$I18Next$translationsDecoder = A2(
 	$elm$json$Json$Decode$map,
 	A2($elm$core$Basics$composeR, $ChristophP$elm_i18next$I18Next$flattenTranslations, $ChristophP$elm_i18next$I18Next$Translations),
 	$elm$json$Json$Decode$dict($ChristophP$elm_i18next$I18Next$treeDecoder));
-var $author$project$Flags$flagsDecoder = A2(
-	$elm$json$Json$Decode$map,
-	$author$project$Flags$Flags,
-	A2($elm$json$Json$Decode$field, 'translations', $ChristophP$elm_i18next$I18Next$translationsDecoder));
+var $author$project$Flags$flagsDecoder = A3(
+	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+	'hostname',
+	$elm$json$Json$Decode$string,
+	A3(
+		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+		'translations',
+		$ChristophP$elm_i18next$I18Next$translationsDecoder,
+		$elm$json$Json$Decode$succeed($author$project$Flags$Flags)));
+var $author$project$Data$Env$Debugging = {$: 'Debugging'};
+var $author$project$Data$Env$PreRelease = {$: 'PreRelease'};
+var $author$project$Data$Env$Production = {$: 'Production'};
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			$elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
+	});
+var $author$project$Data$Env$fromHostname = function (hostname) {
+	return A2(
+		$elm$core$List$member,
+		hostname,
+		_List_fromArray(
+			['localhost', '127.0.0.1', 'test-debug.editool.cn'])) ? $author$project$Data$Env$Debugging : ((hostname === 'https://test-1.editool.cn') ? $author$project$Data$Env$PreRelease : ((hostname === 'https://desk.editool.cn') ? $author$project$Data$Env$Production : $author$project$Data$Env$Production));
+};
 var $elm$url$Url$Parser$State = F5(
 	function (visited, unvisited, params, frag, value) {
 		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
@@ -11698,7 +11752,7 @@ var $author$project$Request$Helper$apiNativeClient = F2(
 	function (path, params) {
 		return A3(
 			$elm$url$Url$Builder$crossOrigin,
-			'http://localhost:8888',
+			'http://localhost:16661',
 			A2($elm$core$List$cons, 'api', path),
 			params);
 	});
@@ -11707,7 +11761,6 @@ var $author$project$Data$Project$Concise$Concise = F5(
 		return {hasSubtitle: hasSubtitle, name: name, params: params, status: status, uuid: uuid};
 	});
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
-var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom = $elm$json$Json$Decode$map2($elm$core$Basics$apR);
 var $author$project$Data$Video$Processing$Params$Params = F7(
 	function (granularity, differentTypeMinDifference, sameTypeMaxDifference, similarTypeMaxDifference, smoothTypeMinValue, isSameCombined, shortNoneCombiningMaxDurationInMs) {
 		return {differentTypeMinDifference: differentTypeMinDifference, granularity: granularity, isSameCombined: isSameCombined, sameTypeMaxDifference: sameTypeMaxDifference, shortNoneCombiningMaxDurationInMs: shortNoneCombiningMaxDurationInMs, similarTypeMaxDifference: similarTypeMaxDifference, smoothTypeMinValue: smoothTypeMinValue};
@@ -11731,13 +11784,6 @@ var $author$project$Data$Video$Processing$Params$granularityDecoder = A2(
 		}
 	},
 	$elm$json$Json$Decode$int);
-var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
-	function (key, valDecoder, decoder) {
-		return A2(
-			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom,
-			A2($elm$json$Json$Decode$field, key, valDecoder),
-			decoder);
-	});
 var $author$project$Data$Video$Processing$Params$decoder = A3(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 	'ShortNoneCombiningMaxDurationInMs',
@@ -13000,7 +13046,14 @@ var $author$project$Main$init = F3(
 		var _v1 = A2(
 			$author$project$Main$setRoute,
 			$author$project$Route$fromUrl(url),
-			{currentPage: $author$project$Main$Blank, key: key, nativeClientStatus: $author$project$Data$NativeClient$Unknown, projectPortal: projectPortalModel, translations: flags.translations});
+			{
+				currentPage: $author$project$Main$Blank,
+				env: $author$project$Data$Env$fromHostname(flags.hostname),
+				key: key,
+				nativeClientStatus: $author$project$Data$NativeClient$Unknown,
+				projectPortal: projectPortalModel,
+				translations: flags.translations
+			});
 		var routeModel = _v1.a;
 		var routeCmd = _v1.b;
 		return _Utils_Tuple2(
@@ -14073,6 +14126,88 @@ var $author$project$Request$Project$getSize = F2(
 					_List_Nil)
 			});
 	});
+var $elm_community$list_extra$List$Extra$minimumBy = F2(
+	function (f, ls) {
+		var minBy = F2(
+			function (x, _v1) {
+				var y = _v1.a;
+				var fy = _v1.b;
+				var fx = f(x);
+				return (_Utils_cmp(fx, fy) < 0) ? _Utils_Tuple2(x, fx) : _Utils_Tuple2(y, fy);
+			});
+		if (ls.b) {
+			if (!ls.b.b) {
+				var l_ = ls.a;
+				return $elm$core$Maybe$Just(l_);
+			} else {
+				var l_ = ls.a;
+				var ls_ = ls.b;
+				return $elm$core$Maybe$Just(
+					A3(
+						$elm$core$List$foldl,
+						minBy,
+						_Utils_Tuple2(
+							l_,
+							f(l_)),
+						ls_).a);
+			}
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$Data$Video$Segment$getStartingTime = function (_v0) {
+	var keyFrame = _v0.a;
+	var others = _v0.b;
+	var _v1 = A2($elm_community$list_extra$List$Extra$minimumBy, $author$project$Data$Video$Frame$getTime, others);
+	if (_v1.$ === 'Nothing') {
+		return $author$project$Data$Video$Frame$getTime(keyFrame);
+	} else {
+		var frame = _v1.a;
+		return A2(
+			$elm$core$Basics$min,
+			$author$project$Data$Video$Frame$getTime(keyFrame),
+			$author$project$Data$Video$Frame$getTime(frame));
+	}
+};
+var $author$project$Data$Project$Content$gifTimeInterval = F3(
+	function (segment, currentIndex, contents) {
+		var findNextSegment = function (index) {
+			findNextSegment:
+			while (true) {
+				var _v0 = A2($elm$core$Array$get, index + 1, contents);
+				if (_v0.$ === 'Just') {
+					if (_v0.a.$ === 'FromSegment') {
+						var _v1 = _v0.a;
+						var segmentContent = _v1.b;
+						return $elm$core$Maybe$Just(
+							$author$project$Data$Video$Segment$getStartingTime(
+								$author$project$Data$Project$SegmentContent$getSegment(segmentContent)));
+					} else {
+						var $temp$index = index + 1;
+						index = $temp$index;
+						continue findNextSegment;
+					}
+				} else {
+					return $elm$core$Maybe$Nothing;
+				}
+			}
+		};
+		var _v2 = $author$project$Data$Video$Segment$getTimeInterval(segment);
+		var nominalStart = _v2.a;
+		var nominalEnd = _v2.b;
+		return ($author$project$Data$Video$Segment$length(segment) > 1) ? {
+			actual: _Utils_Tuple2(nominalStart, nominalEnd),
+			nominal: _Utils_Tuple2(nominalStart, nominalEnd)
+		} : {
+			actual: _Utils_Tuple2(
+				nominalStart,
+				A2(
+					$elm$core$Maybe$withDefault,
+					nominalEnd,
+					findNextSegment(currentIndex))),
+			nominal: _Utils_Tuple2(nominalStart, nominalEnd)
+		};
+	});
 var $elm$core$Set$insert = F2(
 	function (key, _v0) {
 		var dict = _v0.a;
@@ -14326,8 +14461,7 @@ var $author$project$Request$Gif$process = F3(
 			{
 				decoder: $author$project$Data$Video$Gif$processedDecoder,
 				errorDecoder: $author$project$Data$Video$Gif$errorDecoder,
-				handler: handler(
-					_Utils_Tuple2(start, end)),
+				handler: handler,
 				payload: A2(
 					$author$project$Data$Video$Gif$processConfigEncoder,
 					uuid,
@@ -14994,10 +15128,10 @@ var $author$project$Page$Project$updateLoaded = F4(
 	function (key, msg, project, substate) {
 		var present = project.present;
 		var updateState = F2(
-			function (updater, _v16) {
-				var newState = _v16.a;
-				var substate_ = _v16.b;
-				var commands = _v16.c;
+			function (updater, _v17) {
+				var newState = _v17.a;
+				var substate_ = _v17.b;
+				var commands = _v17.c;
 				return _Utils_Tuple3(
 					A3($author$project$Util$flip, updater, project, newState),
 					substate_,
@@ -15025,10 +15159,16 @@ var $author$project$Page$Project$updateLoaded = F4(
 					var _v2 = _v1.a;
 					var isHidden = _v2.a;
 					var segmentContent = _v2.b;
-					var timeInterval = $author$project$Data$Project$SegmentContent$getTimeInterval(segmentContent);
-					var _v3 = $author$project$Data$Project$SegmentContent$toGif(segmentContent);
-					if (_v3.$ === 'Just') {
-						var converted = _v3.a;
+					var _v3 = A3(
+						$author$project$Data$Project$Content$gifTimeInterval,
+						$author$project$Data$Project$SegmentContent$getSegment(segmentContent),
+						index,
+						present.workingData);
+					var nominal = _v3.nominal;
+					var actual = _v3.actual;
+					var _v4 = $author$project$Data$Project$SegmentContent$toGif(segmentContent);
+					if (_v4.$ === 'Just') {
+						var converted = _v4.a;
 						return pushState(
 							_Utils_update(
 								present,
@@ -15045,9 +15185,13 @@ var $author$project$Page$Project$updateLoaded = F4(
 							_Utils_update(
 								substate,
 								{
-									pendingGifJobs: A2($elm$core$Set$insert, timeInterval, substate.pendingGifJobs)
+									pendingGifJobs: A2($elm$core$Set$insert, nominal, substate.pendingGifJobs)
 								}),
-							A3($author$project$Request$Gif$process, $author$project$Page$Project$GifProcessed, present.uuid, timeInterval));
+							A3(
+								$author$project$Request$Gif$process,
+								$author$project$Page$Project$GifProcessed(nominal),
+								present.uuid,
+								actual));
 					}
 				} else {
 					return _Utils_Tuple3(project, substate, $elm$core$Platform$Cmd$none);
@@ -15085,11 +15229,11 @@ var $author$project$Page$Project$updateLoaded = F4(
 				}
 			case 'RevertGif':
 				var index = msg.a;
-				var _v4 = A2($elm$core$Array$get, index, present.workingData);
-				if ((_v4.$ === 'Just') && (_v4.a.$ === 'FromSegment')) {
-					var _v5 = _v4.a;
-					var isHidden = _v5.a;
-					var segmentContent = _v5.b;
+				var _v5 = A2($elm$core$Array$get, index, present.workingData);
+				if ((_v5.$ === 'Just') && (_v5.a.$ === 'FromSegment')) {
+					var _v6 = _v5.a;
+					var isHidden = _v6.a;
+					var segmentContent = _v6.b;
 					var updatedContent = A2(
 						$author$project$Data$Project$Content$FromSegment,
 						isHidden,
@@ -15105,9 +15249,9 @@ var $author$project$Page$Project$updateLoaded = F4(
 				}
 			case 'AddPlainTextAfter':
 				var index = msg.a;
-				var _v6 = A2($elm_community$array_extra$Array$Extra$splitAt, index + 1, present.workingData);
-				var before = _v6.a;
-				var after = _v6.b;
+				var _v7 = A2($elm_community$array_extra$Array$Extra$splitAt, index + 1, present.workingData);
+				var before = _v7.a;
+				var after = _v7.b;
 				var updatedWorkingData = A3(
 					$author$project$Util$flip,
 					$elm$core$Array$append,
@@ -15160,10 +15304,10 @@ var $author$project$Page$Project$updateLoaded = F4(
 			case 'EditPlainText':
 				var index = msg.a;
 				var plainText = msg.b;
-				var _v7 = A2($elm$core$Array$get, index, present.workingData);
-				if (((_v7.$ === 'Just') && (_v7.a.$ === 'FromUser')) && (!_v7.a.b)) {
-					var _v8 = _v7.a;
-					var userContentID = _v8.a;
+				var _v8 = A2($elm$core$Array$get, index, present.workingData);
+				if (((_v8.$ === 'Just') && (_v8.a.$ === 'FromUser')) && (!_v8.a.b)) {
+					var _v9 = _v8.a;
+					var userContentID = _v9.a;
 					return replaceState(
 						_Utils_update(
 							present,
@@ -15224,30 +15368,30 @@ var $author$project$Page$Project$updateLoaded = F4(
 			case 'SplitSection':
 				var index = msg.a;
 				var frameIndex = msg.b;
-				var _v9 = A2($elm$core$Array$get, index, present.workingData);
-				if (((_v9.$ === 'Just') && (_v9.a.$ === 'FromSegment')) && (!_v9.a.a)) {
-					var _v10 = _v9.a;
-					var segmentContent = _v10.b;
-					var _v11 = A2(
+				var _v10 = A2($elm$core$Array$get, index, present.workingData);
+				if (((_v10.$ === 'Just') && (_v10.a.$ === 'FromSegment')) && (!_v10.a.a)) {
+					var _v11 = _v10.a;
+					var segmentContent = _v11.b;
+					var _v12 = A2(
 						$author$project$Data$Video$Segment$splitAt,
 						frameIndex,
 						$author$project$Data$Project$SegmentContent$getSegment(segmentContent));
-					if (_v11.$ === 'Just') {
-						var _v12 = _v11.a;
-						var first = _v12.a;
-						var second = _v12.b;
-						var _v13 = A2(
+					if (_v12.$ === 'Just') {
+						var _v13 = _v12.a;
+						var first = _v13.a;
+						var second = _v13.b;
+						var _v14 = A2(
 							$elm_community$array_extra$Array$Extra$splitAt,
 							index + 1,
 							A3(
 								$author$project$Data$Project$Content$updateSegmentBy,
 								index,
-								function (_v14) {
+								function (_v15) {
 									return first;
 								},
 								present.workingData));
-						var before = _v13.a;
-						var after = _v13.b;
+						var before = _v14.a;
+						var after = _v14.b;
 						var updatedWorkingData = A3(
 							$author$project$Util$flip,
 							$elm$core$Array$append,
@@ -15374,10 +15518,10 @@ var $author$project$Page$Project$updateLoaded = F4(
 							savingResult: $elm$core$Maybe$Just(result)
 						}),
 					function () {
-						var _v15 = _Utils_Tuple2(redirection, result);
-						if (_v15.b.$ === 'Ok') {
-							if (_v15.a.$ === 'Just') {
-								var targetRoute = _v15.a.a;
+						var _v16 = _Utils_Tuple2(redirection, result);
+						if (_v16.b.$ === 'Ok') {
+							if (_v16.a.$ === 'Just') {
+								var targetRoute = _v16.a.a;
 								return $elm$core$Platform$Cmd$batch(
 									_List_fromArray(
 										[
@@ -16157,36 +16301,6 @@ var $author$project$Data$Uploader$Media$doMatch = F3(
 var $author$project$Data$Uploader$Media$match = F2(
 	function (videos, subtitles) {
 		return A3($author$project$Data$Uploader$Media$doMatch, videos, subtitles, _List_Nil);
-	});
-var $elm$core$List$any = F2(
-	function (isOkay, list) {
-		any:
-		while (true) {
-			if (!list.b) {
-				return false;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (isOkay(x)) {
-					return true;
-				} else {
-					var $temp$isOkay = isOkay,
-						$temp$list = xs;
-					isOkay = $temp$isOkay;
-					list = $temp$list;
-					continue any;
-				}
-			}
-		}
-	});
-var $elm$core$List$member = F2(
-	function (x, xs) {
-		return A2(
-			$elm$core$List$any,
-			function (a) {
-				return _Utils_eq(a, x);
-			},
-			xs);
 	});
 var $author$project$Data$Uploader$Media$Subtitle = F2(
 	function (a, b) {
@@ -18270,7 +18384,7 @@ var $elm$html$Html$Attributes$autoplay = $elm$html$Html$Attributes$boolProperty(
 var $elm$html$Html$Attributes$controls = $elm$html$Html$Attributes$boolProperty('controls');
 var $author$project$Data$File$Object$baseToString = function (base) {
 	if (base.$ === 'Local') {
-		return 'http://localhost:8888';
+		return 'http://localhost:16661';
 	} else {
 		var url = base.a;
 		return $elm$url$Url$toString(url);
@@ -18909,49 +19023,6 @@ var $author$project$Util$formatTimeInSeconds = function (time) {
 			$elm$core$List$map,
 			toPaddedString,
 			A2(go, (time / 1000) | 0, _List_Nil)));
-};
-var $elm_community$list_extra$List$Extra$minimumBy = F2(
-	function (f, ls) {
-		var minBy = F2(
-			function (x, _v1) {
-				var y = _v1.a;
-				var fy = _v1.b;
-				var fx = f(x);
-				return (_Utils_cmp(fx, fy) < 0) ? _Utils_Tuple2(x, fx) : _Utils_Tuple2(y, fy);
-			});
-		if (ls.b) {
-			if (!ls.b.b) {
-				var l_ = ls.a;
-				return $elm$core$Maybe$Just(l_);
-			} else {
-				var l_ = ls.a;
-				var ls_ = ls.b;
-				return $elm$core$Maybe$Just(
-					A3(
-						$elm$core$List$foldl,
-						minBy,
-						_Utils_Tuple2(
-							l_,
-							f(l_)),
-						ls_).a);
-			}
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $author$project$Data$Video$Segment$getStartingTime = function (_v0) {
-	var keyFrame = _v0.a;
-	var others = _v0.b;
-	var _v1 = A2($elm_community$list_extra$List$Extra$minimumBy, $author$project$Data$Video$Frame$getTime, others);
-	if (_v1.$ === 'Nothing') {
-		return $author$project$Data$Video$Frame$getTime(keyFrame);
-	} else {
-		var frame = _v1.a;
-		return A2(
-			$elm$core$Basics$min,
-			$author$project$Data$Video$Frame$getTime(keyFrame),
-			$author$project$Data$Video$Frame$getTime(frame));
-	}
 };
 var $author$project$Data$File$Object$relativeTo = F2(
 	function (padPath, _v0) {
@@ -21583,7 +21654,6 @@ var $author$project$Data$NativeClient$statusToString = F2(
 				return $author$project$Translations$NativeClient$unknown(trn);
 		}
 	});
-var $author$project$View$NativeClient$downloadLink = 'https://editool.blob.core.chinacloudapi.cn/client/editool.exe';
 var $author$project$Translations$NativeClient$promptPart1 = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'native_client.prompt_part1');
 };
@@ -21600,70 +21670,92 @@ var $author$project$Translations$NativeClient$promptPart5 = function (translatio
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'native_client.prompt_part5');
 };
 var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty('target');
-var $author$project$View$NativeClient$uriScheme = 'Editool://';
-var $author$project$View$NativeClient$viewGeneralErrorMessages = function (trn) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('text-grey-800')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$span,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$author$project$Translations$NativeClient$promptPart1(trn))
-					])),
-				A2(
-				$elm$html$Html$a,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$target('_blank'),
-						$elm$html$Html$Attributes$href($author$project$View$NativeClient$uriScheme),
-						$elm$html$Html$Attributes$class('px-1 text-theme-400 font-bold')
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$author$project$Translations$NativeClient$promptPart2(trn))
-					])),
-				A2(
-				$elm$html$Html$span,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$author$project$Translations$NativeClient$promptPart3(trn))
-					])),
-				A2(
-				$elm$html$Html$a,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$target('_blank'),
-						$elm$html$Html$Attributes$href($author$project$View$NativeClient$downloadLink),
-						$elm$html$Html$Attributes$class('px-1 text-theme-400 font-bold')
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$author$project$Translations$NativeClient$promptPart4(trn))
-					])),
-				A2(
-				$elm$html$Html$span,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$author$project$Translations$NativeClient$promptPart5(trn))
-					]))
-			]));
+var $author$project$Data$Env$toDownloadLink = function (env) {
+	switch (env.$) {
+		case 'Debugging':
+			return 'https://editool.blob.core.chinacloudapi.cn/devclient/editool.exe';
+		case 'PreRelease':
+			return 'https://editool.blob.core.chinacloudapi.cn/qaclient/editool.exe';
+		default:
+			return 'https://editool.blob.core.chinacloudapi.cn/client/editool.exe';
+	}
 };
-var $author$project$View$NativeClient$viewError = F2(
-	function (trn, status) {
+var $author$project$Data$Env$toUriScheme = function (env) {
+	switch (env.$) {
+		case 'Debugging':
+			return 'editool://profile/debug';
+		case 'PreRelease':
+			return 'editool://profile/pre-release';
+		default:
+			return 'editool://profile/production';
+	}
+};
+var $author$project$View$NativeClient$viewGeneralErrorMessages = F2(
+	function (trn, env) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('text-grey-800')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$span,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$Translations$NativeClient$promptPart1(trn))
+						])),
+					A2(
+					$elm$html$Html$a,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$target('_blank'),
+							$elm$html$Html$Attributes$href(
+							$author$project$Data$Env$toUriScheme(env)),
+							$elm$html$Html$Attributes$class('px-1 text-theme-400 font-bold')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$Translations$NativeClient$promptPart2(trn))
+						])),
+					A2(
+					$elm$html$Html$span,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$Translations$NativeClient$promptPart3(trn))
+						])),
+					A2(
+					$elm$html$Html$a,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$target('_blank'),
+							$elm$html$Html$Attributes$href(
+							$author$project$Data$Env$toDownloadLink(env)),
+							$elm$html$Html$Attributes$class('px-1 text-theme-400 font-bold')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$Translations$NativeClient$promptPart4(trn))
+						])),
+					A2(
+					$elm$html$Html$span,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$Translations$NativeClient$promptPart5(trn))
+						]))
+				]));
+	});
+var $author$project$View$NativeClient$viewError = F3(
+	function (trn, env, status) {
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -21711,7 +21803,7 @@ var $author$project$View$NativeClient$viewError = F2(
 						]),
 					_List_fromArray(
 						[
-							$author$project$View$NativeClient$viewGeneralErrorMessages(trn)
+							A2($author$project$View$NativeClient$viewGeneralErrorMessages, trn, env)
 						]))
 				]));
 	});
@@ -21733,12 +21825,12 @@ var $author$project$View$NativeClient$wrapPopup = function (content) {
 				content)
 			]));
 };
-var $author$project$View$NativeClient$viewPopup = F2(
-	function (trn, status) {
+var $author$project$View$NativeClient$viewPopup = F3(
+	function (trn, env, status) {
 		return $author$project$Data$NativeClient$isStatusNormal(status) ? $elm$html$Html$text('') : $author$project$View$NativeClient$wrapPopup(
 			_List_fromArray(
 				[
-					A2($author$project$View$NativeClient$viewError, trn, status)
+					A3($author$project$View$NativeClient$viewError, trn, env, status)
 				]));
 	});
 var $author$project$Translations$Page$Project$pageTitle = function (translations) {
@@ -21816,7 +21908,7 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$Attributes$class('absolute inset-0 z-0')
 					]),
 				content),
-				A2($author$project$View$NativeClient$viewPopup, translations, model.nativeClientStatus)
+				A3($author$project$View$NativeClient$viewPopup, translations, model.env, model.nativeClientStatus)
 			]),
 		title: title
 	};
@@ -21884,8 +21976,7 @@ var app = _Main.Elm.Main.init({
   flags: {
     token: localStorage.token || null,
     translations: _chi.default,
-    lastUsedDirectory: localStorage.lastUsedDirectory || null,
-    lastPickedVideos: readStringifiedJson(localStorage.lastPickedVideos) || null
+    hostname: location.hostname
   }
 });
 
@@ -21913,7 +22004,7 @@ app.ports.seekTime.subscribe(function (milliseconds) {
 });
 
 var connectSocket = function connectSocket() {
-  var socket = new WebSocket('ws://localhost:8282');
+  var socket = new WebSocket('ws://localhost:16699');
   socket.addEventListener('close', function (event) {
     app.ports.websocketClosed.send(event.code);
   });
