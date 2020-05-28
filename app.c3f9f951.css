@@ -1134,6 +1134,12 @@ a.btn:hover {
   background-color: rgba(238, 238, 238, var(--bg-opacity));
 }
 
+.bg-grey-300 {
+  --bg-opacity: 1;
+  background-color: #e0e0e0;
+  background-color: rgba(224, 224, 224, var(--bg-opacity));
+}
+
 .bg-grey-700 {
   --bg-opacity: 1;
   background-color: #616161;
@@ -1320,8 +1326,16 @@ a.btn:hover {
   margin-bottom: 4rem;
 }
 
+.mb-0 {
+  margin-bottom: 0;
+}
+
 .ml-1 {
   margin-left: 0.25rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
 }
 
 .mr-2 {
