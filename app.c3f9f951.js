@@ -15787,22 +15787,42 @@ var $author$project$Request$Project$addSubtitle = F4(
 					_List_Nil)
 			});
 	});
-var $elm$http$Http$expectBytesResponse = F2(
-	function (toMsg, toResult) {
-		return A3(
-			_Http_expect,
-			'arraybuffer',
-			_Http_toDataView,
-			A2($elm$core$Basics$composeR, toResult, toMsg));
-	});
-var $elm$http$Http$expectWhatever = function (toMsg) {
+var $author$project$Request$Helper$expectDeletion = function (toMsg) {
 	return A2(
-		$elm$http$Http$expectBytesResponse,
+		$elm$http$Http$expectStringResponse,
 		toMsg,
-		$elm$http$Http$resolve(
-			function (_v0) {
-				return $elm$core$Result$Ok(_Utils_Tuple0);
-			}));
+		function (response) {
+			switch (response.$) {
+				case 'BadUrl_':
+					var url = response.a;
+					return $elm$core$Result$Err(
+						$elm$http$Http$BadUrl(url));
+				case 'Timeout_':
+					return $elm$core$Result$Err($elm$http$Http$Timeout);
+				case 'NetworkError_':
+					return $elm$core$Result$Err($elm$http$Http$NetworkError);
+				case 'GoodStatus_':
+					var metadata = response.a;
+					return (metadata.statusCode === 204) ? $elm$core$Result$Ok(_Utils_Tuple0) : $elm$core$Result$Err(
+						$elm$http$Http$BadStatus(metadata.statusCode));
+				default:
+					var metadata = response.a;
+					return (metadata.statusCode === 404) ? $elm$core$Result$Ok(_Utils_Tuple0) : $elm$core$Result$Err(
+						$elm$http$Http$BadStatus(metadata.statusCode));
+			}
+		});
+};
+var $author$project$Request$Helper$deleteResource = function (r) {
+	return $elm$http$Http$request(
+		{
+			body: $elm$http$Http$jsonBody(r.payload),
+			expect: $author$project$Request$Helper$expectDeletion(r.handler),
+			headers: _List_Nil,
+			method: 'POST',
+			timeout: $elm$core$Maybe$Just(5000),
+			tracker: $elm$core$Maybe$Nothing,
+			url: r.url
+		});
 };
 var $author$project$Data$Project$Concise$wrapRequestBody = function (body) {
 	return $elm$json$Json$Encode$object(
@@ -15831,13 +15851,11 @@ var $author$project$Data$Project$Concise$uuidsEncoder = function (uuids) {
 };
 var $author$project$Request$Project$delete = F2(
 	function (handler, uuids) {
-		return $elm$http$Http$post(
+		return $author$project$Request$Helper$deleteResource(
 			{
-				body: $elm$http$Http$jsonBody(
-					$author$project$Data$Project$Concise$uuidsEncoder(
-						$elm$core$Set$toList(uuids))),
-				expect: $elm$http$Http$expectWhatever(
-					handler(uuids)),
+				handler: handler(uuids),
+				payload: $author$project$Data$Project$Concise$uuidsEncoder(
+					$elm$core$Set$toList(uuids)),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
 					_List_fromArray(
@@ -17346,6 +17364,7 @@ var $author$project$Page$Project$Portal$update = F2(
 						_Utils_update(
 							model,
 							{
+								pendingDeletion: $elm$core$Maybe$Nothing,
 								projects: A2(
 									$krisajenkins$remotedata$RemoteData$map,
 									$elm_community$list_extra$List$Extra$filterNot(
