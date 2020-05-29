@@ -12358,7 +12358,7 @@ var $author$project$Main$NativeClientVersionInfoRequested = function (a) {
 var $author$project$Data$Version$incrementMinor = function (version) {
 	return _Utils_update(
 		version,
-		{buildNo: version.buildNo + 1, minor: version.minor + 1});
+		{buildNo: version.buildNo + 1, minor: version.minor + 1, patch: 0});
 };
 var $author$project$Data$Version$initial = {buildNo: 1, major: 0, minor: 1, patch: 0};
 var $author$project$Data$Version$Platform$incrementedBy = function (history) {
