@@ -1718,6 +1718,10 @@ a.btn:hover {
   background-color: rgba(64, 64, 64, .5);
 }
 
+.h-7 {
+  height: 1.75rem;
+}
+
 .w-mobile {
   width: 25rem;
 }

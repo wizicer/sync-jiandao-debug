@@ -18870,7 +18870,7 @@ var $author$project$Page$Project$viewHiddenContent = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('h-8 my-4 flex flex-row justify-center items-center')
+					$elm$html$Html$Attributes$class('h-8 my-1 text-sm flex flex-row justify-center items-center')
 				]),
 			_List_fromArray(
 				[
@@ -18891,7 +18891,7 @@ var $author$project$Page$Project$viewHiddenContent = F2(
 						[
 							$elm$html$Html$Events$onClick(
 							$author$project$Page$Project$ToggleContentVisibility(index)),
-							$elm$html$Html$Attributes$class('w-16 h-8 btn btn--light-grey')
+							$elm$html$Html$Attributes$class('w-16 h-7 btn btn--light-grey')
 						]),
 					_List_fromArray(
 						[
