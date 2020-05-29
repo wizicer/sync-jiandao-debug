@@ -21570,6 +21570,26 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 									A3($author$project$Page$Project$Portal$viewPreset, trn, project.uuid, currentPreset),
 									availablePresets)),
 								A2(
+								$author$project$Util$viewIfPresent,
+								A2(
+									$elm$core$Maybe$andThen,
+									function ($) {
+										return $.description;
+									},
+									currentPreset),
+								function (description) {
+									return A2(
+										$elm$html$Html$p,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('text-sm text-grey-600')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text(description)
+											]));
+								}),
+								A2(
 								$author$project$Util$viewIf,
 								expertMode,
 								A2(
