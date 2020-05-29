@@ -820,6 +820,14 @@ a.project-concise__edit {
   color: rgba(255, 255, 255, var(--text-opacity));
 }
 
+/* Markdown content */
+
+.md-content .a {
+  --text-opacity: 1;
+  color: #3091bb;
+  color: rgba(48, 145, 187, var(--text-opacity));
+}
+
 /* Buttons */
 
 .btn {

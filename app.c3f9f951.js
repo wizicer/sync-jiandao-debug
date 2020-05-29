@@ -12902,6 +12902,23 @@ var $author$project$Data$Video$Segment$offsetIndicesOfFrames = function (segment
 			A2($elm$core$List$map, $author$project$Data$Video$Segment$length, segmentList)),
 		segmentList);
 };
+var $elm$core$Maybe$andThen = F2(
+	function (callback, maybeValue) {
+		if (maybeValue.$ === 'Just') {
+			var value = maybeValue.a;
+			return callback(value);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $elm$json$Json$Decode$nullable = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder)
+			]));
+};
 var $elm_community$json_extra$Json$Decode$Extra$optionalField = F2(
 	function (fieldName, decoder) {
 		var finishDecoding = function (json) {
@@ -12920,6 +12937,16 @@ var $elm_community$json_extra$Json$Decode$Extra$optionalField = F2(
 			}
 		};
 		return A2($elm$json$Json$Decode$andThen, finishDecoding, $elm$json$Json$Decode$value);
+	});
+var $elm_community$json_extra$Json$Decode$Extra$optionalNullableField = F2(
+	function (fieldName, decoder) {
+		return A2(
+			$elm$json$Json$Decode$map,
+			$elm$core$Maybe$andThen($elm$core$Basics$identity),
+			A2(
+				$elm_community$json_extra$Json$Decode$Extra$optionalField,
+				fieldName,
+				$elm$json$Json$Decode$nullable(decoder)));
 	});
 var $elm_community$json_extra$Json$Decode$Extra$combine = A2(
 	$elm$core$List$foldr,
@@ -12993,7 +13020,7 @@ var $author$project$Data$Project$Content$listFromOriginalDecoder = function () {
 		$elm$json$Json$Decode$list(
 			A2($elm$json$Json$Decode$field, 'frames', $author$project$Data$Video$Segment$originalDecoder)));
 	var captionListDecoder = $elm$json$Json$Decode$list(
-		A2($elm_community$json_extra$Json$Decode$Extra$optionalField, 'caption', $elm$json$Json$Decode$string));
+		A2($elm_community$json_extra$Json$Decode$Extra$optionalNullableField, 'caption', $elm$json$Json$Decode$string));
 	return A3($elm$json$Json$Decode$map2, $author$project$Data$Project$Content$interweaveToContentList, segmentListDecoder, captionListDecoder);
 }();
 var $author$project$Data$Project$contentDecoder = $elm$json$Json$Decode$oneOf(
@@ -13912,6 +13939,7 @@ var $author$project$Page$Project$initLoaded = function (project) {
 				$elm$core$Array$toList(project.workingData))
 		});
 };
+var $author$project$Page$Project$ChangeBeforeUnloadPrompt = {$: 'ChangeBeforeUnloadPrompt'};
 var $author$project$Page$Project$GifProcessed = F2(
 	function (a, b) {
 		return {$: 'GifProcessed', a: a, b: b};
@@ -14597,7 +14625,6 @@ var $author$project$Request$Gif$process = F3(
 					_List_Nil)
 			});
 	});
-var $author$project$Page$Project$ChangeBeforeUnloadPrompt = {$: 'ChangeBeforeUnloadPrompt'};
 var $author$project$Page$Project$projectChanged = $elm$core$Platform$Cmd$batch(
 	_List_fromArray(
 		[
@@ -15251,10 +15278,10 @@ var $author$project$Page$Project$updateLoaded = F4(
 	function (key, msg, project, substate) {
 		var present = project.present;
 		var updateState = F2(
-			function (updater, _v18) {
-				var newState = _v18.a;
-				var substate_ = _v18.b;
-				var commands = _v18.c;
+			function (updater, _v19) {
+				var newState = _v19.a;
+				var substate_ = _v19.b;
+				var commands = _v19.c;
 				return _Utils_Tuple3(
 					A3($author$project$Util$flip, updater, project, newState),
 					substate_,
@@ -15266,7 +15293,12 @@ var $author$project$Page$Project$updateLoaded = F4(
 			return _Utils_Tuple3(
 				A3($author$project$Util$flip, $author$project$Data$UndoList$replace, project, newState),
 				substate,
-				$author$project$Page$Project$projectChanged);
+				A2(
+					$elm$core$Task$perform,
+					function (_v18) {
+						return $author$project$Page$Project$ChangeBeforeUnloadPrompt;
+					},
+					$elm$core$Task$succeed(_Utils_Tuple0)));
 		};
 		var pushState = function (newState) {
 			return _Utils_Tuple3(
@@ -18493,7 +18525,7 @@ var $author$project$View$Markdown$viewUnsanitized = function () {
 var $author$project$View$Project$viewPoster = $author$project$View$Markdown$viewUnsanitized(
 	_List_fromArray(
 		[
-			$elm$html$Html$Attributes$class('my-4 px-4 py-2 bg-white shadow')
+			$elm$html$Html$Attributes$class('md-content my-4 px-4 py-2 bg-white shadow')
 		]));
 var $author$project$Translations$Page$Project$LeftPanel$frontendVersion = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.frontend_version');
@@ -20059,7 +20091,7 @@ var $author$project$View$Project$viewPreviewer = F7(
 							$author$project$View$Markdown$viewUnsanitized(
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('bg-white w-mobile mt-2 mb-0 p-3 bg-grey-300')
+										$elm$html$Html$Attributes$class('md-content bg-white w-mobile mt-2 mb-0 p-3 bg-grey-300')
 									]))),
 							A2(
 							$elm$html$Html$div,
