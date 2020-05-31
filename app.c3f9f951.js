@@ -11545,7 +11545,7 @@ var $author$project$Data$Env$fromHostname = function (hostname) {
 		$elm$core$List$member,
 		hostname,
 		_List_fromArray(
-			['localhost', '127.0.0.1', 'test-debug.editool.cn'])) ? $author$project$Data$Env$Debugging : ((hostname === 'https://test-1.editool.cn') ? $author$project$Data$Env$PreRelease : ((hostname === 'https://desk.editool.cn') ? $author$project$Data$Env$Production : $author$project$Data$Env$Production));
+			['localhost', '127.0.0.1', 'test-debug.editool.cn'])) ? $author$project$Data$Env$Debugging : ((hostname === 'test-1.editool.cn') ? $author$project$Data$Env$PreRelease : ((hostname === 'desk.editool.cn') ? $author$project$Data$Env$Production : $author$project$Data$Env$Production));
 };
 var $elm$url$Url$Parser$State = F5(
 	function (visited, unvisited, params, frag, value) {
