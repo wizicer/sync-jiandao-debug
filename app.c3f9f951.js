@@ -209,7 +209,8 @@ module.exports = {
         "exporting_in_progress": "发布中",
         "frontend_version": "前端版本",
         "native_client_version": "Native Client 版本",
-        "project_size": "当前项目总大小"
+        "project_size": "当前项目总大小",
+        "stop_previewing": "关闭"
       },
       "right_panel": {
         "hidden_content": "已删除",
@@ -17896,6 +17897,7 @@ var $author$project$Data$NativeClient$getVersion = function (status) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
+var $author$project$Page$Project$NavigateToPortal = {$: 'NavigateToPortal'};
 var $elm$core$List$repeatHelp = F3(
 	function (result, n, value) {
 		repeatHelp:
@@ -17936,35 +17938,62 @@ var $elm$html$Html$Attributes$src = function (url) {
 		'src',
 		_VirtualDom_noJavaScriptOrHtmlUri(url));
 };
-var $author$project$View$Layout$viewAppbar = A2(
-	$elm$html$Html$div,
-	_List_fromArray(
-		[
-			$elm$html$Html$Attributes$class('w-screen flex flex-row justify-between items-stretch bg-theme-600'),
-			A2($elm$html$Html$Attributes$style, 'height', $author$project$View$Layout$appbarHeight)
-		]),
-	_List_fromArray(
-		[
-			A2(
-			$elm$html$Html$a,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$id('logo'),
-					$elm$html$Html$Attributes$class('px-2'),
-					$author$project$Route$linkTo($author$project$Route$Home)
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$img,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$src('/assets/logo.png'),
-							$elm$html$Html$Attributes$class('h-full w-auto')
-						]),
-					_List_Nil)
-				]))
-		]));
+var $author$project$View$Layout$viewAppbar = function (action) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('w-screen flex flex-row justify-between items-stretch bg-theme-600'),
+				A2($elm$html$Html$Attributes$style, 'height', $author$project$View$Layout$appbarHeight)
+			]),
+		_List_fromArray(
+			[
+				function () {
+				if (action.$ === 'Just') {
+					var act = action.a;
+					return A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(act),
+								$elm$html$Html$Attributes$id('logo'),
+								$elm$html$Html$Attributes$class('px-2')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$img,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$src('/assets/logo.png'),
+										$elm$html$Html$Attributes$class('h-full w-auto')
+									]),
+								_List_Nil)
+							]));
+				} else {
+					return A2(
+						$elm$html$Html$a,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$id('logo'),
+								$elm$html$Html$Attributes$class('px-2'),
+								$author$project$Route$linkTo($author$project$Route$Home)
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$img,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$src('/assets/logo.png'),
+										$elm$html$Html$Attributes$class('h-full w-auto')
+									]),
+								_List_Nil)
+							]));
+				}
+			}()
+			]));
+};
 var $author$project$View$Layout$viewBody = function (attrs) {
 	return $elm$html$Html$div(
 		_Utils_ap(
@@ -19918,6 +19947,9 @@ var $author$project$View$Project$viewConfirmNavigatingAway = F6(
 var $author$project$Translations$Page$Project$RightPanel$projectSizeLabel = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.project_size_label');
 };
+var $author$project$Translations$Page$Project$LeftPanel$stopPreviewing = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.stop_previewing');
+};
 var $author$project$Data$File$Object$unpadGif = function (key) {
 	if (key.a.b && (key.a.a === 'gif')) {
 		var _v1 = key.a;
@@ -20048,7 +20080,7 @@ var $author$project$View$Project$viewPreviewer = F7(
 				return A4(
 					$author$project$View$Layout$viewOverlay,
 					noOp,
-					stopPreviewing,
+					noOp,
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$class('h-full px-12 py-4 flex flex-col items-center')
@@ -20083,7 +20115,28 @@ var $author$project$View$Project$viewPreviewer = F7(
 													$elm$html$Html$text(
 													$author$project$Data$FileSize$toString(size))
 												]));
-									})
+									}),
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('h-10 flex-shrink-0 flex px-4 justify-between items-right text-white text-sm')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$button,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('btn btn--theme w-24 h-10'),
+													$elm$html$Html$Events$onClick(stopPreviewing)
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text(
+													$author$project$Translations$Page$Project$LeftPanel$stopPreviewing(trn))
+												]))
+										]))
 								])),
 							A2(
 							$author$project$Util$viewIfPresent,
@@ -20171,7 +20224,6 @@ var $author$project$View$Project$viewSectionNav = F3(
 				frames));
 	});
 var $author$project$Page$Project$ExportProject = {$: 'ExportProject'};
-var $author$project$Page$Project$NavigateToPortal = {$: 'NavigateToPortal'};
 var $author$project$Page$Project$StartPreviewing = {$: 'StartPreviewing'};
 var $author$project$View$Icon$accountBox = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M3 5v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2zm12 4c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3zm-9 8c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1H6v-1z');
 var $author$project$Translations$Page$Project$Nav$backToPortal = function (translations) {
@@ -20295,7 +20347,8 @@ var $author$project$Page$Project$view = F3(
 	function (trn, versions, model) {
 		return _List_fromArray(
 			[
-				$author$project$View$Layout$viewAppbar,
+				$author$project$View$Layout$viewAppbar(
+				$elm$core$Maybe$Just($author$project$Page$Project$NavigateToPortal)),
 				A2(
 				$author$project$View$Layout$viewBody,
 				_List_Nil,
@@ -21835,7 +21888,7 @@ var $author$project$Page$Project$Portal$view = F2(
 			var availablePresets = _v0.b.a;
 			return _List_fromArray(
 				[
-					$author$project$View$Layout$viewAppbar,
+					$author$project$View$Layout$viewAppbar($elm$core$Maybe$Nothing),
 					A2(
 					$author$project$View$Layout$viewBody,
 					_List_fromArray(
