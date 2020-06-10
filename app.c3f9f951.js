@@ -199,7 +199,8 @@ module.exports = {
       "prompt": {
         "successfully_saved": "保存成功",
         "failed_to_save": "保存失败",
-        "failed_to_export": "发布失败"
+        "failed_to_export": "发布失败",
+        "exporting": "正在发布中，请稍后..."
       },
       "left_panel": {
         "save_project_and_leave": "保存并离开",
@@ -14618,7 +14619,7 @@ var $author$project$Request$Gif$process = F3(
 					$author$project$Data$Video$Gif$processConfigEncoder,
 					uuid,
 					_Utils_Tuple2(start, end)),
-				timeout: $elm$core$Maybe$Just(10000),
+				timeout: $elm$core$Maybe$Just(60000),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
 					_List_fromArray(
@@ -18377,20 +18378,8 @@ var $author$project$View$Project$Alert$viewExportingError = F3(
 				]),
 			A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$HtmlExport$errorToString, error));
 	});
-var $author$project$Util$viewIfPresent = F2(
-	function (maybeValue, viewer) {
-		if (maybeValue.$ === 'Just') {
-			var a = maybeValue.a;
-			return viewer(a);
-		} else {
-			return $elm$html$Html$text('');
-		}
-	});
-var $author$project$Translations$Page$Project$Prompt$failedToSave = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.failed_to_save');
-};
-var $author$project$Translations$Page$Project$Prompt$successfullySaved = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.successfully_saved');
+var $author$project$Translations$Page$Project$Prompt$exporting = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.exporting');
 };
 var $author$project$View$Alert$viewSuccess = F2(
 	function (attrs, textContent) {
@@ -18407,6 +18396,27 @@ var $author$project$View$Alert$viewSuccess = F2(
 					$elm$html$Html$text(textContent)
 				]));
 	});
+var $author$project$View$Project$Alert$viewExportingInProgress = function (trn) {
+	return A2(
+		$author$project$View$Alert$viewSuccess,
+		_List_Nil,
+		$author$project$Translations$Page$Project$Prompt$exporting(trn));
+};
+var $author$project$Util$viewIfPresent = F2(
+	function (maybeValue, viewer) {
+		if (maybeValue.$ === 'Just') {
+			var a = maybeValue.a;
+			return viewer(a);
+		} else {
+			return $elm$html$Html$text('');
+		}
+	});
+var $author$project$Translations$Page$Project$Prompt$failedToSave = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.failed_to_save');
+};
+var $author$project$Translations$Page$Project$Prompt$successfullySaved = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.successfully_saved');
+};
 var $author$project$View$Project$Alert$viewSavingResult = F3(
 	function (trn, dismissSavingResultPrompt, result) {
 		if (result.$ === 'Ok') {
@@ -18428,8 +18438,15 @@ var $author$project$View$Project$Alert$viewSavingResult = F3(
 				$author$project$Translations$Page$Project$Prompt$failedToSave(trn));
 		}
 	});
-var $author$project$View$Project$Alert$view = F5(
-	function (trn, dismissSavingResultPrompt, dismissExportingErrorPrompt, exportingError, savingResult) {
+var $author$project$Util$viewIf = F2(
+	function (condition, content) {
+		return condition ? content : $elm$html$Html$text('');
+	});
+var $author$project$Util$viewUnless = function (condition) {
+	return $author$project$Util$viewIf(!condition);
+};
+var $author$project$View$Project$Alert$view = F6(
+	function (trn, dismissSavingResultPrompt, dismissExportingErrorPrompt, exportingError, savingResult, isExportingInProgress) {
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -18448,7 +18465,7 @@ var $author$project$View$Project$Alert$view = F5(
 									_Utils_Tuple2('w-64 flex flex-col justify-start items-stretch py-8 ', true),
 									_Utils_Tuple2(
 									'visible',
-									!(_Utils_eq(exportingError, $elm$core$Maybe$Nothing) && _Utils_eq(savingResult, $elm$core$Maybe$Nothing)))
+									!(_Utils_eq(exportingError, $elm$core$Maybe$Nothing) && (_Utils_eq(savingResult, $elm$core$Maybe$Nothing) && (!isExportingInProgress))))
 								]))
 						]),
 					_List_fromArray(
@@ -18460,7 +18477,11 @@ var $author$project$View$Project$Alert$view = F5(
 							A2(
 							$author$project$Util$viewIfPresent,
 							exportingError,
-							A2($author$project$View$Project$Alert$viewExportingError, trn, dismissExportingErrorPrompt))
+							A2($author$project$View$Project$Alert$viewExportingError, trn, dismissExportingErrorPrompt)),
+							A2(
+							$author$project$Util$viewUnless,
+							!isExportingInProgress,
+							$author$project$View$Project$Alert$viewExportingInProgress(trn))
 						]))
 				]));
 	});
@@ -18514,10 +18535,6 @@ var $author$project$Data$FileSize$toString = function (fileSize) {
 		}
 	}
 };
-var $author$project$Util$viewIf = F2(
-	function (condition, content) {
-		return condition ? content : $elm$html$Html$text('');
-	});
 var $author$project$View$Project$viewFileName = F2(
 	function (isProjectModified, projectName) {
 		return A2(
@@ -18695,7 +18712,7 @@ var $author$project$View$Project$viewAuxiliary = F7(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('px-4 py-6 w-80 flex-shrink-0 overflow-y-auto')
+					$elm$html$Html$Attributes$class('px-4 py-6 w-1/3 lg:w-1/4 flex-shrink-0 overflow-y-auto')
 				]),
 			_List_fromArray(
 				[
@@ -19171,7 +19188,7 @@ var $author$project$Page$Project$viewPlainText = F3(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('plain-text')
+						$elm$html$Html$Attributes$class('plain-text w-1/2 lg:w-1/3')
 					]),
 				_List_fromArray(
 					[
@@ -19434,7 +19451,7 @@ var $author$project$View$Project$viewFrame = F3(
 							$elm$html$Html$Attributes$classList(
 							_List_fromArray(
 								[
-									_Utils_Tuple2('frame-collection__item w-12 md:w-14', true),
+									_Utils_Tuple2('frame-collection__item lg:w-24 w-12', true),
 									_Utils_Tuple2(
 									'frame-collection__item--active',
 									_Utils_eq(
@@ -19632,7 +19649,7 @@ var $author$project$Page$Project$viewSegmentContent = F6(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('flex-1 p-1 relative')
+						$elm$html$Html$Attributes$class('w-1/2 lg:w-1/3 p-1 relative')
 					]),
 				_List_fromArray(
 					[
@@ -19724,7 +19741,7 @@ var $author$project$Page$Project$viewBlock = F5(
 			$elm$html$Html$div,
 			A2(
 				$elm$core$List$cons,
-				$elm$html$Html$Attributes$class('content-block'),
+				$elm$html$Html$Attributes$class('content-block p-0'),
 				A2(
 					$elm$core$List$cons,
 					$elm$html$Html$Attributes$id(
@@ -19769,7 +19786,7 @@ var $author$project$Page$Project$viewBlocks = F4(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('px-4 py-6 max-w-2xl lg:max-w-4xl overflow-y-scroll')
+					$elm$html$Html$Attributes$class('ml-4 lg:ml-16 px-4 py-6 overflow-y-scroll')
 				]),
 			$elm$core$List$singleton(
 				A3(
@@ -20216,7 +20233,7 @@ var $author$project$View$Project$viewSectionNav = F3(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('w-12 overflow-y-auto opacity-25 hover:opacity-75 transition-opacity ease-in duration-150')
+					$elm$html$Html$Attributes$class('w-16 overflow-y-auto opacity-25 hover:opacity-75 transition-opacity ease-in duration-150')
 				]),
 			A2(
 				$elm$core$List$map,
@@ -20225,7 +20242,6 @@ var $author$project$View$Project$viewSectionNav = F3(
 	});
 var $author$project$Page$Project$ExportProject = {$: 'ExportProject'};
 var $author$project$Page$Project$StartPreviewing = {$: 'StartPreviewing'};
-var $author$project$View$Icon$accountBox = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M3 5v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2zm12 4c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3zm-9 8c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1H6v-1z');
 var $author$project$Translations$Page$Project$Nav$backToPortal = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.back_to_portal');
 };
@@ -20265,7 +20281,7 @@ var $author$project$Page$Project$viewSidenav = function (trn) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('nav w-18 py-8 flex flex-col justify-between items-stretch bg-grey-200')
+				$elm$html$Html$Attributes$class('nav w-40 lg:w-48 py-8 bg-grey-200')
 			]),
 		_List_fromArray(
 			[
@@ -20296,19 +20312,6 @@ var $author$project$Page$Project$viewSidenav = function (trn) {
 							$author$project$Translations$Page$Project$Nav$backToPortal(trn),
 							$author$project$View$Icon$lowPriority,
 							$author$project$Page$Project$NavigateToPortal)
-						]))),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('flex flex-col items-center')
-					]),
-				A2(
-					$elm$core$List$map,
-					viewNavItem,
-					_List_fromArray(
-						[
-							_Utils_Tuple3('', $author$project$View$Icon$accountBox, $author$project$Page$Project$NoOp)
 						])))
 			]));
 };
@@ -20340,7 +20343,7 @@ var $author$project$Page$Project$viewLoaded = F4(
 					A2($elm$core$Basics$composeL, $author$project$Page$Project$SaveProject, $elm$core$Maybe$Just),
 					substate.savingResult,
 					substate.confirmNavigatingAway),
-					A5($author$project$View$Project$Alert$view, trn, $author$project$Page$Project$DismissSavingResultPrompt, $author$project$Page$Project$DismissExportingErrorPrompt, substate.exportingError, substate.savingResult)
+					A6($author$project$View$Project$Alert$view, trn, $author$project$Page$Project$DismissSavingResultPrompt, $author$project$Page$Project$DismissExportingErrorPrompt, substate.exportingError, substate.savingResult, substate.isExportingInProgress)
 				]));
 	});
 var $author$project$Page$Project$view = F3(
@@ -20837,6 +20840,8 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 	function (trn, availablePresets, isSelected, project) {
 		var makeSelection = $author$project$Util$onClickWithCtrlKey(
 			$author$project$Page$Project$Portal$SelectProject(project.uuid));
+		var makeMultipleSelection = $author$project$Util$onClickStopPropagation(
+			A2($author$project$Page$Project$Portal$SelectProject, project.uuid, true));
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -20854,7 +20859,7 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							makeSelection,
+							makeMultipleSelection,
 							$elm$html$Html$Attributes$class('checkbox')
 						]),
 					_List_fromArray(
@@ -21558,9 +21563,6 @@ var $author$project$Page$Project$Portal$viewPreset = F4(
 						]))
 				]));
 	});
-var $author$project$Util$viewUnless = function (condition) {
-	return $author$project$Util$viewIf(!condition);
-};
 var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 	function (trn, availablePresets, expertMode, importingError, selected) {
 		var wrapDisabled = $elm$html$Html$div(
@@ -22265,7 +22267,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
