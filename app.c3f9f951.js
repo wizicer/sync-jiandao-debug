@@ -153,6 +153,7 @@ module.exports = {
   },
   "native_client": {
     "attempting_to_launch": "尝试启动中……",
+    "attempting_to_connect": "尝试连接中……",
     "prompt_part1": "如果浏览器未提示任何信息，请",
     "prompt_part2": "点击此处",
     "prompt_part3": "尝试启动，或",
@@ -21939,6 +21940,41 @@ var $author$project$Page$Project$Portal$view = F2(
 			return _List_Nil;
 		}
 	});
+var $author$project$Translations$NativeClient$attemptingToConnect = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'native_client.attempting_to_connect');
+};
+var $author$project$View$NativeClient$viewConnecting = F2(
+	function (trn, env) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('w-full h-full flex flex-col justify-between p-8')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('self-center h-64 flex flex-col items-center justify-center')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$p,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('text-grey-600 text-lg mt-8')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									$author$project$Translations$NativeClient$attemptingToConnect(trn))
+								]))
+						]))
+				]));
+	});
 var $author$project$Translations$NativeClient$attemptingToLaunch = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'native_client.attempting_to_launch');
 };
@@ -22077,8 +22113,8 @@ var $author$project$View$NativeClient$viewGeneralErrorMessages = F2(
 						]))
 				]));
 	});
-var $author$project$View$NativeClient$viewError = F3(
-	function (trn, env, status) {
+var $author$project$View$NativeClient$viewError = F4(
+	function (trn, env, status, attempt) {
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -22107,16 +22143,19 @@ var $author$project$View$NativeClient$viewError = F3(
 									A2($author$project$Data$NativeClient$statusToString, trn, status))
 								])),
 							A2(
-							$elm$html$Html$p,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('text-grey-600 text-lg mt-8')
-								]),
-							_List_fromArray(
-								[
-									$elm$html$Html$text(
-									$author$project$Translations$NativeClient$attemptingToLaunch(trn))
-								]))
+							$author$project$Util$viewIf,
+							attempt,
+							A2(
+								$elm$html$Html$p,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('text-grey-600 text-lg mt-8')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										$author$project$Translations$NativeClient$attemptingToLaunch(trn))
+									])))
 						])),
 					A2(
 					$elm$html$Html$div,
@@ -22148,13 +22187,24 @@ var $author$project$View$NativeClient$wrapPopup = function (content) {
 				content)
 			]));
 };
-var $author$project$View$NativeClient$viewPopup = F3(
-	function (trn, env, status) {
-		return $author$project$Data$NativeClient$isStatusNormal(status) ? $elm$html$Html$text('') : $author$project$View$NativeClient$wrapPopup(
-			_List_fromArray(
-				[
-					A3($author$project$View$NativeClient$viewError, trn, env, status)
-				]));
+var $author$project$View$NativeClient$viewPopup = F4(
+	function (trn, env, status, attempt) {
+		switch (status.$) {
+			case 'Connected':
+				return $elm$html$Html$text('');
+			case 'Unknown':
+				return $author$project$View$NativeClient$wrapPopup(
+					_List_fromArray(
+						[
+							A2($author$project$View$NativeClient$viewConnecting, trn, env)
+						]));
+			default:
+				return $author$project$View$NativeClient$wrapPopup(
+					_List_fromArray(
+						[
+							A4($author$project$View$NativeClient$viewError, trn, env, status, attempt)
+						]));
+		}
 	});
 var $author$project$Translations$Page$Project$pageTitle = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.page_title');
@@ -22231,7 +22281,7 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$Attributes$class('absolute inset-0 z-0')
 					]),
 				content),
-				A3($author$project$View$NativeClient$viewPopup, translations, model.env, model.nativeClientStatus)
+				A4($author$project$View$NativeClient$viewPopup, translations, model.env, model.nativeClientStatus, false)
 			]),
 		title: title
 	};
