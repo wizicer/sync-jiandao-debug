@@ -167,7 +167,7 @@ module.exports = {
     "unknown": "未知状态"
   },
   "page": {
-    "project_portal": {
+    "portal": {
       "page_title": "视频列表-剪刀兔",
       "add_files": "添加",
       "add_files_empty_state": "点击添加视频或字幕文件",
@@ -11418,10 +11418,13 @@ var $elm$core$Basics$never = function (_v0) {
 };
 var $elm$browser$Browser$application = _Browser_application;
 var $author$project$Main$Blank = {$: 'Blank'};
-var $author$project$Main$ProjectPortalMsg = function (a) {
-	return {$: 'ProjectPortalMsg', a: a};
+var $author$project$Main$NativeClientMsg = function (a) {
+	return {$: 'NativeClientMsg', a: a};
 };
-var $author$project$Data$NativeClient$Unknown = {$: 'Unknown'};
+var $author$project$Main$PortalMsg = function (a) {
+	return {$: 'PortalMsg', a: a};
+};
+var $author$project$Component$NativeClient$Msg$RequestMetaOfNativeClient = {$: 'RequestMetaOfNativeClient'};
 var $ChristophP$elm_i18next$I18Next$Translations = function (a) {
 	return {$: 'Translations', a: a};
 };
@@ -11677,10 +11680,10 @@ var $elm$url$Url$Parser$parse = F2(
 					$elm$core$Basics$identity)));
 	});
 var $author$project$Route$Home = {$: 'Home'};
+var $author$project$Route$Portal = {$: 'Portal'};
 var $author$project$Route$Project = function (a) {
 	return {$: 'Project', a: a};
 };
-var $author$project$Route$ProjectPortal = {$: 'ProjectPortal'};
 var $elm$url$Url$Parser$Parser = function (a) {
 	return {$: 'Parser', a: a};
 };
@@ -11811,11 +11814,8 @@ var $author$project$Route$router = $elm$url$Url$Parser$oneOf(
 			A2($elm$url$Url$Parser$map, $author$project$Route$Home, $elm$url$Url$Parser$top),
 			A2(
 			$elm$url$Url$Parser$map,
-			$author$project$Route$ProjectPortal,
-			A2(
-				$elm$url$Url$Parser$slash,
-				$elm$url$Url$Parser$s('project'),
-				$elm$url$Url$Parser$s('portal'))),
+			$author$project$Route$Portal,
+			$elm$url$Url$Parser$s('portal')),
 			A2(
 			$elm$url$Url$Parser$map,
 			$author$project$Route$Project,
@@ -11827,11 +11827,15 @@ var $author$project$Route$router = $elm$url$Url$Parser$oneOf(
 var $author$project$Route$fromUrl = function (url) {
 	return A2($elm$url$Url$Parser$parse, $author$project$Route$router, url);
 };
+var $author$project$Data$NativeClient$Unknown = {$: 'Unknown'};
+var $author$project$Component$NativeClient$Main$init = _Utils_Tuple2(
+	{nativeClientStatus: $author$project$Data$NativeClient$Unknown},
+	$elm$core$Platform$Cmd$none);
 var $krisajenkins$remotedata$RemoteData$NotAsked = {$: 'NotAsked'};
-var $author$project$Page$Project$Portal$PresetsLoaded = function (a) {
+var $author$project$Component$Portal$Msg$PresetsLoaded = function (a) {
 	return {$: 'PresetsLoaded', a: a};
 };
-var $author$project$Page$Project$Portal$ProjectsLoaded = function (a) {
+var $author$project$Component$Portal$Msg$ProjectsLoaded = function (a) {
 	return {$: 'ProjectsLoaded', a: a};
 };
 var $elm$core$Set$Set_elm_builtin = function (a) {
@@ -12354,247 +12358,27 @@ var $author$project$Request$Video$Preset$listAll = function (handler) {
 				_List_Nil)
 		});
 };
-var $author$project$Page$Project$Portal$init = _Utils_Tuple2(
+var $author$project$Component$Portal$Main$init = _Utils_Tuple2(
 	{availablePresets: $krisajenkins$remotedata$RemoteData$NotAsked, expertMode: false, importingError: $elm$core$Maybe$Nothing, isDisplayingUploader: false, items: _List_Nil, paramsToExport: $elm$core$Maybe$Nothing, pendingDeletion: $elm$core$Maybe$Nothing, projects: $krisajenkins$remotedata$RemoteData$NotAsked, reviewingSubtitle: $elm$core$Maybe$Nothing, searchStr: '', selectedProjects: $elm$core$Set$empty},
 	$elm$core$Platform$Cmd$batch(
 		_List_fromArray(
 			[
-				$author$project$Request$Project$listAll($author$project$Page$Project$Portal$ProjectsLoaded),
-				$author$project$Request$Video$Preset$listAll($author$project$Page$Project$Portal$PresetsLoaded)
+				$author$project$Request$Project$listAll($author$project$Component$Portal$Msg$ProjectsLoaded),
+				$author$project$Request$Video$Preset$listAll($author$project$Component$Portal$Msg$PresetsLoaded)
 			])));
-var $author$project$Main$NativeClientVersionInfoRequested = function (a) {
-	return {$: 'NativeClientVersionInfoRequested', a: a};
-};
-var $author$project$Data$Version$incrementMinor = function (version) {
-	return _Utils_update(
-		version,
-		{buildNo: version.buildNo + 1, minor: version.minor + 1, patch: 0});
-};
-var $author$project$Data$Version$initial = {buildNo: 1, major: 0, minor: 1, patch: 0};
-var $author$project$Data$Version$Platform$incrementedBy = function (history) {
-	return A3($elm$core$List$foldl, $elm$core$Basics$apL, $author$project$Data$Version$initial, history);
-};
-var $author$project$Data$Version$Platform$currentVersions = {
-	frontend: $author$project$Data$Version$Platform$incrementedBy(
-		_List_fromArray(
-			[$author$project$Data$Version$incrementMinor])),
-	projectData: $author$project$Data$Version$Platform$incrementedBy(_List_Nil)
-};
-var $author$project$Data$NativeClient$Meta = F2(
-	function (version, isCompatible) {
-		return {isCompatible: isCompatible, version: version};
-	});
-var $author$project$Data$Version$decoder = A2(
-	$elm$json$Json$Decode$andThen,
-	function (str) {
-		var _v0 = A2($elm$core$String$split, '.', str);
-		if ((((_v0.b && _v0.b.b) && _v0.b.b.b) && _v0.b.b.b.b) && (!_v0.b.b.b.b.b)) {
-			var a = _v0.a;
-			var _v1 = _v0.b;
-			var b = _v1.a;
-			var _v2 = _v1.b;
-			var c = _v2.a;
-			var _v3 = _v2.b;
-			var d = _v3.a;
-			var _v4 = A2(
-				$elm$core$List$map,
-				$elm$core$String$toInt,
-				_List_fromArray(
-					[a, b, c, d]));
-			if ((((((((_v4.b && (_v4.a.$ === 'Just')) && _v4.b.b) && (_v4.b.a.$ === 'Just')) && _v4.b.b.b) && (_v4.b.b.a.$ === 'Just')) && _v4.b.b.b.b) && (_v4.b.b.b.a.$ === 'Just')) && (!_v4.b.b.b.b.b)) {
-				var major = _v4.a.a;
-				var _v5 = _v4.b;
-				var minor = _v5.a.a;
-				var _v6 = _v5.b;
-				var patch = _v6.a.a;
-				var _v7 = _v6.b;
-				var buildNo = _v7.a.a;
-				return A3(
-					$elm$core$List$foldr,
-					$elm$core$Basics$and,
-					true,
-					A2(
-						$elm$core$List$map,
-						function (n) {
-							return n >= 0;
-						},
-						_List_fromArray(
-							[major, minor, patch, buildNo]))) ? $elm$json$Json$Decode$succeed(
-					{buildNo: buildNo, major: major, minor: minor, patch: patch}) : $elm$json$Json$Decode$fail('cannot be negative');
-			} else {
-				return $elm$json$Json$Decode$fail('unexpected error');
-			}
-		} else {
-			return $elm$json$Json$Decode$fail('not a valid version number');
-		}
-	},
-	$elm$json$Json$Decode$string);
-var $author$project$Data$NativeClient$metaDecoder = A3(
-	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-	'Compatible',
-	$elm$json$Json$Decode$bool,
-	A3(
-		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-		'Version',
-		$author$project$Data$Version$decoder,
-		$elm$json$Json$Decode$succeed($author$project$Data$NativeClient$Meta)));
-var $author$project$Data$NativeClient$MalformedVersionNumber = {$: 'MalformedVersionNumber'};
-var $author$project$Util$errorCodeDecoder = F2(
-	function (errorCode, error) {
-		return A2(
-			$elm$json$Json$Decode$andThen,
-			function (code) {
-				return _Utils_eq(code, errorCode) ? $elm$json$Json$Decode$succeed(error) : $elm$json$Json$Decode$fail('error not to be handled here');
-			},
-			$elm$json$Json$Decode$int);
-	});
-var $author$project$Data$NativeClient$metaErrorDecoder = function (statusCode) {
-	return (statusCode === 400) ? A2(
-		$elm$json$Json$Decode$field,
-		'ErrorCode',
-		A2($author$project$Util$errorCodeDecoder, 120, $author$project$Data$NativeClient$MalformedVersionNumber)) : $elm$json$Json$Decode$fail('error not to be handled here');
-};
-var $author$project$Data$Version$toString = function (_v0) {
-	var major = _v0.major;
-	var minor = _v0.minor;
-	var patch = _v0.patch;
-	var buildNo = _v0.buildNo;
-	return A2(
-		$elm$core$String$join,
-		'.',
-		A2(
-			$elm$core$List$map,
-			$elm$core$String$fromInt,
-			_List_fromArray(
-				[major, minor, patch, buildNo])));
-};
-var $author$project$Data$Version$encoder = function (version) {
-	return $elm$json$Json$Encode$string(
-		$author$project$Data$Version$toString(version));
-};
-var $author$project$Data$NativeClient$metaRequestEncoder = function (version) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'FrontendVersion',
-				$author$project$Data$Version$encoder(version))
-			]));
-};
-var $author$project$API$Request$BadBody = F2(
-	function (a, b) {
-		return {$: 'BadBody', a: a, b: b};
-	});
-var $author$project$API$Request$BadStatus = F2(
-	function (a, b) {
-		return {$: 'BadStatus', a: a, b: b};
-	});
-var $author$project$API$Request$BadUrl = function (a) {
-	return {$: 'BadUrl', a: a};
-};
-var $author$project$API$Request$NetworkError = {$: 'NetworkError'};
-var $author$project$API$Request$Timeout = {$: 'Timeout'};
-var $author$project$API$Request$expectJson = F3(
-	function (toMsg, errorDecoder, decoder) {
-		return A2(
-			$elm$http$Http$expectStringResponse,
-			toMsg,
-			function (response) {
-				switch (response.$) {
-					case 'BadUrl_':
-						var url = response.a;
-						return $elm$core$Result$Err(
-							$author$project$API$Request$BadUrl(url));
-					case 'Timeout_':
-						return $elm$core$Result$Err($author$project$API$Request$Timeout);
-					case 'NetworkError_':
-						return $elm$core$Result$Err($author$project$API$Request$NetworkError);
-					case 'GoodStatus_':
-						if (response.b === '') {
-							var metadata = response.a;
-							var _v1 = A2($elm$json$Json$Decode$decodeString, decoder, '{}');
-							if (_v1.$ === 'Ok') {
-								var value = _v1.a;
-								return $elm$core$Result$Ok(value);
-							} else {
-								var err = _v1.a;
-								return $elm$core$Result$Err(
-									A2($author$project$API$Request$BadBody, metadata.statusCode, err));
-							}
-						} else {
-							var metadata = response.a;
-							var body = response.b;
-							var _v2 = A2($elm$json$Json$Decode$decodeString, decoder, body);
-							if (_v2.$ === 'Ok') {
-								var value = _v2.a;
-								return $elm$core$Result$Ok(value);
-							} else {
-								var err = _v2.a;
-								return $elm$core$Result$Err(
-									A2($author$project$API$Request$BadBody, metadata.statusCode, err));
-							}
-						}
-					default:
-						var metadata = response.a;
-						var body = response.b;
-						var _v3 = A2(
-							$elm$json$Json$Decode$decodeString,
-							errorDecoder(metadata.statusCode),
-							body);
-						if (_v3.$ === 'Ok') {
-							var value = _v3.a;
-							return $elm$core$Result$Err(
-								A2($author$project$API$Request$BadStatus, metadata.statusCode, value));
-						} else {
-							var err = _v3.a;
-							return $elm$core$Result$Err(
-								A2($author$project$API$Request$BadBody, metadata.statusCode, err));
-						}
-				}
-			});
-	});
-var $author$project$API$Request$post = function (r) {
-	return $elm$http$Http$request(
-		{
-			body: $elm$http$Http$jsonBody(r.payload),
-			expect: A3($author$project$API$Request$expectJson, r.handler, r.errorDecoder, r.decoder),
-			headers: _List_Nil,
-			method: 'POST',
-			timeout: r.timeout,
-			tracker: $elm$core$Maybe$Nothing,
-			url: r.url
-		});
-};
-var $author$project$Request$Meta$nativeClient = F2(
-	function (handler, frontendVersion) {
-		return $author$project$API$Request$post(
-			{
-				decoder: $author$project$Data$NativeClient$metaDecoder,
-				errorDecoder: $author$project$Data$NativeClient$metaErrorDecoder,
-				handler: handler,
-				payload: $author$project$Data$NativeClient$metaRequestEncoder(frontendVersion),
-				timeout: $elm$core$Maybe$Just(5000),
-				url: A2(
-					$author$project$Request$Helper$apiNativeClient,
-					_List_fromArray(
-						['version']),
-					_List_Nil)
-			});
-	});
-var $author$project$Main$requestMetaOfNativeClient = A2($author$project$Request$Meta$nativeClient, $author$project$Main$NativeClientVersionInfoRequested, $author$project$Data$Version$Platform$currentVersions.frontend);
 var $author$project$Main$Home = {$: 'Home'};
 var $author$project$Main$NotFound = {$: 'NotFound'};
+var $author$project$Main$Portal = {$: 'Portal'};
 var $author$project$Main$Project = function (a) {
 	return {$: 'Project', a: a};
 };
 var $author$project$Main$ProjectMsg = function (a) {
 	return {$: 'ProjectMsg', a: a};
 };
-var $author$project$Main$ProjectPortal = {$: 'ProjectPortal'};
-var $author$project$Page$Project$Loading = function (a) {
+var $author$project$Component$Project$Model$Loading = function (a) {
 	return {$: 'Loading', a: a};
 };
-var $author$project$Page$Project$ProjectLoaded = function (a) {
+var $author$project$Component$Project$Msg$ProjectLoaded = function (a) {
 	return {$: 'ProjectLoaded', a: a};
 };
 var $author$project$Data$Project$Project = F3(
@@ -13059,6 +12843,90 @@ var $author$project$Data$Project$ProjectNotFound = {$: 'ProjectNotFound'};
 var $author$project$Data$Project$errorDecoder = function (statusCode) {
 	return (statusCode === 404) ? $elm$json$Json$Decode$succeed($author$project$Data$Project$ProjectNotFound) : $elm$json$Json$Decode$fail('Not to be handled here.');
 };
+var $author$project$API$Request$BadBody = F2(
+	function (a, b) {
+		return {$: 'BadBody', a: a, b: b};
+	});
+var $author$project$API$Request$BadStatus = F2(
+	function (a, b) {
+		return {$: 'BadStatus', a: a, b: b};
+	});
+var $author$project$API$Request$BadUrl = function (a) {
+	return {$: 'BadUrl', a: a};
+};
+var $author$project$API$Request$NetworkError = {$: 'NetworkError'};
+var $author$project$API$Request$Timeout = {$: 'Timeout'};
+var $author$project$API$Request$expectJson = F3(
+	function (toMsg, errorDecoder, decoder) {
+		return A2(
+			$elm$http$Http$expectStringResponse,
+			toMsg,
+			function (response) {
+				switch (response.$) {
+					case 'BadUrl_':
+						var url = response.a;
+						return $elm$core$Result$Err(
+							$author$project$API$Request$BadUrl(url));
+					case 'Timeout_':
+						return $elm$core$Result$Err($author$project$API$Request$Timeout);
+					case 'NetworkError_':
+						return $elm$core$Result$Err($author$project$API$Request$NetworkError);
+					case 'GoodStatus_':
+						if (response.b === '') {
+							var metadata = response.a;
+							var _v1 = A2($elm$json$Json$Decode$decodeString, decoder, '{}');
+							if (_v1.$ === 'Ok') {
+								var value = _v1.a;
+								return $elm$core$Result$Ok(value);
+							} else {
+								var err = _v1.a;
+								return $elm$core$Result$Err(
+									A2($author$project$API$Request$BadBody, metadata.statusCode, err));
+							}
+						} else {
+							var metadata = response.a;
+							var body = response.b;
+							var _v2 = A2($elm$json$Json$Decode$decodeString, decoder, body);
+							if (_v2.$ === 'Ok') {
+								var value = _v2.a;
+								return $elm$core$Result$Ok(value);
+							} else {
+								var err = _v2.a;
+								return $elm$core$Result$Err(
+									A2($author$project$API$Request$BadBody, metadata.statusCode, err));
+							}
+						}
+					default:
+						var metadata = response.a;
+						var body = response.b;
+						var _v3 = A2(
+							$elm$json$Json$Decode$decodeString,
+							errorDecoder(metadata.statusCode),
+							body);
+						if (_v3.$ === 'Ok') {
+							var value = _v3.a;
+							return $elm$core$Result$Err(
+								A2($author$project$API$Request$BadStatus, metadata.statusCode, value));
+						} else {
+							var err = _v3.a;
+							return $elm$core$Result$Err(
+								A2($author$project$API$Request$BadBody, metadata.statusCode, err));
+						}
+				}
+			});
+	});
+var $author$project$API$Request$post = function (r) {
+	return $elm$http$Http$request(
+		{
+			body: $elm$http$Http$jsonBody(r.payload),
+			expect: A3($author$project$API$Request$expectJson, r.handler, r.errorDecoder, r.decoder),
+			headers: _List_Nil,
+			method: 'POST',
+			timeout: r.timeout,
+			tracker: $elm$core$Maybe$Nothing,
+			url: r.url
+		});
+};
 var $author$project$Request$Project$get = F2(
 	function (handler, uuid) {
 		return $author$project$API$Request$post(
@@ -13081,10 +12949,10 @@ var $author$project$Request$Project$get = F2(
 					_List_Nil)
 			});
 	});
-var $author$project$Page$Project$init = function (uuid) {
+var $author$project$Component$Project$Main$init = function (uuid) {
 	return _Utils_Tuple2(
-		$author$project$Page$Project$Loading(uuid),
-		A2($author$project$Request$Project$get, $author$project$Page$Project$ProjectLoaded, uuid));
+		$author$project$Component$Project$Model$Loading(uuid),
+		A2($author$project$Request$Project$get, $author$project$Component$Project$Msg$ProjectLoaded, uuid));
 };
 var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $author$project$Port$removeBeforeUnloadPrompt = _Platform_outgoingPort(
@@ -13101,11 +12969,11 @@ var $author$project$Route$routeToString = function (targetRoute) {
 	switch (targetRoute.$) {
 		case 'Home':
 			return A2($elm$url$Url$Builder$absolute, _List_Nil, _List_Nil);
-		case 'ProjectPortal':
+		case 'Portal':
 			return A2(
 				$elm$url$Url$Builder$absolute,
 				_List_fromArray(
-					['project', 'portal']),
+					['portal']),
 				_List_Nil);
 		default:
 			var uuid = targetRoute.a;
@@ -13138,17 +13006,17 @@ var $author$project$Main$setRoute = F2(
 						_Utils_update(
 							model,
 							{currentPage: $author$project$Main$Home}),
-						A2($author$project$Route$replaceUrl, model.key, $author$project$Route$ProjectPortal));
-				case 'ProjectPortal':
+						A2($author$project$Route$replaceUrl, model.key, $author$project$Route$Portal));
+				case 'Portal':
 					var _v2 = maybeRoute.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{currentPage: $author$project$Main$ProjectPortal}),
+							{currentPage: $author$project$Main$Portal}),
 						$author$project$Port$removeBeforeUnloadPrompt(_Utils_Tuple0));
 				default:
 					var uuid = maybeRoute.a.a;
-					var _v3 = $author$project$Page$Project$init(uuid);
+					var _v3 = $author$project$Component$Project$Main$init(uuid);
 					var pageModel = _v3.a;
 					var pageCmd = _v3.b;
 					return _Utils_Tuple2(
@@ -13176,30 +13044,41 @@ var $author$project$Main$init = F3(
 			$author$project$Flags$empty,
 			$elm$core$Result$toMaybe(
 				A2($elm$json$Json$Decode$decodeValue, $author$project$Flags$flagsDecoder, flagsValue)));
-		var _v0 = $author$project$Page$Project$Portal$init;
-		var projectPortalModel = _v0.a;
-		var projectPortalCmd = _v0.b;
-		var _v1 = A2(
+		var _v0 = $author$project$Component$Portal$Main$init;
+		var portalModel = _v0.a;
+		var portalCmd = _v0.b;
+		var _v1 = $author$project$Component$NativeClient$Main$init;
+		var nativeClientModel = _v1.a;
+		var nativeClientCmd = _v1.b;
+		var _v2 = A2(
 			$author$project$Main$setRoute,
 			$author$project$Route$fromUrl(url),
 			{
 				currentPage: $author$project$Main$Blank,
 				env: $author$project$Data$Env$fromHostname(flags.hostname),
 				key: key,
-				nativeClientStatus: $author$project$Data$NativeClient$Unknown,
-				projectPortal: projectPortalModel,
+				nativeClient: nativeClientModel,
+				portal: portalModel,
 				translations: flags.translations
 			});
-		var routeModel = _v1.a;
-		var routeCmd = _v1.b;
+		var routeModel = _v2.a;
+		var routeCmd = _v2.b;
 		return _Utils_Tuple2(
 			routeModel,
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
 					[
 						routeCmd,
-						A2($elm$core$Platform$Cmd$map, $author$project$Main$ProjectPortalMsg, projectPortalCmd),
-						$author$project$Main$requestMetaOfNativeClient
+						A2($elm$core$Platform$Cmd$map, $author$project$Main$PortalMsg, portalCmd),
+						A2(
+						$elm$core$Task$perform,
+						A2(
+							$elm$core$Basics$composeL,
+							$author$project$Main$NativeClientMsg,
+							function (_v3) {
+								return $author$project$Component$NativeClient$Msg$RequestMetaOfNativeClient;
+							}),
+						$elm$core$Task$succeed(_Utils_Tuple0))
 					])));
 	});
 var $author$project$Main$SetRoute = function (a) {
@@ -13212,8 +13091,7 @@ var $author$project$Main$ClickedLink = function (a) {
 var $author$project$Main$onUrlRequest = function (urlRequest) {
 	return $author$project$Main$ClickedLink(urlRequest);
 };
-var $author$project$Main$RequestMetaOfNativeClient = {$: 'RequestMetaOfNativeClient'};
-var $author$project$Main$WebsocketClosed = function (a) {
+var $author$project$Component$NativeClient$Msg$WebsocketClosed = function (a) {
 	return {$: 'WebsocketClosed', a: a};
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -13407,56 +13285,38 @@ var $author$project$Data$NativeClient$isStatusNormal = function (status) {
 	}
 };
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Page$Project$DismissSavingResultPrompt = {$: 'DismissSavingResultPrompt'};
-var $author$project$Page$Project$RedoProject = {$: 'RedoProject'};
-var $author$project$Page$Project$SaveProject = function (a) {
-	return {$: 'SaveProject', a: a};
+var $author$project$Component$Portal$Msg$MsgForUploader = function (a) {
+	return {$: 'MsgForUploader', a: a};
 };
-var $author$project$Page$Project$UndoProject = {$: 'UndoProject'};
-var $author$project$Data$Shortcut$KeyPress = F5(
-	function (a, b, c, d, e) {
-		return {$: 'KeyPress', a: a, b: b, c: c, d: d, e: e};
+var $author$project$Component$Portal$Msg$ProcessingStatusUpdate = function (a) {
+	return {$: 'ProcessingStatusUpdate', a: a};
+};
+var $author$project$Component$Portal$Msg$VideoUploading = F2(
+	function (a, b) {
+		return {$: 'VideoUploading', a: a, b: b};
 	});
-var $author$project$Data$Shortcut$keyPressDecoder = A6(
-	$elm$json$Json$Decode$map5,
-	$author$project$Data$Shortcut$KeyPress,
-	A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string),
-	A2($elm$json$Json$Decode$field, 'ctrlKey', $elm$json$Json$Decode$bool),
-	A2($elm$json$Json$Decode$field, 'metaKey', $elm$json$Json$Decode$bool),
-	A2($elm$json$Json$Decode$field, 'shiftKey', $elm$json$Json$Decode$bool),
-	A2($elm$json$Json$Decode$field, 'altKey', $elm$json$Json$Decode$bool));
-var $author$project$Page$Project$keyMsgDecoder = A2(
+var $author$project$Component$Portal$Msg$ToggleExpertMode = {$: 'ToggleExpertMode'};
+var $elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
+var $author$project$Component$Portal$Main$keyMsgDecoder = A2(
 	$elm$json$Json$Decode$andThen,
-	function (keyPress) {
-		_v0$3:
-		while (true) {
-			if (keyPress.b) {
-				switch (keyPress.a) {
-					case 's':
-						return $elm$json$Json$Decode$succeed(
-							$author$project$Page$Project$SaveProject($elm$core$Maybe$Nothing));
-					case 'z':
-						if (!keyPress.d) {
-							return $elm$json$Json$Decode$succeed($author$project$Page$Project$UndoProject);
-						} else {
-							break _v0$3;
-						}
-					case 'Z':
-						if (keyPress.d) {
-							return $elm$json$Json$Decode$succeed($author$project$Page$Project$RedoProject);
-						} else {
-							break _v0$3;
-						}
-					default:
-						break _v0$3;
-				}
-			} else {
-				break _v0$3;
-			}
+	function (_v0) {
+		var ctrlKey = _v0.a;
+		var key = _v0.b;
+		var _v1 = _Utils_Tuple2(ctrlKey, key);
+		if (_v1.a && (_v1.b === 'e')) {
+			return $elm$json$Json$Decode$succeed($author$project$Component$Portal$Msg$ToggleExpertMode);
+		} else {
+			return $elm$json$Json$Decode$fail(key);
 		}
-		return $elm$json$Json$Decode$fail('not to be handled here');
 	},
-	$author$project$Data$Shortcut$keyPressDecoder);
+	A3(
+		$elm$json$Json$Decode$map2,
+		$elm$core$Tuple$pair,
+		A2($elm$json$Json$Decode$field, 'ctrlKey', $elm$json$Json$Decode$bool),
+		A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string)));
 var $elm$browser$Browser$Events$Document = {$: 'Document'};
 var $elm$browser$Browser$Events$MySub = F3(
 	function (a, b, c) {
@@ -13628,64 +13488,8 @@ var $elm$browser$Browser$Events$on = F3(
 		return $elm$browser$Browser$Events$subscription(
 			A3($elm$browser$Browser$Events$MySub, node, name, decoder));
 	});
-var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keydown');
-var $author$project$Page$Project$subscriptions = function (model) {
-	if (model.$ === 'Loaded') {
-		var project = model.a;
-		var substate = model.b;
-		return $elm$core$Platform$Sub$batch(
-			_List_fromArray(
-				[
-					$elm$browser$Browser$Events$onKeyDown($author$project$Page$Project$keyMsgDecoder),
-					function () {
-					var _v1 = substate.savingResult;
-					if ((_v1.$ === 'Just') && (_v1.a.$ === 'Ok')) {
-						return A2(
-							$elm$time$Time$every,
-							5000,
-							function (_v2) {
-								return $author$project$Page$Project$DismissSavingResultPrompt;
-							});
-					} else {
-						return $elm$core$Platform$Sub$none;
-					}
-				}()
-				]));
-	} else {
-		return $elm$core$Platform$Sub$none;
-	}
-};
-var $author$project$Page$Project$Portal$ProcessingStatusUpdate = function (a) {
-	return {$: 'ProcessingStatusUpdate', a: a};
-};
-var $author$project$Page$Project$Portal$VideoUploading = F2(
-	function (a, b) {
-		return {$: 'VideoUploading', a: a, b: b};
-	});
-var $author$project$Page$Project$Portal$ToggleExpertMode = {$: 'ToggleExpertMode'};
-var $elm$core$Tuple$pair = F2(
-	function (a, b) {
-		return _Utils_Tuple2(a, b);
-	});
-var $author$project$Page$Project$Portal$keyMsgDecoder = A2(
-	$elm$json$Json$Decode$andThen,
-	function (_v0) {
-		var ctrlKey = _v0.a;
-		var key = _v0.b;
-		var _v1 = _Utils_Tuple2(ctrlKey, key);
-		if (_v1.a && (_v1.b === 'e')) {
-			return $elm$json$Json$Decode$succeed($author$project$Page$Project$Portal$ToggleExpertMode);
-		} else {
-			return $elm$json$Json$Decode$fail(key);
-		}
-	},
-	A3(
-		$elm$json$Json$Decode$map2,
-		$elm$core$Tuple$pair,
-		A2($elm$json$Json$Decode$field, 'ctrlKey', $elm$json$Json$Decode$bool),
-		A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string)));
 var $elm$browser$Browser$Events$onKeyUp = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keyup');
-var $author$project$View$Uploader$ongoingTrackerIDs = $elm$core$List$filterMap(
+var $author$project$Component$Portal$Uploader$ongoingTrackerIDs = $elm$core$List$filterMap(
 	function (item) {
 		if (item.$ === 'Uploading') {
 			var trackerID = item.a;
@@ -13713,15 +13517,15 @@ var $elm$http$Http$track = F2(
 		return $elm$http$Http$subscription(
 			A2($elm$http$Http$MySub, tracker, toMsg));
 	});
-var $author$project$Page$Project$Portal$subscriptions = function (model) {
+var $author$project$Component$Portal$Main$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
-				$elm$browser$Browser$Events$onKeyUp($author$project$Page$Project$Portal$keyMsgDecoder),
+				$elm$browser$Browser$Events$onKeyUp($author$project$Component$Portal$Main$keyMsgDecoder),
 				$author$project$Port$processingStatusUpdate(
 				A2(
 					$elm$core$Basics$composeL,
-					$author$project$Page$Project$Portal$ProcessingStatusUpdate,
+					$author$project$Component$Portal$Msg$ProcessingStatusUpdate,
 					$elm$json$Json$Decode$decodeValue($author$project$Data$Project$Concise$statusUpdateDecoder))),
 				$elm$core$Platform$Sub$batch(
 				A2(
@@ -13730,10 +13534,95 @@ var $author$project$Page$Project$Portal$subscriptions = function (model) {
 						return A2(
 							$elm$http$Http$track,
 							trackerID,
-							$author$project$Page$Project$Portal$VideoUploading(trackerID));
+							A2(
+								$elm$core$Basics$composeL,
+								$author$project$Component$Portal$Msg$MsgForUploader,
+								$author$project$Component$Portal$Msg$VideoUploading(trackerID)));
 					},
-					$author$project$View$Uploader$ongoingTrackerIDs(model.items)))
+					$author$project$Component$Portal$Uploader$ongoingTrackerIDs(model.items)))
 			]));
+};
+var $author$project$Component$Project$Msg$DismissSavingResultPrompt = {$: 'DismissSavingResultPrompt'};
+var $author$project$Component$Project$Msg$MsgForEditing = function (a) {
+	return {$: 'MsgForEditing', a: a};
+};
+var $author$project$Component$Project$Msg$RedoProject = {$: 'RedoProject'};
+var $author$project$Component$Project$Msg$SaveProject = function (a) {
+	return {$: 'SaveProject', a: a};
+};
+var $author$project$Component$Project$Msg$UndoProject = {$: 'UndoProject'};
+var $author$project$Data$Shortcut$KeyPress = F5(
+	function (a, b, c, d, e) {
+		return {$: 'KeyPress', a: a, b: b, c: c, d: d, e: e};
+	});
+var $author$project$Data$Shortcut$keyPressDecoder = A6(
+	$elm$json$Json$Decode$map5,
+	$author$project$Data$Shortcut$KeyPress,
+	A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'ctrlKey', $elm$json$Json$Decode$bool),
+	A2($elm$json$Json$Decode$field, 'metaKey', $elm$json$Json$Decode$bool),
+	A2($elm$json$Json$Decode$field, 'shiftKey', $elm$json$Json$Decode$bool),
+	A2($elm$json$Json$Decode$field, 'altKey', $elm$json$Json$Decode$bool));
+var $author$project$Component$Project$Main$keyMsgDecoder = A2(
+	$elm$json$Json$Decode$andThen,
+	function (keyPress) {
+		_v0$3:
+		while (true) {
+			if (keyPress.b) {
+				switch (keyPress.a) {
+					case 's':
+						return $elm$json$Json$Decode$succeed(
+							$author$project$Component$Project$Msg$SaveProject($elm$core$Maybe$Nothing));
+					case 'z':
+						if (!keyPress.d) {
+							return $elm$json$Json$Decode$succeed(
+								$author$project$Component$Project$Msg$MsgForEditing($author$project$Component$Project$Msg$UndoProject));
+						} else {
+							break _v0$3;
+						}
+					case 'Z':
+						if (keyPress.d) {
+							return $elm$json$Json$Decode$succeed(
+								$author$project$Component$Project$Msg$MsgForEditing($author$project$Component$Project$Msg$RedoProject));
+						} else {
+							break _v0$3;
+						}
+					default:
+						break _v0$3;
+				}
+			} else {
+				break _v0$3;
+			}
+		}
+		return $elm$json$Json$Decode$fail('not to be handled here');
+	},
+	$author$project$Data$Shortcut$keyPressDecoder);
+var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keydown');
+var $author$project$Component$Project$Main$subscriptions = function (model) {
+	if (model.$ === 'Loaded') {
+		var project = model.a;
+		var substate = model.b;
+		return $elm$core$Platform$Sub$batch(
+			_List_fromArray(
+				[
+					$elm$browser$Browser$Events$onKeyDown($author$project$Component$Project$Main$keyMsgDecoder),
+					function () {
+					var _v1 = substate.savingResult;
+					if ((_v1.$ === 'Just') && (_v1.a.$ === 'Ok')) {
+						return A2(
+							$elm$time$Time$every,
+							5000,
+							function (_v2) {
+								return $author$project$Component$Project$Msg$DismissSavingResultPrompt;
+							});
+					} else {
+						return $elm$core$Platform$Sub$none;
+					}
+				}()
+				]));
+	} else {
+		return $elm$core$Platform$Sub$none;
+	}
 };
 var $author$project$Port$websocketClosed = _Platform_incomingPort('websocketClosed', $elm$json$Json$Decode$int);
 var $author$project$Main$subscriptions = function (model) {
@@ -13742,14 +13631,15 @@ var $author$project$Main$subscriptions = function (model) {
 			[
 				A2(
 				$elm$core$Platform$Sub$map,
-				$author$project$Main$ProjectPortalMsg,
-				$author$project$Page$Project$Portal$subscriptions(model.projectPortal)),
-				$author$project$Port$websocketClosed($author$project$Main$WebsocketClosed),
-				$author$project$Data$NativeClient$isStatusNormal(model.nativeClientStatus) ? $elm$core$Platform$Sub$none : A2(
+				$author$project$Main$PortalMsg,
+				$author$project$Component$Portal$Main$subscriptions(model.portal)),
+				$author$project$Port$websocketClosed(
+				A2($elm$core$Basics$composeL, $author$project$Main$NativeClientMsg, $author$project$Component$NativeClient$Msg$WebsocketClosed)),
+				$author$project$Data$NativeClient$isStatusNormal(model.nativeClient.nativeClientStatus) ? $elm$core$Platform$Sub$none : A2(
 				$elm$time$Time$every,
 				2000,
 				function (_v0) {
-					return $author$project$Main$RequestMetaOfNativeClient;
+					return $author$project$Main$NativeClientMsg($author$project$Component$NativeClient$Msg$RequestMetaOfNativeClient);
 				}),
 				function () {
 				var _v1 = model.currentPage;
@@ -13758,26 +13648,15 @@ var $author$project$Main$subscriptions = function (model) {
 					return A2(
 						$elm$core$Platform$Sub$map,
 						$author$project$Main$ProjectMsg,
-						$author$project$Page$Project$subscriptions(subModel));
+						$author$project$Component$Project$Main$subscriptions(subModel));
 				} else {
 					return $elm$core$Platform$Sub$none;
 				}
 			}()
 			]));
 };
-var $author$project$Port$connectSocket = _Platform_outgoingPort(
-	'connectSocket',
-	function ($) {
-		return $elm$json$Json$Encode$null;
-	});
-var $author$project$Page$Project$isLoaded = function (model) {
-	if (model.$ === 'Loaded') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var $author$project$Page$Project$Portal$isLoaded = function (_v0) {
+var $author$project$Main$TryReload = {$: 'TryReload'};
+var $author$project$Component$Portal$Main$isLoaded = function (_v0) {
 	var availablePresets = _v0.availablePresets;
 	var projects = _v0.projects;
 	var _v1 = _Utils_Tuple2(availablePresets, projects);
@@ -13787,40 +13666,17 @@ var $author$project$Page$Project$Portal$isLoaded = function (_v0) {
 		return false;
 	}
 };
+var $author$project$Component$Project$Main$isLoaded = function (model) {
+	if (model.$ === 'Loaded') {
+		return true;
+	} else {
+		return false;
+	}
+};
 var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
 var $elm$browser$Browser$Navigation$reload = _Browser_reload(false);
 var $author$project$Route$reload = $elm$browser$Browser$Navigation$reload;
-var $author$project$Data$NativeClient$Disconnected = {$: 'Disconnected'};
-var $author$project$Data$NativeClient$Incompatible = {$: 'Incompatible'};
-var $author$project$Data$NativeClient$PlatformError = function (a) {
-	return {$: 'PlatformError', a: a};
-};
-var $author$project$Data$NativeClient$VersionUnknown = {$: 'VersionUnknown'};
-var $author$project$Data$NativeClient$statusFromError = function (error) {
-	switch (error.$) {
-		case 'BadUrl':
-			return $author$project$Data$NativeClient$PlatformError('bad URL requested');
-		case 'Timeout':
-			return $author$project$Data$NativeClient$VersionUnknown;
-		case 'NetworkError':
-			return $author$project$Data$NativeClient$Disconnected;
-		case 'BadStatus':
-			var statusCode = error.a;
-			var statusError = error.b;
-			return $author$project$Data$NativeClient$VersionUnknown;
-		default:
-			var statusCode = error.a;
-			var decodeError = error.b;
-			return $author$project$Data$NativeClient$Incompatible;
-	}
-};
-var $author$project$Data$NativeClient$Connected = function (a) {
-	return {$: 'Connected', a: a};
-};
-var $author$project$Data$NativeClient$statusFromMeta = function (meta) {
-	return meta.isCompatible ? $author$project$Data$NativeClient$Connected(meta.version) : $author$project$Data$NativeClient$Incompatible;
-};
 var $elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
 		if (maybePort.$ === 'Nothing') {
@@ -13865,17 +13721,2216 @@ var $elm$url$Url$toString = function (url) {
 					_Utils_ap(http, url.host)),
 				url.path)));
 };
-var $author$project$Page$Project$Loaded = F2(
+var $author$project$Component$NativeClient$Msg$NoOp = {$: 'NoOp'};
+var $author$project$Component$NativeClient$Msg$TryReload = {$: 'TryReload'};
+var $author$project$Port$connectSocket = _Platform_outgoingPort(
+	'connectSocket',
+	function ($) {
+		return $elm$json$Json$Encode$null;
+	});
+var $author$project$Component$NativeClient$Msg$NativeClientVersionInfoRequested = function (a) {
+	return {$: 'NativeClientVersionInfoRequested', a: a};
+};
+var $author$project$Data$Version$incrementMinor = function (version) {
+	return _Utils_update(
+		version,
+		{buildNo: version.buildNo + 1, minor: version.minor + 1, patch: 0});
+};
+var $author$project$Data$Version$initial = {buildNo: 1, major: 0, minor: 1, patch: 0};
+var $author$project$Data$Version$Platform$incrementedBy = function (history) {
+	return A3($elm$core$List$foldl, $elm$core$Basics$apL, $author$project$Data$Version$initial, history);
+};
+var $author$project$Data$Version$Platform$currentVersions = {
+	frontend: $author$project$Data$Version$Platform$incrementedBy(
+		_List_fromArray(
+			[$author$project$Data$Version$incrementMinor])),
+	projectData: $author$project$Data$Version$Platform$incrementedBy(_List_Nil)
+};
+var $author$project$Data$NativeClient$Meta = F2(
+	function (version, isCompatible) {
+		return {isCompatible: isCompatible, version: version};
+	});
+var $author$project$Data$Version$decoder = A2(
+	$elm$json$Json$Decode$andThen,
+	function (str) {
+		var _v0 = A2($elm$core$String$split, '.', str);
+		if ((((_v0.b && _v0.b.b) && _v0.b.b.b) && _v0.b.b.b.b) && (!_v0.b.b.b.b.b)) {
+			var a = _v0.a;
+			var _v1 = _v0.b;
+			var b = _v1.a;
+			var _v2 = _v1.b;
+			var c = _v2.a;
+			var _v3 = _v2.b;
+			var d = _v3.a;
+			var _v4 = A2(
+				$elm$core$List$map,
+				$elm$core$String$toInt,
+				_List_fromArray(
+					[a, b, c, d]));
+			if ((((((((_v4.b && (_v4.a.$ === 'Just')) && _v4.b.b) && (_v4.b.a.$ === 'Just')) && _v4.b.b.b) && (_v4.b.b.a.$ === 'Just')) && _v4.b.b.b.b) && (_v4.b.b.b.a.$ === 'Just')) && (!_v4.b.b.b.b.b)) {
+				var major = _v4.a.a;
+				var _v5 = _v4.b;
+				var minor = _v5.a.a;
+				var _v6 = _v5.b;
+				var patch = _v6.a.a;
+				var _v7 = _v6.b;
+				var buildNo = _v7.a.a;
+				return A3(
+					$elm$core$List$foldr,
+					$elm$core$Basics$and,
+					true,
+					A2(
+						$elm$core$List$map,
+						function (n) {
+							return n >= 0;
+						},
+						_List_fromArray(
+							[major, minor, patch, buildNo]))) ? $elm$json$Json$Decode$succeed(
+					{buildNo: buildNo, major: major, minor: minor, patch: patch}) : $elm$json$Json$Decode$fail('cannot be negative');
+			} else {
+				return $elm$json$Json$Decode$fail('unexpected error');
+			}
+		} else {
+			return $elm$json$Json$Decode$fail('not a valid version number');
+		}
+	},
+	$elm$json$Json$Decode$string);
+var $author$project$Data$NativeClient$metaDecoder = A3(
+	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+	'Compatible',
+	$elm$json$Json$Decode$bool,
+	A3(
+		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+		'Version',
+		$author$project$Data$Version$decoder,
+		$elm$json$Json$Decode$succeed($author$project$Data$NativeClient$Meta)));
+var $author$project$Data$NativeClient$MalformedVersionNumber = {$: 'MalformedVersionNumber'};
+var $author$project$Util$errorCodeDecoder = F2(
+	function (errorCode, error) {
+		return A2(
+			$elm$json$Json$Decode$andThen,
+			function (code) {
+				return _Utils_eq(code, errorCode) ? $elm$json$Json$Decode$succeed(error) : $elm$json$Json$Decode$fail('error not to be handled here');
+			},
+			$elm$json$Json$Decode$int);
+	});
+var $author$project$Data$NativeClient$metaErrorDecoder = function (statusCode) {
+	return (statusCode === 400) ? A2(
+		$elm$json$Json$Decode$field,
+		'ErrorCode',
+		A2($author$project$Util$errorCodeDecoder, 120, $author$project$Data$NativeClient$MalformedVersionNumber)) : $elm$json$Json$Decode$fail('error not to be handled here');
+};
+var $author$project$Data$Version$toString = function (_v0) {
+	var major = _v0.major;
+	var minor = _v0.minor;
+	var patch = _v0.patch;
+	var buildNo = _v0.buildNo;
+	return A2(
+		$elm$core$String$join,
+		'.',
+		A2(
+			$elm$core$List$map,
+			$elm$core$String$fromInt,
+			_List_fromArray(
+				[major, minor, patch, buildNo])));
+};
+var $author$project$Data$Version$encoder = function (version) {
+	return $elm$json$Json$Encode$string(
+		$author$project$Data$Version$toString(version));
+};
+var $author$project$Data$NativeClient$metaRequestEncoder = function (version) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'FrontendVersion',
+				$author$project$Data$Version$encoder(version))
+			]));
+};
+var $author$project$Request$Meta$nativeClient = F2(
+	function (handler, frontendVersion) {
+		return $author$project$API$Request$post(
+			{
+				decoder: $author$project$Data$NativeClient$metaDecoder,
+				errorDecoder: $author$project$Data$NativeClient$metaErrorDecoder,
+				handler: handler,
+				payload: $author$project$Data$NativeClient$metaRequestEncoder(frontendVersion),
+				timeout: $elm$core$Maybe$Just(5000),
+				url: A2(
+					$author$project$Request$Helper$apiNativeClient,
+					_List_fromArray(
+						['version']),
+					_List_Nil)
+			});
+	});
+var $author$project$Component$NativeClient$Main$requestMetaOfNativeClient = A2($author$project$Request$Meta$nativeClient, $author$project$Component$NativeClient$Msg$NativeClientVersionInfoRequested, $author$project$Data$Version$Platform$currentVersions.frontend);
+var $author$project$Data$NativeClient$Disconnected = {$: 'Disconnected'};
+var $author$project$Data$NativeClient$Incompatible = {$: 'Incompatible'};
+var $author$project$Data$NativeClient$PlatformError = function (a) {
+	return {$: 'PlatformError', a: a};
+};
+var $author$project$Data$NativeClient$VersionUnknown = {$: 'VersionUnknown'};
+var $author$project$Data$NativeClient$statusFromError = function (error) {
+	switch (error.$) {
+		case 'BadUrl':
+			return $author$project$Data$NativeClient$PlatformError('bad URL requested');
+		case 'Timeout':
+			return $author$project$Data$NativeClient$VersionUnknown;
+		case 'NetworkError':
+			return $author$project$Data$NativeClient$Disconnected;
+		case 'BadStatus':
+			var statusCode = error.a;
+			var statusError = error.b;
+			return $author$project$Data$NativeClient$VersionUnknown;
+		default:
+			var statusCode = error.a;
+			var decodeError = error.b;
+			return $author$project$Data$NativeClient$Incompatible;
+	}
+};
+var $author$project$Data$NativeClient$Connected = function (a) {
+	return {$: 'Connected', a: a};
+};
+var $author$project$Data$NativeClient$statusFromMeta = function (meta) {
+	return meta.isCompatible ? $author$project$Data$NativeClient$Connected(meta.version) : $author$project$Data$NativeClient$Incompatible;
+};
+var $author$project$Component$NativeClient$Main$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'RequestMetaOfNativeClient':
+				return _Utils_Tuple3(model, $author$project$Component$NativeClient$Main$requestMetaOfNativeClient, $author$project$Component$NativeClient$Msg$NoOp);
+			case 'NativeClientVersionInfoRequested':
+				if (msg.a.$ === 'Ok') {
+					var meta = msg.a.a;
+					var newStatus = $author$project$Data$NativeClient$statusFromMeta(meta);
+					return _Utils_Tuple3(
+						_Utils_update(
+							model,
+							{nativeClientStatus: newStatus}),
+						$author$project$Port$connectSocket(_Utils_Tuple0),
+						function () {
+							var _v1 = _Utils_Tuple2(
+								$author$project$Data$NativeClient$isStatusNormal(newStatus),
+								$author$project$Data$NativeClient$isStatusNormal(model.nativeClientStatus));
+							if (_v1.a && (!_v1.b)) {
+								return $author$project$Component$NativeClient$Msg$TryReload;
+							} else {
+								return $author$project$Component$NativeClient$Msg$NoOp;
+							}
+						}());
+				} else {
+					var error = msg.a.a;
+					return _Utils_Tuple3(
+						_Utils_update(
+							model,
+							{
+								nativeClientStatus: $author$project$Data$NativeClient$statusFromError(error)
+							}),
+						$elm$core$Platform$Cmd$none,
+						$author$project$Component$NativeClient$Msg$NoOp);
+				}
+			default:
+				var statusCode = msg.a;
+				return _Utils_Tuple3(model, $author$project$Component$NativeClient$Main$requestMetaOfNativeClient, $author$project$Component$NativeClient$Msg$NoOp);
+		}
+	});
+var $author$project$Component$Portal$Msg$FilesSelected = F2(
+	function (a, b) {
+		return {$: 'FilesSelected', a: a, b: b};
+	});
+var $author$project$Component$Portal$Msg$ProjectUpdated = function (a) {
+	return {$: 'ProjectUpdated', a: a};
+};
+var $author$project$Component$Portal$Msg$ProjectsDeleted = F2(
+	function (a, b) {
+		return {$: 'ProjectsDeleted', a: a, b: b};
+	});
+var $author$project$Component$Portal$Msg$UploadVideo = F3(
+	function (a, b, c) {
+		return {$: 'UploadVideo', a: a, b: b, c: c};
+	});
+var $author$project$Component$Portal$Msg$VideoProcessingStarted = F2(
+	function (a, b) {
+		return {$: 'VideoProcessingStarted', a: a, b: b};
+	});
+var $author$project$Request$Helper$expectDeletion = function (toMsg) {
+	return A2(
+		$elm$http$Http$expectStringResponse,
+		toMsg,
+		function (response) {
+			switch (response.$) {
+				case 'BadUrl_':
+					var url = response.a;
+					return $elm$core$Result$Err(
+						$elm$http$Http$BadUrl(url));
+				case 'Timeout_':
+					return $elm$core$Result$Err($elm$http$Http$Timeout);
+				case 'NetworkError_':
+					return $elm$core$Result$Err($elm$http$Http$NetworkError);
+				case 'GoodStatus_':
+					var metadata = response.a;
+					return (metadata.statusCode === 204) ? $elm$core$Result$Ok(_Utils_Tuple0) : $elm$core$Result$Err(
+						$elm$http$Http$BadStatus(metadata.statusCode));
+				default:
+					var metadata = response.a;
+					return (metadata.statusCode === 404) ? $elm$core$Result$Ok(_Utils_Tuple0) : $elm$core$Result$Err(
+						$elm$http$Http$BadStatus(metadata.statusCode));
+			}
+		});
+};
+var $author$project$Request$Helper$deleteResource = function (r) {
+	return $elm$http$Http$request(
+		{
+			body: $elm$http$Http$jsonBody(r.payload),
+			expect: $author$project$Request$Helper$expectDeletion(r.handler),
+			headers: _List_Nil,
+			method: 'POST',
+			timeout: $elm$core$Maybe$Just(5000),
+			tracker: $elm$core$Maybe$Nothing,
+			url: r.url
+		});
+};
+var $author$project$Data$Project$Concise$wrapRequestBody = function (body) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2('Videos', body)
+			]));
+};
+var $author$project$Data$Project$Concise$uuidsEncoder = function (uuids) {
+	var body = A2(
+		$elm$json$Json$Encode$list,
+		$elm$core$Basics$identity,
+		A2(
+			$elm$core$List$map,
+			function (uuid) {
+				return $elm$json$Json$Encode$object(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'Id',
+							$elm$json$Json$Encode$string(uuid))
+						]));
+			},
+			uuids));
+	return $author$project$Data$Project$Concise$wrapRequestBody(body);
+};
+var $author$project$Request$Project$delete = F2(
+	function (handler, uuids) {
+		return $author$project$Request$Helper$deleteResource(
+			{
+				handler: handler(uuids),
+				payload: $author$project$Data$Project$Concise$uuidsEncoder(
+					$elm$core$Set$toList(uuids)),
+				url: A2(
+					$author$project$Request$Helper$apiNativeClient,
+					_List_fromArray(
+						['deletevideo']),
+					_List_Nil)
+			});
+	});
+var $elm$core$Dict$diff = F2(
+	function (t1, t2) {
+		return A3(
+			$elm$core$Dict$foldl,
+			F3(
+				function (k, v, t) {
+					return A2($elm$core$Dict$remove, k, t);
+				}),
+			t1,
+			t2);
+	});
+var $elm$core$Set$diff = F2(
+	function (_v0, _v1) {
+		var dict1 = _v0.a;
+		var dict2 = _v1.a;
+		return $elm$core$Set$Set_elm_builtin(
+			A2($elm$core$Dict$diff, dict1, dict2));
+	});
+var $author$project$Data$Project$Concise$FailedToProcess = function (a) {
+	return {$: 'FailedToProcess', a: a};
+};
+var $elm$core$Dict$member = F2(
+	function (key, dict) {
+		var _v0 = A2($elm$core$Dict$get, key, dict);
+		if (_v0.$ === 'Just') {
+			return true;
+		} else {
+			return false;
+		}
+	});
+var $elm$core$Set$member = F2(
+	function (key, _v0) {
+		var dict = _v0.a;
+		return A2($elm$core$Dict$member, key, dict);
+	});
+var $author$project$Data$Project$Concise$batchUpdateBy = F2(
+	function (uuids, updater) {
+		return $elm$core$List$map(
+			function (item) {
+				return A2($elm$core$Set$member, item.uuid, uuids) ? updater(item) : item;
+			});
+	});
+var $author$project$Data$Project$Concise$updateStatus = F2(
+	function (status, newStatus) {
+		var _v0 = _Utils_Tuple2(status, newStatus);
+		_v0$1:
+		while (true) {
+			_v0$2:
+			while (true) {
+				_v0$3:
+				while (true) {
+					switch (_v0.a.$) {
+						case 'Uploaded':
+							var _v1 = _v0.a;
+							return newStatus;
+						case 'Processing':
+							switch (_v0.b.$) {
+								case 'Uploaded':
+									break _v0$1;
+								case 'Processing':
+									break _v0$2;
+								default:
+									break _v0$2;
+							}
+						case 'Processed':
+							switch (_v0.b.$) {
+								case 'Uploaded':
+									break _v0$1;
+								case 'Processing':
+									break _v0$3;
+								default:
+									var _v3 = _v0.a;
+									return status;
+							}
+						default:
+							switch (_v0.b.$) {
+								case 'Uploaded':
+									break _v0$1;
+								case 'Processing':
+									break _v0$3;
+								default:
+									return status;
+							}
+					}
+				}
+				return status;
+			}
+			return newStatus;
+		}
+		var _v2 = _v0.b;
+		return status;
+	});
+var $author$project$Data$Project$Concise$setStatus = F2(
+	function (status, item) {
+		return _Utils_update(
+			item,
+			{
+				status: A2($author$project$Data$Project$Concise$updateStatus, item.status, status)
+			});
+	});
+var $author$project$Data$Project$Concise$failedToStartProcessing = F2(
+	function (uuids, error) {
+		return A2(
+			$author$project$Data$Project$Concise$batchUpdateBy,
+			uuids,
+			$author$project$Data$Project$Concise$setStatus(
+				$author$project$Data$Project$Concise$FailedToProcess(error)));
+	});
+var $elm_community$list_extra$List$Extra$filterNot = F2(
+	function (pred, list) {
+		return A2(
+			$elm$core$List$filter,
+			A2($elm$core$Basics$composeL, $elm$core$Basics$not, pred),
+			list);
+	});
+var $elm$random$Random$Generate = function (a) {
+	return {$: 'Generate', a: a};
+};
+var $elm$random$Random$Seed = F2(
+	function (a, b) {
+		return {$: 'Seed', a: a, b: b};
+	});
+var $elm$random$Random$next = function (_v0) {
+	var state0 = _v0.a;
+	var incr = _v0.b;
+	return A2($elm$random$Random$Seed, ((state0 * 1664525) + incr) >>> 0, incr);
+};
+var $elm$random$Random$initialSeed = function (x) {
+	var _v0 = $elm$random$Random$next(
+		A2($elm$random$Random$Seed, 0, 1013904223));
+	var state1 = _v0.a;
+	var incr = _v0.b;
+	var state2 = (state1 + x) >>> 0;
+	return $elm$random$Random$next(
+		A2($elm$random$Random$Seed, state2, incr));
+};
+var $elm$time$Time$posixToMillis = function (_v0) {
+	var millis = _v0.a;
+	return millis;
+};
+var $elm$random$Random$init = A2(
+	$elm$core$Task$andThen,
+	function (time) {
+		return $elm$core$Task$succeed(
+			$elm$random$Random$initialSeed(
+				$elm$time$Time$posixToMillis(time)));
+	},
+	$elm$time$Time$now);
+var $elm$random$Random$step = F2(
+	function (_v0, seed) {
+		var generator = _v0.a;
+		return generator(seed);
+	});
+var $elm$random$Random$onEffects = F3(
+	function (router, commands, seed) {
+		if (!commands.b) {
+			return $elm$core$Task$succeed(seed);
+		} else {
+			var generator = commands.a.a;
+			var rest = commands.b;
+			var _v1 = A2($elm$random$Random$step, generator, seed);
+			var value = _v1.a;
+			var newSeed = _v1.b;
+			return A2(
+				$elm$core$Task$andThen,
+				function (_v2) {
+					return A3($elm$random$Random$onEffects, router, rest, newSeed);
+				},
+				A2($elm$core$Platform$sendToApp, router, value));
+		}
+	});
+var $elm$random$Random$onSelfMsg = F3(
+	function (_v0, _v1, seed) {
+		return $elm$core$Task$succeed(seed);
+	});
+var $elm$random$Random$Generator = function (a) {
+	return {$: 'Generator', a: a};
+};
+var $elm$random$Random$map = F2(
+	function (func, _v0) {
+		var genA = _v0.a;
+		return $elm$random$Random$Generator(
+			function (seed0) {
+				var _v1 = genA(seed0);
+				var a = _v1.a;
+				var seed1 = _v1.b;
+				return _Utils_Tuple2(
+					func(a),
+					seed1);
+			});
+	});
+var $elm$random$Random$cmdMap = F2(
+	function (func, _v0) {
+		var generator = _v0.a;
+		return $elm$random$Random$Generate(
+			A2($elm$random$Random$map, func, generator));
+	});
+_Platform_effectManagers['Random'] = _Platform_createManager($elm$random$Random$init, $elm$random$Random$onEffects, $elm$random$Random$onSelfMsg, $elm$random$Random$cmdMap);
+var $elm$random$Random$command = _Platform_leaf('Random');
+var $elm$random$Random$generate = F2(
+	function (tagger, generator) {
+		return $elm$random$Random$command(
+			$elm$random$Random$Generate(
+				A2($elm$random$Random$map, tagger, generator)));
+	});
+var $TSFoster$elm_uuid$UUID$UUID = F4(
+	function (a, b, c, d) {
+		return {$: 'UUID', a: a, b: b, c: c, d: d};
+	});
+var $elm$random$Random$map4 = F5(
+	function (func, _v0, _v1, _v2, _v3) {
+		var genA = _v0.a;
+		var genB = _v1.a;
+		var genC = _v2.a;
+		var genD = _v3.a;
+		return $elm$random$Random$Generator(
+			function (seed0) {
+				var _v4 = genA(seed0);
+				var a = _v4.a;
+				var seed1 = _v4.b;
+				var _v5 = genB(seed1);
+				var b = _v5.a;
+				var seed2 = _v5.b;
+				var _v6 = genC(seed2);
+				var c = _v6.a;
+				var seed3 = _v6.b;
+				var _v7 = genD(seed3);
+				var d = _v7.a;
+				var seed4 = _v7.b;
+				return _Utils_Tuple2(
+					A4(func, a, b, c, d),
+					seed4);
+			});
+	});
+var $TSFoster$elm_uuid$UUID$forceUnsigned = $elm$core$Bitwise$shiftRightZfBy(0);
+var $elm$core$Bitwise$xor = _Bitwise_xor;
+var $elm$random$Random$peel = function (_v0) {
+	var state = _v0.a;
+	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
+	return ((word >>> 22) ^ word) >>> 0;
+};
+var $elm$random$Random$int = F2(
+	function (a, b) {
+		return $elm$random$Random$Generator(
+			function (seed0) {
+				var _v0 = (_Utils_cmp(a, b) < 0) ? _Utils_Tuple2(a, b) : _Utils_Tuple2(b, a);
+				var lo = _v0.a;
+				var hi = _v0.b;
+				var range = (hi - lo) + 1;
+				if (!((range - 1) & range)) {
+					return _Utils_Tuple2(
+						(((range - 1) & $elm$random$Random$peel(seed0)) >>> 0) + lo,
+						$elm$random$Random$next(seed0));
+				} else {
+					var threshhold = (((-range) >>> 0) % range) >>> 0;
+					var accountForBias = function (seed) {
+						accountForBias:
+						while (true) {
+							var x = $elm$random$Random$peel(seed);
+							var seedN = $elm$random$Random$next(seed);
+							if (_Utils_cmp(x, threshhold) < 0) {
+								var $temp$seed = seedN;
+								seed = $temp$seed;
+								continue accountForBias;
+							} else {
+								return _Utils_Tuple2((x % range) + lo, seedN);
+							}
+						}
+					};
+					return accountForBias(seed0);
+				}
+			});
+	});
+var $elm$random$Random$maxInt = 2147483647;
+var $elm$random$Random$minInt = -2147483648;
+var $TSFoster$elm_uuid$UUID$randomU32 = A2(
+	$elm$random$Random$map,
+	$TSFoster$elm_uuid$UUID$forceUnsigned,
+	A2($elm$random$Random$int, $elm$random$Random$minInt, $elm$random$Random$maxInt));
+var $elm$core$Bitwise$or = _Bitwise_or;
+var $TSFoster$elm_uuid$UUID$toVariant1 = function (_v0) {
+	var a = _v0.a;
+	var b = _v0.b;
+	var c = _v0.c;
+	var d = _v0.d;
+	return A4(
+		$TSFoster$elm_uuid$UUID$UUID,
+		a,
+		b,
+		$TSFoster$elm_uuid$UUID$forceUnsigned(2147483648 | (1073741823 & c)),
+		d);
+};
+var $TSFoster$elm_uuid$UUID$toVersion = F2(
+	function (v, _v0) {
+		var a = _v0.a;
+		var b = _v0.b;
+		var c = _v0.c;
+		var d = _v0.d;
+		return A4(
+			$TSFoster$elm_uuid$UUID$UUID,
+			a,
+			$TSFoster$elm_uuid$UUID$forceUnsigned((v << 12) | (4294905855 & b)),
+			c,
+			d);
+	});
+var $TSFoster$elm_uuid$UUID$generator = A2(
+	$elm$random$Random$map,
+	A2(
+		$elm$core$Basics$composeR,
+		$TSFoster$elm_uuid$UUID$toVersion(4),
+		$TSFoster$elm_uuid$UUID$toVariant1),
+	A5($elm$random$Random$map4, $TSFoster$elm_uuid$UUID$UUID, $TSFoster$elm_uuid$UUID$randomU32, $TSFoster$elm_uuid$UUID$randomU32, $TSFoster$elm_uuid$UUID$randomU32, $TSFoster$elm_uuid$UUID$randomU32));
+var $krisajenkins$remotedata$RemoteData$Loading = {$: 'Loading'};
+var $krisajenkins$remotedata$RemoteData$map = F2(
+	function (f, data) {
+		switch (data.$) {
+			case 'Success':
+				var value = data.a;
+				return $krisajenkins$remotedata$RemoteData$Success(
+					f(value));
+			case 'Loading':
+				return $krisajenkins$remotedata$RemoteData$Loading;
+			case 'NotAsked':
+				return $krisajenkins$remotedata$RemoteData$NotAsked;
+			default:
+				var error = data.a;
+				return $krisajenkins$remotedata$RemoteData$Failure(error);
+		}
+	});
+var $elm$core$Tuple$mapSecond = F2(
+	function (func, _v0) {
+		var x = _v0.a;
+		var y = _v0.b;
+		return _Utils_Tuple2(
+			x,
+			func(y));
+	});
+var $author$project$Util$flip = F3(
+	function (f, b, a) {
+		return A2(f, a, b);
+	});
+var $elm$core$String$reverse = _String_reverse;
+var $author$project$Util$cropFileExtension = function (fileName) {
+	var _v0 = A2(
+		$elm$core$String$split,
+		'.',
+		$elm$core$String$reverse(fileName));
+	if (!_v0.b) {
+		return '';
+	} else {
+		if (!_v0.b.b) {
+			return '';
+		} else {
+			var xs = _v0.b;
+			return $elm$core$String$reverse(
+				A2($elm$core$String$join, '.', xs));
+		}
+	}
+};
+var $elm$file$File$name = _File_name;
+var $author$project$Data$Uploader$Media$subtitleToName = function (_v0) {
+	var file = _v0.b;
+	return $author$project$Util$cropFileExtension(
+		$elm$file$File$name(file));
+};
+var $author$project$Data$Uploader$Media$videoToName = function (_v0) {
+	var file = _v0.a;
+	return $author$project$Util$cropFileExtension(
+		$elm$file$File$name(file));
+};
+var $author$project$Data$Uploader$Media$doMatch = F3(
+	function (videos, subtitles, groupings) {
+		doMatch:
+		while (true) {
+			if (!videos.b) {
+				return groupings;
+			} else {
+				var x = videos.a;
+				var xs = videos.b;
+				var grouping = A2(
+					$elm$core$Tuple$pair,
+					x,
+					A2(
+						$elm$core$List$filter,
+						function (sub) {
+							return _Utils_eq(
+								$author$project$Data$Uploader$Media$subtitleToName(sub),
+								$author$project$Data$Uploader$Media$videoToName(x));
+						},
+						subtitles));
+				var $temp$videos = xs,
+					$temp$subtitles = subtitles,
+					$temp$groupings = A2($elm$core$List$cons, grouping, groupings);
+				videos = $temp$videos;
+				subtitles = $temp$subtitles;
+				groupings = $temp$groupings;
+				continue doMatch;
+			}
+		}
+	});
+var $author$project$Data$Uploader$Media$match = F2(
+	function (videos, subtitles) {
+		return A3($author$project$Data$Uploader$Media$doMatch, videos, subtitles, _List_Nil);
+	});
+var $author$project$Data$Uploader$Media$Subtitle = F2(
+	function (a, b) {
+		return {$: 'Subtitle', a: a, b: b};
+	});
+var $author$project$Data$Uploader$Media$Video = function (a) {
+	return {$: 'Video', a: a};
+};
+var $elm_community$list_extra$List$Extra$indexedFoldr = F3(
+	function (func, acc, list) {
+		var step = F2(
+			function (x, _v0) {
+				var i = _v0.a;
+				var thisAcc = _v0.b;
+				return _Utils_Tuple2(
+					i - 1,
+					A3(func, i, x, thisAcc));
+			});
+		return A3(
+			$elm$core$List$foldr,
+			step,
+			_Utils_Tuple2(
+				$elm$core$List$length(list) - 1,
+				acc),
+			list).b;
+	});
+var $elm$core$String$toLower = _String_toLower;
+var $author$project$Util$getFileExtension = function (fileName) {
+	var _v0 = A2(
+		$elm$core$String$split,
+		'.',
+		$elm$core$String$reverse(fileName));
+	if (!_v0.b) {
+		return '';
+	} else {
+		if (!_v0.b.b) {
+			return '';
+		} else {
+			var x = _v0.a;
+			return $elm$core$String$toLower(
+				$elm$core$String$reverse(x));
+		}
+	}
+};
+var $elm$file$File$mime = _File_mime;
+var $elm$core$Set$insert = F2(
+	function (key, _v0) {
+		var dict = _v0.a;
+		return $elm$core$Set$Set_elm_builtin(
+			A3($elm$core$Dict$insert, key, _Utils_Tuple0, dict));
+	});
+var $elm$core$Set$fromList = function (list) {
+	return A3($elm$core$List$foldl, $elm$core$Set$insert, $elm$core$Set$empty, list);
+};
+var $author$project$Data$File$Type$toExtensions = A2(
+	$elm$core$Basics$composeL,
+	$elm$core$Set$fromList,
+	A2(
+		$elm$core$List$foldr,
+		F2(
+			function (identifier, extensions) {
+				if (identifier.$ === 'Ext') {
+					var extension = identifier.a;
+					return A2($elm$core$List$cons, extension, extensions);
+				} else {
+					return extensions;
+				}
+			}),
+		_List_Nil));
+var $author$project$Data$File$Type$toMimes = A2(
+	$elm$core$Basics$composeL,
+	$elm$core$Set$fromList,
+	A2(
+		$elm$core$List$foldr,
+		F2(
+			function (identifier, mimes) {
+				if (identifier.$ === 'Mime') {
+					var mime = identifier.a;
+					return A2($elm$core$List$cons, mime, mimes);
+				} else {
+					return mimes;
+				}
+			}),
+		_List_Nil));
+var $author$project$Data$File$Type$isOneOf = F2(
+	function (file, identifiers) {
+		var mime = $elm$file$File$mime(file);
+		var ext = $author$project$Util$getFileExtension(
+			$elm$file$File$name(file));
+		return A2(
+			$elm$core$Set$member,
+			mime,
+			$author$project$Data$File$Type$toMimes(identifiers)) || ($elm$core$String$isEmpty(mime) && A2(
+			$elm$core$Set$member,
+			ext,
+			$author$project$Data$File$Type$toExtensions(identifiers)));
+	});
+var $author$project$Data$File$Type$Ext = function (a) {
+	return {$: 'Ext', a: a};
+};
+var $author$project$Data$File$Type$supportedSubtitles = _List_fromArray(
+	[
+		$author$project$Data$File$Type$Ext('srt'),
+		$author$project$Data$File$Type$Ext('vtt')
+	]);
+var $author$project$Data$File$Type$isSupportedSubtitle = function (file) {
+	return A2($author$project$Data$File$Type$isOneOf, file, $author$project$Data$File$Type$supportedSubtitles);
+};
+var $author$project$Data$File$Type$Mime = function (a) {
+	return {$: 'Mime', a: a};
+};
+var $author$project$Data$File$Type$supportedVideos = _List_fromArray(
+	[
+		$author$project$Data$File$Type$Mime('video/mp4'),
+		$author$project$Data$File$Type$Mime('video/webm'),
+		$author$project$Data$File$Type$Mime('video/mpeg'),
+		$author$project$Data$File$Type$Mime('video/quicktime'),
+		$author$project$Data$File$Type$Mime('video/MP2T'),
+		$author$project$Data$File$Type$Ext('flv'),
+		$author$project$Data$File$Type$Mime('video/avi'),
+		$author$project$Data$File$Type$Mime('video/x-ms-wmv')
+	]);
+var $author$project$Data$File$Type$isSupportedVideo = function (file) {
+	return A2($author$project$Data$File$Type$isOneOf, file, $author$project$Data$File$Type$supportedVideos);
+};
+var $author$project$Data$File$Type$unsupportedSubtitles = _List_fromArray(
+	[
+		$author$project$Data$File$Type$Ext('ass'),
+		$author$project$Data$File$Type$Ext('ssa')
+	]);
+var $author$project$Data$File$Type$isUnsupportedSubtitle = function (file) {
+	return A2($author$project$Data$File$Type$isOneOf, file, $author$project$Data$File$Type$unsupportedSubtitles);
+};
+var $author$project$Data$File$Type$unsupportedVideos = _List_fromArray(
+	[
+		$author$project$Data$File$Type$Mime('video/x-matroska')
+	]);
+var $author$project$Data$File$Type$isUnsupportedVideo = function (file) {
+	return A2($author$project$Data$File$Type$isOneOf, file, $author$project$Data$File$Type$unsupportedVideos);
+};
+var $author$project$Data$Uploader$Media$partitionFiles = function () {
+	var reducer = F3(
+		function (index, file, partitioned) {
+			return $author$project$Data$File$Type$isSupportedVideo(file) ? _Utils_update(
+				partitioned,
+				{
+					videos: A2(
+						$elm$core$List$cons,
+						$author$project$Data$Uploader$Media$Video(file),
+						partitioned.videos)
+				}) : ($author$project$Data$File$Type$isSupportedSubtitle(file) ? _Utils_update(
+				partitioned,
+				{
+					subtitles: A2(
+						$elm$core$List$cons,
+						A2($author$project$Data$Uploader$Media$Subtitle, index, file),
+						partitioned.subtitles)
+				}) : ($author$project$Data$File$Type$isUnsupportedVideo(file) ? _Utils_update(
+				partitioned,
+				{
+					unsupportedVideos: A2($elm$core$List$cons, file, partitioned.unsupportedVideos)
+				}) : ($author$project$Data$File$Type$isUnsupportedSubtitle(file) ? _Utils_update(
+				partitioned,
+				{
+					unsupportedSubtitles: A2($elm$core$List$cons, file, partitioned.unsupportedSubtitles)
+				}) : _Utils_update(
+				partitioned,
+				{
+					unsupportedFiles: A2($elm$core$List$cons, file, partitioned.unsupportedFiles)
+				}))));
+		});
+	return A2(
+		$elm_community$list_extra$List$Extra$indexedFoldr,
+		reducer,
+		{subtitles: _List_Nil, unsupportedFiles: _List_Nil, unsupportedSubtitles: _List_Nil, unsupportedVideos: _List_Nil, videos: _List_Nil});
+}();
+var $author$project$Data$Uploader$Media$AmbiguousSubs = F3(
+	function (a, b, c) {
+		return {$: 'AmbiguousSubs', a: a, b: b, c: c};
+	});
+var $author$project$Data$Uploader$Media$HasSub = function (a) {
+	return {$: 'HasSub', a: a};
+};
+var $author$project$Data$Uploader$Media$NoSub = {$: 'NoSub'};
+var $author$project$Data$Uploader$Media$subtitleCandidatesFromList = function (subs) {
+	if (!subs.b) {
+		return $author$project$Data$Uploader$Media$NoSub;
+	} else {
+		if (!subs.b.b) {
+			var head = subs.a;
+			return $author$project$Data$Uploader$Media$HasSub(head);
+		} else {
+			var head = subs.a;
+			var _v1 = subs.b;
+			var neck = _v1.a;
+			var tails = _v1.b;
+			return A3($author$project$Data$Uploader$Media$AmbiguousSubs, head, neck, tails);
+		}
+	}
+};
+var $author$project$Data$Uploader$Media$morph = function (files) {
+	var _v0 = $author$project$Data$Uploader$Media$partitionFiles(files);
+	var videos = _v0.videos;
+	var subtitles = _v0.subtitles;
+	var unsupportedVideos = _v0.unsupportedVideos;
+	var unsupportedSubtitles = _v0.unsupportedSubtitles;
+	var unsupportedFiles = _v0.unsupportedFiles;
+	var matchedFileNames = A2($elm$core$List$map, $author$project$Data$Uploader$Media$videoToName, videos);
+	return {
+		matches: A2(
+			$elm$core$List$map,
+			$elm$core$Tuple$mapSecond($author$project$Data$Uploader$Media$subtitleCandidatesFromList),
+			A2($author$project$Data$Uploader$Media$match, videos, subtitles)),
+		unsupportedFiles: unsupportedFiles,
+		unsupportedSubtitles: unsupportedSubtitles,
+		unsupportedVideos: unsupportedVideos,
+		widows: A2(
+			$elm$core$List$filter,
+			A2(
+				$elm$core$Basics$composeL,
+				A2(
+					$elm$core$Basics$composeL,
+					$elm$core$Basics$not,
+					A2($author$project$Util$flip, $elm$core$List$member, matchedFileNames)),
+				$author$project$Data$Uploader$Media$subtitleToName),
+			subtitles)
+	};
+};
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $author$project$Data$Video$Processing$Params$granularityToInt = function (granularity) {
+	switch (granularity.$) {
+		case 'Rough':
+			return 1;
+		case 'Medium':
+			return 2;
+		default:
+			return 3;
+	}
+};
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $author$project$Data$Video$Processing$Params$granularityEncoder = A2($elm$core$Basics$composeR, $author$project$Data$Video$Processing$Params$granularityToInt, $elm$json$Json$Encode$int);
+var $author$project$Data$Video$Processing$Params$encoder = function (params) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'Granularity',
+				$author$project$Data$Video$Processing$Params$granularityEncoder(params.granularity)),
+				_Utils_Tuple2(
+				'DifferentTypeMinDifference',
+				$elm$json$Json$Encode$int(params.differentTypeMinDifference)),
+				_Utils_Tuple2(
+				'SameTypeMaxDifference',
+				$elm$json$Json$Encode$int(params.sameTypeMaxDifference)),
+				_Utils_Tuple2(
+				'SimilarTypeMaxDifference',
+				$elm$json$Json$Encode$int(params.similarTypeMaxDifference)),
+				_Utils_Tuple2(
+				'SmoothTypeMinValue',
+				$elm$json$Json$Encode$int(params.smoothTypeMinValue)),
+				_Utils_Tuple2(
+				'IsSameCombined',
+				$elm$json$Json$Encode$bool(params.isSameCombined)),
+				_Utils_Tuple2(
+				'ShortNoneCombiningMaxDurationInMs',
+				$elm$json$Json$Encode$int(params.shortNoneCombiningMaxDurationInMs))
+			]));
+};
+var $elm$core$List$singleton = function (value) {
+	return _List_fromArray(
+		[value]);
+};
+var $author$project$Data$Project$Concise$paramsUpdateEncoder = F2(
+	function (uuid, params) {
+		return $author$project$Data$Project$Concise$wrapRequestBody(
+			A2(
+				$elm$json$Json$Encode$list,
+				$elm$core$Basics$identity,
+				$elm$core$List$singleton(
+					$elm$json$Json$Encode$object(
+						_List_fromArray(
+							[
+								_Utils_Tuple2(
+								'Id',
+								$elm$json$Json$Encode$string(uuid)),
+								_Utils_Tuple2(
+								'Parameters',
+								$author$project$Data$Video$Processing$Params$encoder(params))
+							])))));
+	});
+var $elm_community$list_extra$List$Extra$find = F2(
+	function (predicate, list) {
+		find:
+		while (true) {
+			if (!list.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var first = list.a;
+				var rest = list.b;
+				if (predicate(first)) {
+					return $elm$core$Maybe$Just(first);
+				} else {
+					var $temp$predicate = predicate,
+						$temp$list = rest;
+					predicate = $temp$predicate;
+					list = $temp$list;
+					continue find;
+				}
+			}
+		}
+	});
+var $elm_community$list_extra$List$Extra$updateIf = F3(
+	function (predicate, update, list) {
+		return A2(
+			$elm$core$List$map,
+			function (item) {
+				return predicate(item) ? update(item) : item;
+			},
+			list);
+	});
+var $elm_community$list_extra$List$Extra$setIf = F3(
+	function (predicate, replacement, list) {
+		return A3(
+			$elm_community$list_extra$List$Extra$updateIf,
+			predicate,
+			$elm$core$Basics$always(replacement),
+			list);
+	});
+var $author$project$Data$Project$Concise$updateCollection = function (item) {
+	return A2(
+		$elm_community$list_extra$List$Extra$setIf,
+		function (_v0) {
+			var uuid = _v0.uuid;
+			return _Utils_eq(uuid, item.uuid);
+		},
+		item);
+};
+var $author$project$Data$Project$Concise$putInCollection = F2(
+	function (item, collection) {
+		var _v0 = A2(
+			$elm_community$list_extra$List$Extra$find,
+			function (_v1) {
+				var uuid = _v1.uuid;
+				return _Utils_eq(uuid, item.uuid);
+			},
+			collection);
+		if (_v0.$ === 'Just') {
+			return A2($author$project$Data$Project$Concise$updateCollection, item, collection);
+		} else {
+			return A2($elm$core$List$cons, item, collection);
+		}
+	});
+var $author$project$Data$Project$Concise$updateBy = function (uuid) {
+	return $elm_community$list_extra$List$Extra$updateIf(
+		function (item) {
+			return _Utils_eq(item.uuid, uuid);
+		});
+};
+var $author$project$Data$Project$Concise$resetProcessingStatusBy = function (uuid) {
+	return A2(
+		$author$project$Data$Project$Concise$updateBy,
+		uuid,
+		function (item) {
+			return _Utils_update(
+				item,
+				{status: $author$project$Data$Project$Concise$Uploaded});
+		});
+};
+var $elm$core$String$cons = _String_cons;
+var $author$project$Data$File$Type$identifierToString = function (identifier) {
+	if (identifier.$ === 'Ext') {
+		var extension = identifier.a;
+		return A2(
+			$elm$core$String$cons,
+			_Utils_chr('.'),
+			extension);
+	} else {
+		var mime = identifier.a;
+		return mime;
+	}
+};
+var $author$project$Data$File$Type$acceptableSubtitleFormats = A2($elm$core$List$map, $author$project$Data$File$Type$identifierToString, $author$project$Data$File$Type$supportedSubtitles);
+var $author$project$Data$File$Type$acceptableVideoFormats = A2($elm$core$List$map, $author$project$Data$File$Type$identifierToString, $author$project$Data$File$Type$supportedVideos);
+var $author$project$Data$Uploader$Media$acceptableSpecifiers = _Utils_ap($author$project$Data$File$Type$acceptableVideoFormats, $author$project$Data$File$Type$acceptableSubtitleFormats);
+var $elm$file$File$Select$files = F2(
+	function (mimes, toMsg) {
+		return A2(
+			$elm$core$Task$perform,
+			function (_v0) {
+				var f = _v0.a;
+				var fs = _v0.b;
+				return A2(toMsg, f, fs);
+			},
+			_File_uploadOneOrMore(mimes));
+	});
+var $author$project$Data$Uploader$Media$selectFiles = $elm$file$File$Select$files($author$project$Data$Uploader$Media$acceptableSpecifiers);
+var $author$project$Data$Project$Concise$setProcessingStatusBy = F2(
+	function (uuid, status) {
+		return A2(
+			$author$project$Data$Project$Concise$updateBy,
+			uuid,
+			$author$project$Data$Project$Concise$setStatus(status));
+	});
+var $elm$core$Dict$singleton = F2(
+	function (key, value) {
+		return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
+	});
+var $elm$core$Set$singleton = function (key) {
+	return $elm$core$Set$Set_elm_builtin(
+		A2($elm$core$Dict$singleton, key, _Utils_Tuple0));
+};
+var $author$project$Data$Project$Concise$BadParameters = {$: 'BadParameters'};
+var $author$project$Data$Project$Concise$CannotDecodeVideo = {$: 'CannotDecodeVideo'};
+var $author$project$Data$Project$Concise$FileNotFound = {$: 'FileNotFound'};
+var $author$project$Data$Project$Concise$processingErrorDecoder = function (statusCode) {
+	return (statusCode === 400) ? $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2(
+				$elm$json$Json$Decode$field,
+				'ErrorCode',
+				A2($author$project$Util$errorCodeDecoder, 130, $author$project$Data$Project$Concise$FileNotFound)),
+				A2(
+				$elm$json$Json$Decode$field,
+				'ErrorCode',
+				A2($author$project$Util$errorCodeDecoder, 110, $author$project$Data$Project$Concise$BadParameters))
+			])) : ((statusCode === 422) ? $elm$json$Json$Decode$succeed($author$project$Data$Project$Concise$CannotDecodeVideo) : $elm$json$Json$Decode$fail('not to be handled here'));
+};
+var $author$project$Request$Helper$whateverDecoder = $elm$json$Json$Decode$succeed(_Utils_Tuple0);
+var $author$project$Request$Video$Processing$start = F2(
+	function (handler, uuids) {
+		return $author$project$API$Request$post(
+			{
+				decoder: $author$project$Request$Helper$whateverDecoder,
+				errorDecoder: $author$project$Data$Project$Concise$processingErrorDecoder,
+				handler: handler(uuids),
+				payload: $author$project$Data$Project$Concise$uuidsEncoder(
+					$elm$core$Set$toList(uuids)),
+				timeout: $elm$core$Maybe$Just(20000),
+				url: A2(
+					$author$project$Request$Helper$apiNativeClient,
+					_List_fromArray(
+						['process']),
+					_List_Nil)
+			});
+	});
+var $author$project$Data$Project$Concise$startProcessing = function (uuids) {
+	return A2(
+		$author$project$Data$Project$Concise$batchUpdateBy,
+		uuids,
+		$author$project$Data$Project$Concise$setStatus(
+			$author$project$Data$Project$Concise$Processing(0)));
+};
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
+var $elm$core$String$repeatHelp = F3(
+	function (n, chunk, result) {
+		return (n <= 0) ? result : A3(
+			$elm$core$String$repeatHelp,
+			n >> 1,
+			_Utils_ap(chunk, chunk),
+			(!(n & 1)) ? result : _Utils_ap(result, chunk));
+	});
+var $elm$core$String$repeat = F2(
+	function (n, chunk) {
+		return A3($elm$core$String$repeatHelp, n, chunk, '');
+	});
+var $elm$core$String$padLeft = F3(
+	function (n, _char, string) {
+		return _Utils_ap(
+			A2(
+				$elm$core$String$repeat,
+				n - $elm$core$String$length(string),
+				$elm$core$String$fromChar(_char)),
+			string);
+	});
+var $elm$core$String$fromList = _String_fromList;
+var $TSFoster$elm_uuid$UUID$toHex = F2(
+	function (acc, _int) {
+		toHex:
+		while (true) {
+			if (!_int) {
+				return $elm$core$String$fromList(acc);
+			} else {
+				var _char = function () {
+					var _v0 = 15 & _int;
+					switch (_v0) {
+						case 0:
+							return _Utils_chr('0');
+						case 1:
+							return _Utils_chr('1');
+						case 2:
+							return _Utils_chr('2');
+						case 3:
+							return _Utils_chr('3');
+						case 4:
+							return _Utils_chr('4');
+						case 5:
+							return _Utils_chr('5');
+						case 6:
+							return _Utils_chr('6');
+						case 7:
+							return _Utils_chr('7');
+						case 8:
+							return _Utils_chr('8');
+						case 9:
+							return _Utils_chr('9');
+						case 10:
+							return _Utils_chr('a');
+						case 11:
+							return _Utils_chr('b');
+						case 12:
+							return _Utils_chr('c');
+						case 13:
+							return _Utils_chr('d');
+						case 14:
+							return _Utils_chr('e');
+						default:
+							return _Utils_chr('f');
+					}
+				}();
+				var $temp$acc = A2($elm$core$List$cons, _char, acc),
+					$temp$int = _int >>> 4;
+				acc = $temp$acc;
+				_int = $temp$int;
+				continue toHex;
+			}
+		}
+	});
+var $TSFoster$elm_uuid$UUID$toStringWith = F2(
+	function (sep, _v0) {
+		var a = _v0.a;
+		var b = _v0.b;
+		var c = _v0.c;
+		var d = _v0.d;
+		return _Utils_ap(
+			A3(
+				$elm$core$String$padLeft,
+				8,
+				_Utils_chr('0'),
+				A2($TSFoster$elm_uuid$UUID$toHex, _List_Nil, a)),
+			_Utils_ap(
+				sep,
+				_Utils_ap(
+					A3(
+						$elm$core$String$padLeft,
+						4,
+						_Utils_chr('0'),
+						A2($TSFoster$elm_uuid$UUID$toHex, _List_Nil, b >>> 16)),
+					_Utils_ap(
+						sep,
+						_Utils_ap(
+							A3(
+								$elm$core$String$padLeft,
+								4,
+								_Utils_chr('0'),
+								A2($TSFoster$elm_uuid$UUID$toHex, _List_Nil, 65535 & b)),
+							_Utils_ap(
+								sep,
+								_Utils_ap(
+									A3(
+										$elm$core$String$padLeft,
+										4,
+										_Utils_chr('0'),
+										A2($TSFoster$elm_uuid$UUID$toHex, _List_Nil, c >>> 16)),
+									_Utils_ap(
+										sep,
+										_Utils_ap(
+											A3(
+												$elm$core$String$padLeft,
+												4,
+												_Utils_chr('0'),
+												A2($TSFoster$elm_uuid$UUID$toHex, _List_Nil, 65535 & c)),
+											A3(
+												$elm$core$String$padLeft,
+												8,
+												_Utils_chr('0'),
+												A2($TSFoster$elm_uuid$UUID$toHex, _List_Nil, d)))))))))));
+	});
+var $TSFoster$elm_uuid$UUID$toString = $TSFoster$elm_uuid$UUID$toStringWith('-');
+var $author$project$Data$Uploader$Media$toUploadableSubtitle = function (candidates) {
+	switch (candidates.$) {
+		case 'NoSub':
+			return $elm$core$Maybe$Nothing;
+		case 'HasSub':
+			var subtitle = candidates.a;
+			return $elm$core$Maybe$Just(subtitle);
+		default:
+			var subtitle = candidates.a;
+			return $elm$core$Maybe$Just(subtitle);
+	}
+};
+var $author$project$Component$Portal$Params$update = F2(
+	function (msg, params) {
+		switch (msg.$) {
+			case 'SetGranularity':
+				var granularity = msg.a;
+				return _Utils_update(
+					params,
+					{granularity: granularity});
+			case 'SetDifferentTypeMinDifference':
+				var n = msg.a;
+				return _Utils_update(
+					params,
+					{differentTypeMinDifference: n});
+			case 'SetSameTypeMaxDifference':
+				var n = msg.a;
+				return _Utils_update(
+					params,
+					{sameTypeMaxDifference: n});
+			case 'SetSimilarTypeMaxDifference':
+				var n = msg.a;
+				return _Utils_update(
+					params,
+					{similarTypeMaxDifference: n});
+			case 'SetSmoothTypeMinValue':
+				var n = msg.a;
+				return _Utils_update(
+					params,
+					{smoothTypeMinValue: n});
+			case 'SetIsSameCombined':
+				var isSameCombined = msg.a;
+				return _Utils_update(
+					params,
+					{isSameCombined: isSameCombined});
+			case 'SetShortNoneCombiningMaxDurationInMs':
+				var n = msg.a;
+				return _Utils_update(
+					params,
+					{shortNoneCombiningMaxDurationInMs: n});
+			default:
+				return params;
+		}
+	});
+var $author$project$Component$Portal$Msg$MsgForParamsKeeper = function (a) {
+	return {$: 'MsgForParamsKeeper', a: a};
+};
+var $author$project$Component$Portal$Msg$ParamsLoaded = function (a) {
+	return {$: 'ParamsLoaded', a: a};
+};
+var $author$project$Component$Portal$Msg$ParamsSelected = function (a) {
+	return {$: 'ParamsSelected', a: a};
+};
+var $elm$file$File$Select$file = F2(
+	function (mimes, toMsg) {
+		return A2(
+			$elm$core$Task$perform,
+			toMsg,
+			_File_uploadOne(mimes));
+	});
+var $author$project$Component$Portal$ParamsKeeper$isProjectSelected = F2(
+	function (selection, _v0) {
+		var uuid = _v0.uuid;
+		return A2($elm$core$Set$member, uuid, selection);
+	});
+var $author$project$Component$Portal$ParamsKeeper$filterSelectedProjects = A2($elm$core$Basics$composeL, $elm$core$List$filter, $author$project$Component$Portal$ParamsKeeper$isProjectSelected);
+var $elm$file$File$Download$string = F3(
+	function (name, mime, content) {
+		return A2(
+			$elm$core$Task$perform,
+			$elm$core$Basics$never,
+			A3(_File_download, name, mime, content));
+	});
+var $elm$file$File$toString = _File_toString;
+var $author$project$Component$Portal$ParamsKeeper$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'StartExportingParams':
+				var params = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							paramsToExport: $elm$core$Maybe$Just(params)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'CancelExportingParams':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{paramsToExport: $elm$core$Maybe$Nothing}),
+					$elm$core$Platform$Cmd$none);
+			case 'ExportParams':
+				var filename = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{paramsToExport: $elm$core$Maybe$Nothing}),
+					function () {
+						var _v1 = model.paramsToExport;
+						if (_v1.$ === 'Just') {
+							var params = _v1.a;
+							return A3(
+								$elm$file$File$Download$string,
+								filename,
+								'application/json',
+								A2(
+									$elm$json$Json$Encode$encode,
+									2,
+									$author$project$Data$Video$Processing$Params$encoder(params)));
+						} else {
+							return $elm$core$Platform$Cmd$none;
+						}
+					}());
+			case 'ParamsRequested':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{importingError: $elm$core$Maybe$Nothing}),
+					A2(
+						$elm$file$File$Select$file,
+						_List_fromArray(
+							['application/json']),
+						A2($elm$core$Basics$composeL, $author$project$Component$Portal$Msg$MsgForParamsKeeper, $author$project$Component$Portal$Msg$ParamsSelected)));
+			case 'ParamsSelected':
+				var file = msg.a;
+				return _Utils_Tuple2(
+					model,
+					A2(
+						$elm$core$Task$perform,
+						A2($elm$core$Basics$composeL, $author$project$Component$Portal$Msg$MsgForParamsKeeper, $author$project$Component$Portal$Msg$ParamsLoaded),
+						$elm$file$File$toString(file)));
+			case 'ParamsLoaded':
+				var content = msg.a;
+				var _v2 = _Utils_Tuple2(
+					A2($elm$json$Json$Decode$decodeString, $author$project$Data$Video$Processing$Params$decoder, content),
+					A2(
+						$krisajenkins$remotedata$RemoteData$map,
+						$author$project$Component$Portal$ParamsKeeper$filterSelectedProjects(model.selectedProjects),
+						model.projects));
+				_v2$2:
+				while (true) {
+					if (_v2.a.$ === 'Ok') {
+						if (((_v2.b.$ === 'Success') && _v2.b.a.b) && (!_v2.b.a.b.b)) {
+							var _v3 = _v2.b.a;
+							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+						} else {
+							break _v2$2;
+						}
+					} else {
+						if (((_v2.b.$ === 'Success') && _v2.b.a.b) && (!_v2.b.a.b.b)) {
+							var error = _v2.a.a;
+							var _v4 = _v2.b.a;
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										importingError: $elm$core$Maybe$Just(error)
+									}),
+								$elm$core$Platform$Cmd$none);
+						} else {
+							break _v2$2;
+						}
+					}
+				}
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{importingError: $elm$core$Maybe$Nothing}),
+					$elm$core$Platform$Cmd$none);
+		}
+	});
+var $author$project$Component$Portal$Msg$CloseUploaderWhenCompleted = {$: 'CloseUploaderWhenCompleted'};
+var $author$project$Component$Portal$Msg$FailedToUpload = F2(
+	function (a, b) {
+		return {$: 'FailedToUpload', a: a, b: b};
+	});
+var $author$project$Component$Portal$Msg$SubtitleLoaded = F3(
+	function (a, b, c) {
+		return {$: 'SubtitleLoaded', a: a, b: b, c: c};
+	});
+var $author$project$Component$Portal$Msg$SubtitleSelected = F2(
+	function (a, b) {
+		return {$: 'SubtitleSelected', a: a, b: b};
+	});
+var $author$project$Component$Portal$Msg$SubtitleUploaded = F2(
+	function (a, b) {
+		return {$: 'SubtitleUploaded', a: a, b: b};
+	});
+var $author$project$Component$Portal$Msg$Uploading = F4(
+	function (a, b, c, d) {
+		return {$: 'Uploading', a: a, b: b, c: c, d: d};
+	});
+var $author$project$Component$Portal$Msg$UploadingSubtitle = function (a) {
+	return {$: 'UploadingSubtitle', a: a};
+};
+var $author$project$Component$Portal$Msg$VideoUploaded = F3(
+	function (a, b, c) {
+		return {$: 'VideoUploaded', a: a, b: b, c: c};
+	});
+var $author$project$Data$Project$Concise$subtitleEncoder = F3(
+	function (uuid, ext, content) {
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'Id',
+					$elm$json$Json$Encode$string(uuid)),
+					_Utils_Tuple2(
+					'Type',
+					$elm$json$Json$Encode$string(ext)),
+					_Utils_Tuple2(
+					'Text',
+					$elm$json$Json$Encode$string(content))
+				]));
+	});
+var $author$project$Data$Project$Concise$InvalidSubtitle = {$: 'InvalidSubtitle'};
+var $author$project$Data$Project$Concise$subtitleErrorDecoder = function (statusCode) {
+	return $elm$json$Json$Decode$succeed($author$project$Data$Project$Concise$InvalidSubtitle);
+};
+var $author$project$Request$Project$addSubtitle = F4(
+	function (handler, uuid, ext, content) {
+		return $author$project$API$Request$post(
+			{
+				decoder: A2($elm$json$Json$Decode$field, 'Video', $author$project$Data$Project$Concise$decoder),
+				errorDecoder: $author$project$Data$Project$Concise$subtitleErrorDecoder,
+				handler: handler(uuid),
+				payload: A3($author$project$Data$Project$Concise$subtitleEncoder, uuid, ext, content),
+				timeout: $elm$core$Maybe$Just(10000),
+				url: A2(
+					$author$project$Request$Helper$apiNativeClient,
+					_List_fromArray(
+						['uploadsubtitle']),
+					_List_Nil)
+			});
+	});
+var $elm$core$Basics$clamp = F3(
+	function (low, high, number) {
+		return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
+	});
+var $elm$http$Http$fractionSent = function (p) {
+	return (!p.size) ? 1 : A3($elm$core$Basics$clamp, 0, 1, p.sent / p.size);
+};
+var $elm$http$Http$filePart = _Http_pair;
+var $elm$http$Http$multipartBody = function (parts) {
+	return A2(
+		_Http_pair,
+		'',
+		_Http_toFormData(parts));
+};
+var $author$project$Request$Project$new = F3(
+	function (handler, videoFile, trackerID) {
+		return $elm$http$Http$request(
+			{
+				body: $elm$http$Http$multipartBody(
+					_List_fromArray(
+						[
+							A2($elm$http$Http$filePart, 'File', videoFile)
+						])),
+				expect: A2(
+					$elm$http$Http$expectJson,
+					handler,
+					A2($elm$json$Json$Decode$field, 'Video', $author$project$Data$Project$Concise$decoder)),
+				headers: _List_Nil,
+				method: 'POST',
+				timeout: $elm$core$Maybe$Just(60000),
+				tracker: $elm$core$Maybe$Just(trackerID),
+				url: A2(
+					$author$project$Request$Helper$apiNativeClient,
+					_List_fromArray(
+						['uploadvideo']),
+					_List_Nil)
+			});
+	});
+var $elm$core$List$partition = F2(
+	function (pred, list) {
+		var step = F2(
+			function (x, _v0) {
+				var trues = _v0.a;
+				var falses = _v0.b;
+				return pred(x) ? _Utils_Tuple2(
+					A2($elm$core$List$cons, x, trues),
+					falses) : _Utils_Tuple2(
+					trues,
+					A2($elm$core$List$cons, x, falses));
+			});
+		return A3(
+			$elm$core$List$foldr,
+			step,
+			_Utils_Tuple2(_List_Nil, _List_Nil),
+			list);
+	});
+var $author$project$Data$Project$Concise$updateErrorDecoder = function (statusCode) {
+	return $elm$json$Json$Decode$fail('');
+};
+var $author$project$Request$Project$removeSubtitle = F2(
+	function (handler, uuid) {
+		return $author$project$API$Request$post(
+			{
+				decoder: A2(
+					$elm$json$Json$Decode$field,
+					'Videos',
+					A2($elm$json$Json$Decode$index, 0, $author$project$Data$Project$Concise$decoder)),
+				errorDecoder: $author$project$Data$Project$Concise$updateErrorDecoder,
+				handler: handler,
+				payload: $author$project$Data$Project$Concise$uuidsEncoder(
+					_List_fromArray(
+						[uuid])),
+				timeout: $elm$core$Maybe$Just(10000),
+				url: A2(
+					$author$project$Request$Helper$apiNativeClient,
+					_List_fromArray(
+						['deletesubtitle']),
+					_List_Nil)
+			});
+	});
+var $author$project$Data$Uploader$Media$selectSubtitle = $elm$file$File$Select$file($author$project$Data$File$Type$acceptableSubtitleFormats);
+var $author$project$Data$Uploader$Media$subtitleToExt = function (_v0) {
+	var file = _v0.b;
+	return $author$project$Util$getFileExtension(
+		$elm$file$File$name(file));
+};
+var $author$project$Data$Uploader$Media$subtitleToFile = function (_v0) {
+	var file = _v0.b;
+	return file;
+};
+var $author$project$Data$File$Type$toSubtitleExtension = function (file) {
+	return $author$project$Data$File$Type$isSupportedSubtitle(file) ? $elm$core$Maybe$Just(
+		$author$project$Util$getFileExtension(
+			$elm$file$File$name(file))) : $elm$core$Maybe$Nothing;
+};
+var $author$project$Component$Portal$Uploader$updateProgress = F2(
+	function (targetTrackerID, progress) {
+		return $elm$core$List$map(
+			function (item) {
+				if (item.$ === 'Uploading') {
+					var trackerID = item.a;
+					var video = item.b;
+					var availableSubtitle = item.c;
+					return _Utils_eq(trackerID, targetTrackerID) ? A4($author$project$Component$Portal$Msg$Uploading, trackerID, video, availableSubtitle, progress) : item;
+				} else {
+					return item;
+				}
+			});
+	});
+var $author$project$Data$Uploader$Media$videoToFile = function (_v0) {
+	var file = _v0.a;
+	return file;
+};
+var $author$project$Component$Portal$Uploader$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'UploadVideo':
+				var targetVideo = msg.a;
+				var availableSubtitle = msg.b;
+				var trackerID = msg.c;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							isDisplayingUploader: true,
+							items: A2(
+								$elm$core$List$cons,
+								A4($author$project$Component$Portal$Msg$Uploading, trackerID, targetVideo, availableSubtitle, 0),
+								model.items)
+						}),
+					A3(
+						$author$project$Request$Project$new,
+						A2(
+							$elm$core$Basics$composeL,
+							$author$project$Component$Portal$Msg$MsgForUploader,
+							A2($author$project$Component$Portal$Msg$VideoUploaded, targetVideo, availableSubtitle)),
+						$author$project$Data$Uploader$Media$videoToFile(targetVideo),
+						trackerID));
+			case 'VideoUploading':
+				var trackerID = msg.a;
+				var progress = msg.b;
+				if (progress.$ === 'Sending') {
+					var sendingProgress = progress.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								items: A3(
+									$author$project$Component$Portal$Uploader$updateProgress,
+									trackerID,
+									$elm$http$Http$fractionSent(sendingProgress),
+									model.items)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'VideoUploaded':
+				var targetVideo = msg.a;
+				var availableSubtitle = msg.b;
+				var result = msg.c;
+				var isTargetVideo = function (item) {
+					if (item.$ === 'Uploading') {
+						var video = item.b;
+						return _Utils_eq(video, targetVideo);
+					} else {
+						return false;
+					}
+				};
+				var _v2 = _Utils_Tuple2(result, availableSubtitle);
+				if (_v2.a.$ === 'Ok') {
+					if (_v2.b.$ === 'Nothing') {
+						var concise = _v2.a.a;
+						var _v3 = _v2.b;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									items: A2($elm_community$list_extra$List$Extra$filterNot, isTargetVideo, model.items),
+									projects: A2(
+										$krisajenkins$remotedata$RemoteData$map,
+										$elm$core$List$cons(concise),
+										model.projects)
+								}),
+							A2(
+								$elm$core$Task$perform,
+								A2(
+									$elm$core$Basics$composeL,
+									$author$project$Component$Portal$Msg$MsgForUploader,
+									function (_v4) {
+										return $author$project$Component$Portal$Msg$CloseUploaderWhenCompleted;
+									}),
+								$elm$core$Task$succeed(_Utils_Tuple0)));
+					} else {
+						var concise = _v2.a.a;
+						var subtitle = _v2.b.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									items: A3(
+										$elm_community$list_extra$List$Extra$setIf,
+										isTargetVideo,
+										$author$project$Component$Portal$Msg$UploadingSubtitle(concise),
+										model.items)
+								}),
+							A2(
+								$elm$core$Task$perform,
+								A2(
+									$elm$core$Basics$composeL,
+									$author$project$Component$Portal$Msg$MsgForUploader,
+									A2(
+										$author$project$Component$Portal$Msg$SubtitleLoaded,
+										concise.uuid,
+										$author$project$Data$Uploader$Media$subtitleToExt(subtitle))),
+								$elm$file$File$toString(
+									$author$project$Data$Uploader$Media$subtitleToFile(subtitle))));
+					}
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								items: A3(
+									$elm_community$list_extra$List$Extra$setIf,
+									isTargetVideo,
+									A2($author$project$Component$Portal$Msg$FailedToUpload, targetVideo, availableSubtitle),
+									model.items)
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'PickSubtitleFor':
+				var uuid = msg.a;
+				return _Utils_Tuple2(
+					model,
+					$author$project$Data$Uploader$Media$selectSubtitle(
+						A2(
+							$elm$core$Basics$composeL,
+							$author$project$Component$Portal$Msg$MsgForUploader,
+							$author$project$Component$Portal$Msg$SubtitleSelected(uuid))));
+			case 'SubtitleSelected':
+				var uuid = msg.a;
+				var file = msg.b;
+				var _v6 = $author$project$Data$File$Type$toSubtitleExtension(file);
+				if (_v6.$ === 'Just') {
+					var ext = _v6.a;
+					return _Utils_Tuple2(
+						model,
+						A2(
+							$elm$core$Task$perform,
+							A2(
+								$elm$core$Basics$composeL,
+								$author$project$Component$Portal$Msg$MsgForUploader,
+								A2($author$project$Component$Portal$Msg$SubtitleLoaded, uuid, ext)),
+							$elm$file$File$toString(file)));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'SubtitleLoaded':
+				var uuid = msg.a;
+				var ext = msg.b;
+				var subtitleContent = msg.c;
+				return _Utils_Tuple2(
+					model,
+					A4(
+						$author$project$Request$Project$addSubtitle,
+						F2(
+							function (u, h) {
+								return $author$project$Component$Portal$Msg$MsgForUploader(
+									A2($author$project$Component$Portal$Msg$SubtitleUploaded, u, h));
+							}),
+						uuid,
+						ext,
+						subtitleContent));
+			case 'SubtitleUploaded':
+				if (msg.b.$ === 'Ok') {
+					var concise = msg.b.a;
+					var isTargetVideo = function (item) {
+						if (item.$ === 'UploadingSubtitle') {
+							var uuid = item.a.uuid;
+							return _Utils_eq(uuid, concise.uuid);
+						} else {
+							return false;
+						}
+					};
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								items: A2($elm_community$list_extra$List$Extra$filterNot, isTargetVideo, model.items),
+								projects: A2(
+									$krisajenkins$remotedata$RemoteData$map,
+									$author$project$Data$Project$Concise$putInCollection(concise),
+									model.projects),
+								reviewingSubtitle: $elm$core$Maybe$Nothing
+							}),
+						A2(
+							$elm$core$Task$perform,
+							A2(
+								$elm$core$Basics$composeL,
+								$author$project$Component$Portal$Msg$MsgForUploader,
+								function (_v7) {
+									return $author$project$Component$Portal$Msg$CloseUploaderWhenCompleted;
+								}),
+							$elm$core$Task$succeed(_Utils_Tuple0)));
+				} else {
+					var targetUUID = msg.a;
+					var isTarget = function (item) {
+						if (item.$ === 'UploadingSubtitle') {
+							var uuid = item.a.uuid;
+							return _Utils_eq(uuid, targetUUID);
+						} else {
+							return false;
+						}
+					};
+					var _v9 = A2($elm$core$List$partition, isTarget, model.items);
+					if (_v9.a.b && (_v9.a.a.$ === 'UploadingSubtitle')) {
+						var _v10 = _v9.a;
+						var concise = _v10.a.a;
+						var remaining = _v9.b;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									items: remaining,
+									projects: A2(
+										$krisajenkins$remotedata$RemoteData$map,
+										$elm$core$List$cons(concise),
+										model.projects)
+								}),
+							$elm$core$Platform$Cmd$none);
+					} else {
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					}
+				}
+			case 'OpenUploader':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{isDisplayingUploader: true}),
+					$elm$core$Platform$Cmd$none);
+			case 'CloseUploader':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{isDisplayingUploader: false}),
+					$elm$core$Platform$Cmd$none);
+			case 'CloseUploaderWhenCompleted':
+				return $elm$core$List$isEmpty(model.items) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{isDisplayingUploader: false}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'ReviewSubtitle':
+				var uuid = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							reviewingSubtitle: $elm$core$Maybe$Just(uuid)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'StopReviewingSubtitle':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{reviewingSubtitle: $elm$core$Maybe$Nothing}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var uuid = msg.a;
+				return _Utils_Tuple2(
+					model,
+					A2($author$project$Request$Project$removeSubtitle, $author$project$Component$Portal$Msg$ProjectUpdated, uuid));
+		}
+	});
+var $author$project$Request$Project$update = F2(
+	function (handler, changes) {
+		return $author$project$API$Request$post(
+			{
+				decoder: A2(
+					$elm$json$Json$Decode$field,
+					'Videos',
+					A2($elm$json$Json$Decode$index, 0, $author$project$Data$Project$Concise$decoder)),
+				errorDecoder: $author$project$Data$Project$Concise$updateErrorDecoder,
+				handler: handler,
+				payload: changes,
+				timeout: $elm$core$Maybe$Just(10000),
+				url: A2(
+					$author$project$Request$Helper$apiNativeClient,
+					_List_fromArray(
+						['updatevideo']),
+					_List_Nil)
+			});
+	});
+var $elm$core$Set$remove = F2(
+	function (key, _v0) {
+		var dict = _v0.a;
+		return $elm$core$Set$Set_elm_builtin(
+			A2($elm$core$Dict$remove, key, dict));
+	});
+var $elm$core$Set$size = function (_v0) {
+	var dict = _v0.a;
+	return $elm$core$Dict$size(dict);
+};
+var $author$project$Util$updateSelection = F3(
+	function (entryID, isSelectingMultiple, currentlySelectedEntries) {
+		var isEntryAlreadySelected = A2($elm$core$Set$member, entryID, currentlySelectedEntries);
+		var _v0 = _Utils_Tuple2(isSelectingMultiple, isEntryAlreadySelected);
+		if (!_v0.a) {
+			if (!_v0.b) {
+				return $elm$core$Set$singleton(entryID);
+			} else {
+				return ($elm$core$Set$size(currentlySelectedEntries) > 1) ? $elm$core$Set$singleton(entryID) : $elm$core$Set$empty;
+			}
+		} else {
+			if (!_v0.b) {
+				return A2($elm$core$Set$insert, entryID, currentlySelectedEntries);
+			} else {
+				return A2($elm$core$Set$remove, entryID, currentlySelectedEntries);
+			}
+		}
+	});
+var $author$project$Component$Portal$Main$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'ToggleExpertMode':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{expertMode: !model.expertMode, importingError: $elm$core$Maybe$Nothing, paramsToExport: $elm$core$Maybe$Nothing}),
+					$elm$core$Platform$Cmd$none);
+			case 'PresetsLoaded':
+				var result = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{availablePresets: result}),
+					$elm$core$Platform$Cmd$none);
+			case 'ProjectsLoaded':
+				var result = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							projects: A2($krisajenkins$remotedata$RemoteData$map, $elm$core$List$reverse, result)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'PickFiles':
+				return _Utils_Tuple2(
+					model,
+					$author$project$Data$Uploader$Media$selectFiles($author$project$Component$Portal$Msg$FilesSelected));
+			case 'FilesSelected':
+				var h = msg.a;
+				var t = msg.b;
+				var _v1 = $author$project$Data$Uploader$Media$morph(
+					A2($elm$core$List$cons, h, t));
+				var matches = _v1.matches;
+				var widows = _v1.widows;
+				var unsupportedVideos = _v1.unsupportedVideos;
+				var unsupportedSubtitles = _v1.unsupportedSubtitles;
+				var unsupportedFiles = _v1.unsupportedFiles;
+				var uploadablePairs = A2(
+					$elm$core$List$map,
+					$elm$core$Tuple$mapSecond($author$project$Data$Uploader$Media$toUploadableSubtitle),
+					matches);
+				return _Utils_Tuple2(
+					model,
+					$elm$core$Platform$Cmd$batch(
+						A2(
+							$elm$core$List$map,
+							function (_v2) {
+								var video = _v2.a;
+								var availableSubtitle = _v2.b;
+								return A2(
+									$elm$random$Random$generate,
+									A2(
+										$elm$core$Basics$composeL,
+										A2(
+											$elm$core$Basics$composeL,
+											$author$project$Component$Portal$Msg$MsgForUploader,
+											A2($author$project$Component$Portal$Msg$UploadVideo, video, availableSubtitle)),
+										$TSFoster$elm_uuid$UUID$toString),
+									$TSFoster$elm_uuid$UUID$generator);
+							},
+							uploadablePairs)));
+			case 'SelectProject':
+				var uuid = msg.a;
+				var isSelectingMultiple = msg.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							selectedProjects: A3($author$project$Util$updateSelection, uuid, isSelectingMultiple, model.selectedProjects)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'ConfirmDeletion':
+				var deletion = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							pendingDeletion: $elm$core$Maybe$Just(deletion)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'StopConfirmation':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{pendingDeletion: $elm$core$Maybe$Nothing}),
+					$elm$core$Platform$Cmd$none);
+			case 'DeleteProject':
+				var uuid = msg.a;
+				return _Utils_Tuple2(
+					model,
+					A2(
+						$author$project$Request$Project$delete,
+						$author$project$Component$Portal$Msg$ProjectsDeleted,
+						$elm$core$Set$singleton(uuid)));
+			case 'BatchDeleteProjects':
+				return _Utils_Tuple2(
+					model,
+					A2($author$project$Request$Project$delete, $author$project$Component$Portal$Msg$ProjectsDeleted, model.selectedProjects));
+			case 'ProjectsDeleted':
+				if (msg.b.$ === 'Ok') {
+					var uuids = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								pendingDeletion: $elm$core$Maybe$Nothing,
+								projects: A2(
+									$krisajenkins$remotedata$RemoteData$map,
+									$elm_community$list_extra$List$Extra$filterNot(
+										function (_v3) {
+											var uuid = _v3.uuid;
+											return A2($elm$core$Set$member, uuid, uuids);
+										}),
+									model.projects)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'StartProcessingVideos':
+				return _Utils_Tuple2(
+					model,
+					A2($author$project$Request$Video$Processing$start, $author$project$Component$Portal$Msg$VideoProcessingStarted, model.selectedProjects));
+			case 'VideoProcessingStarted':
+				if (msg.b.$ === 'Ok') {
+					var uuidsStarted = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								projects: A2(
+									$krisajenkins$remotedata$RemoteData$map,
+									$author$project$Data$Project$Concise$startProcessing(uuidsStarted),
+									model.projects),
+								selectedProjects: A2($elm$core$Set$diff, model.selectedProjects, uuidsStarted)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var uuidsNotStarted = msg.a;
+					var error = msg.b.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								projects: A2(
+									$krisajenkins$remotedata$RemoteData$map,
+									A2($author$project$Data$Project$Concise$failedToStartProcessing, uuidsNotStarted, error),
+									model.projects)
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'ProcessingStatusUpdate':
+				if (msg.a.$ === 'Ok') {
+					var uuid = msg.a.a.uuid;
+					var status = msg.a.a.status;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								projects: A2(
+									$krisajenkins$remotedata$RemoteData$map,
+									A2($author$project$Data$Project$Concise$setProcessingStatusBy, uuid, status),
+									model.projects)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'StartOver':
+				var uuid = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							projects: A2(
+								$krisajenkins$remotedata$RemoteData$map,
+								$author$project$Data$Project$Concise$resetProcessingStatusBy(uuid),
+								model.projects)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'SetProcessingPreset':
+				var uuid = msg.a;
+				var params = msg.b.params;
+				return _Utils_Tuple2(
+					model,
+					A2(
+						$author$project$Request$Project$update,
+						$author$project$Component$Portal$Msg$ProjectUpdated,
+						A2($author$project$Data$Project$Concise$paramsUpdateEncoder, uuid, params)));
+			case 'ProjectUpdated':
+				if (msg.a.$ === 'Ok') {
+					var project = msg.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								projects: A2(
+									$krisajenkins$remotedata$RemoteData$map,
+									$author$project$Data$Project$Concise$putInCollection(project),
+									model.projects),
+								reviewingSubtitle: $elm$core$Maybe$Nothing
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'MsgForParams':
+				var uuid = msg.a;
+				var params = msg.b;
+				var subMsg = msg.c;
+				var updatedParams = A2($author$project$Component$Portal$Params$update, subMsg, params);
+				return _Utils_Tuple2(
+					model,
+					A2(
+						$author$project$Request$Project$update,
+						$author$project$Component$Portal$Msg$ProjectUpdated,
+						A2($author$project$Data$Project$Concise$paramsUpdateEncoder, uuid, updatedParams)));
+			case 'SetSearchStr':
+				var str = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{searchStr: str}),
+					$elm$core$Platform$Cmd$none);
+			case 'MsgForUploader':
+				var m = msg.a;
+				return A2($author$project$Component$Portal$Uploader$update, m, model);
+			case 'MsgForParamsKeeper':
+				var m = msg.a;
+				return A2($author$project$Component$Portal$ParamsKeeper$update, m, model);
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		}
+	});
+var $author$project$Component$Project$Model$Loaded = F2(
 	function (a, b) {
 		return {$: 'Loaded', a: a, b: b};
 	});
-var $author$project$Page$Project$PosterLoaded = function (a) {
+var $author$project$Component$Project$Msg$PosterLoaded = function (a) {
 	return {$: 'PosterLoaded', a: a};
 };
-var $author$project$Page$Project$ProjectFailedToLoad = function (a) {
+var $author$project$Component$Project$Model$ProjectFailedToLoad = function (a) {
 	return {$: 'ProjectFailedToLoad', a: a};
 };
-var $author$project$Page$Project$RequestProjectSize = {$: 'RequestProjectSize'};
+var $author$project$Component$Project$Msg$RequestProjectSize = {$: 'RequestProjectSize'};
 var $author$project$Request$Poster$get = function (handler) {
 	return $elm$http$Http$post(
 		{
@@ -13892,7 +15947,7 @@ var $author$project$Request$Poster$get = function (handler) {
 				_List_Nil)
 		});
 };
-var $author$project$View$Project$Small = {$: 'Small'};
+var $author$project$Component$Project$Msg$Small = {$: 'Small'};
 var $author$project$Data$UndoList$UndoList = F3(
 	function (past, present, future) {
 		return {future: future, past: past, present: present};
@@ -13927,9 +15982,9 @@ var $author$project$Data$Project$Content$maxAssignedIndex = function (sections) 
 				},
 				sections)));
 };
-var $author$project$Page$Project$initLoaded = function (project) {
+var $author$project$Component$Project$Main$initLoaded = function (project) {
 	return A2(
-		$author$project$Page$Project$Loaded,
+		$author$project$Component$Project$Model$Loaded,
 		$author$project$Data$UndoList$fresh(project),
 		{
 			confirmNavigatingAway: $elm$core$Maybe$Nothing,
@@ -13948,22 +16003,17 @@ var $author$project$Page$Project$initLoaded = function (project) {
 			textBeingEdited: $elm$core$Maybe$Nothing,
 			userContentIndexToAssign: 1 + $author$project$Data$Project$Content$maxAssignedIndex(
 				$elm$core$Array$toList(project.workingData)),
-			viewType: $author$project$View$Project$Small
+			viewType: $author$project$Component$Project$Msg$Small
 		});
 };
-var $author$project$Page$Project$ChangeBeforeUnloadPrompt = {$: 'ChangeBeforeUnloadPrompt'};
-var $author$project$Page$Project$GifProcessed = F2(
-	function (a, b) {
-		return {$: 'GifProcessed', a: a, b: b};
-	});
-var $author$project$Page$Project$ProjectExported = function (a) {
+var $author$project$Component$Project$Msg$ProjectExported = function (a) {
 	return {$: 'ProjectExported', a: a};
 };
-var $author$project$Page$Project$ProjectSaved = F2(
+var $author$project$Component$Project$Msg$ProjectSaved = F2(
 	function (a, b) {
 		return {$: 'ProjectSaved', a: a, b: b};
 	});
-var $author$project$Page$Project$ProjectSizeRequested = function (a) {
+var $author$project$Component$Project$Msg$ProjectSizeRequested = function (a) {
 	return {$: 'ProjectSizeRequested', a: a};
 };
 var $author$project$Port$addBeforeUnloadPrompt = _Platform_outgoingPort(
@@ -13971,6 +16021,239 @@ var $author$project$Port$addBeforeUnloadPrompt = _Platform_outgoingPort(
 	function ($) {
 		return $elm$json$Json$Encode$null;
 	});
+var $author$project$Data$File$Object$Remote = function (a) {
+	return {$: 'Remote', a: a};
+};
+var $author$project$Util$trimTrailingSlash = function (str) {
+	var _v0 = $elm$core$String$uncons(
+		$elm$core$String$reverse(str));
+	if ((_v0.$ === 'Just') && ('/' === _v0.a.a.valueOf())) {
+		var _v1 = _v0.a;
+		var trimmed = _v1.b;
+		return $elm$core$String$reverse(trimmed);
+	} else {
+		return str;
+	}
+};
+var $author$project$Data$File$Object$remoteBaseDecoder = A2(
+	$elm$json$Json$Decode$andThen,
+	function (str) {
+		var _v0 = $elm$url$Url$fromString(str);
+		if (_v0.$ === 'Just') {
+			var url = _v0.a;
+			return $elm$json$Json$Decode$succeed(
+				$author$project$Data$File$Object$Remote(url));
+		} else {
+			return $elm$json$Json$Decode$fail('not a valid URL');
+		}
+	},
+	A2($elm$json$Json$Decode$map, $author$project$Util$trimTrailingSlash, $elm$json$Json$Decode$string));
+var $author$project$Data$Project$HtmlExport$decoder = A3(
+	$elm$json$Json$Decode$map2,
+	$elm$core$Tuple$pair,
+	A2($elm$json$Json$Decode$field, 'Uri', $author$project$Data$File$Object$remoteBaseDecoder),
+	A2($elm$json$Json$Decode$field, 'Info', $elm$json$Json$Decode$string));
+var $author$project$Data$Video$Segment$getKeyFrame = function (_v0) {
+	var keyFrame = _v0.a;
+	return keyFrame;
+};
+var $author$project$Data$Project$SegmentContent$getMedia = function (content) {
+	if (content.$ === 'FrameSequence') {
+		var segment = content.a;
+		return $author$project$Data$Video$Segment$getKeyFrame(segment).localObjectKey;
+	} else {
+		var gif = content.a;
+		return gif.localObjectKey;
+	}
+};
+var $author$project$Data$Project$UserContent$getMedia = function (content) {
+	if (content.$ === 'PlainText') {
+		return $elm$core$Maybe$Nothing;
+	} else {
+		var objectKey = content.a;
+		return $elm$core$Maybe$Just(objectKey);
+	}
+};
+var $author$project$Data$Project$Content$getMedia = function (content) {
+	_v0$2:
+	while (true) {
+		if (content.$ === 'FromSegment') {
+			if (!content.a) {
+				var segmentContent = content.b;
+				return $elm$core$Maybe$Just(
+					$author$project$Data$Project$SegmentContent$getMedia(segmentContent));
+			} else {
+				break _v0$2;
+			}
+		} else {
+			if (!content.b) {
+				var userContent = content.c;
+				return $author$project$Data$Project$UserContent$getMedia(userContent);
+			} else {
+				break _v0$2;
+			}
+		}
+	}
+	return $elm$core$Maybe$Nothing;
+};
+var $author$project$Data$File$Object$keyStrEncoder = function (_v0) {
+	var path = _v0.a;
+	return $elm$json$Json$Encode$string(
+		A2($elm$core$String$join, '/', path));
+};
+var $author$project$Data$Project$HtmlExport$encoder = function (_v0) {
+	var uuid = _v0.uuid;
+	var workingData = _v0.workingData;
+	var mediaList = A2(
+		$elm$core$List$filterMap,
+		$author$project$Data$Project$Content$getMedia,
+		$elm$core$Array$toList(workingData));
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'Id',
+				$elm$json$Json$Encode$string(uuid)),
+				_Utils_Tuple2(
+				'Assets',
+				A2($elm$json$Json$Encode$list, $author$project$Data$File$Object$keyStrEncoder, mediaList))
+			]));
+};
+var $author$project$Data$Project$HtmlExport$SourceFileNotFound = {$: 'SourceFileNotFound'};
+var $author$project$Data$Project$HtmlExport$errorDecoder = function (statusCode) {
+	return (statusCode === 404) ? $elm$json$Json$Decode$succeed($author$project$Data$Project$HtmlExport$SourceFileNotFound) : $elm$json$Json$Decode$fail('not handled here');
+};
+var $author$project$Request$Project$export = F2(
+	function (handler, project) {
+		return $author$project$API$Request$post(
+			{
+				decoder: $author$project$Data$Project$HtmlExport$decoder,
+				errorDecoder: $author$project$Data$Project$HtmlExport$errorDecoder,
+				handler: handler,
+				payload: $author$project$Data$Project$HtmlExport$encoder(project),
+				timeout: $elm$core$Maybe$Just(30000),
+				url: A2(
+					$author$project$Request$Helper$apiNativeClient,
+					_List_fromArray(
+						['export']),
+					_List_Nil)
+			});
+	});
+var $author$project$Data$Project$HtmlExport$sizeDecoder = A2($elm$json$Json$Decode$field, 'FileSize', $author$project$Data$FileSize$byteDecoder);
+var $author$project$Request$Project$getSize = F2(
+	function (handler, project) {
+		return $author$project$API$Request$post(
+			{
+				decoder: $author$project$Data$Project$HtmlExport$sizeDecoder,
+				errorDecoder: $author$project$Data$Project$HtmlExport$errorDecoder,
+				handler: handler,
+				payload: $author$project$Data$Project$HtmlExport$encoder(project),
+				timeout: $elm$core$Maybe$Just(30000),
+				url: A2(
+					$author$project$Request$Helper$apiNativeClient,
+					_List_fromArray(
+						['estimate']),
+					_List_Nil)
+			});
+	});
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$Route$pushUrl = function (key) {
+	return A2(
+		$elm$core$Basics$composeL,
+		$elm$browser$Browser$Navigation$pushUrl(key),
+		$author$project$Route$routeToString);
+};
+var $elm$json$Json$Encode$array = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$Array$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var $elm$json$Json$Encode$float = _Json_wrap;
+var $author$project$Data$FileSize$factor = 1024;
+var $author$project$Data$FileSize$toByte = function (fileSize) {
+	switch (fileSize.$) {
+		case 'Bit':
+			var n = fileSize.a;
+			return n / 8;
+		case 'Byte':
+			var x = fileSize.a;
+			return x;
+		case 'Kibibyte':
+			var x = fileSize.a;
+			return x * $author$project$Data$FileSize$factor;
+		default:
+			var x = fileSize.a;
+			return (x * $author$project$Data$FileSize$factor) * $author$project$Data$FileSize$factor;
+	}
+};
+var $author$project$Data$FileSize$byteEncoder = A2($elm$core$Basics$composeR, $author$project$Data$FileSize$toByte, $elm$json$Json$Encode$float);
+var $author$project$Data$File$Object$keyEncoder = function (_v0) {
+	var path = _v0.a;
+	return A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, path);
+};
+var $author$project$Data$Video$Gif$encoder = function (gif) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'localObjectKey',
+				$author$project$Data$File$Object$keyEncoder(gif.localObjectKey)),
+				_Utils_Tuple2(
+				'fileSize',
+				$author$project$Data$FileSize$byteEncoder(gif.fileSize))
+			]));
+};
+var $author$project$Data$Video$Frame$encoder = function (frame) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'index',
+				$elm$json$Json$Encode$int(frame.index)),
+				_Utils_Tuple2(
+				'objectKey',
+				$author$project$Data$File$Object$keyEncoder(frame.localObjectKey)),
+				_Utils_Tuple2(
+				'time',
+				$elm$json$Json$Encode$int(frame.time))
+			]));
+};
+var $author$project$Data$Video$Segment$encoder = function (_v0) {
+	var keyFrame = _v0.a;
+	var others = _v0.b;
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'keyFrame',
+				$author$project$Data$Video$Frame$encoder(keyFrame)),
+				_Utils_Tuple2(
+				'others',
+				A2($elm$json$Json$Encode$list, $author$project$Data$Video$Frame$encoder, others))
+			]));
+};
+var $author$project$Data$Project$SegmentContent$getGif = function (content) {
+	if (content.$ === 'FrameSequence') {
+		var maybeGif = content.b;
+		return maybeGif;
+	} else {
+		var gif = content.a;
+		return $elm$core$Maybe$Just(gif);
+	}
+};
 var $author$project$Data$Project$SegmentContent$getSegment = function (content) {
 	if (content.$ === 'FrameSequence') {
 		var segment = content.a;
@@ -13979,6 +16262,148 @@ var $author$project$Data$Project$SegmentContent$getSegment = function (content) 
 		var segment = content.b;
 		return segment;
 	}
+};
+var $elm_community$json_extra$Json$Encode$Extra$maybe = function (encoder) {
+	return A2(
+		$elm$core$Basics$composeR,
+		$elm$core$Maybe$map(encoder),
+		$elm$core$Maybe$withDefault($elm$json$Json$Encode$null));
+};
+var $author$project$Data$Project$SegmentContent$typeEncoder = function (content) {
+	if (content.$ === 'FrameSequence') {
+		return $elm$json$Json$Encode$string('frame sequence');
+	} else {
+		return $elm$json$Json$Encode$string('GIF');
+	}
+};
+var $author$project$Data$Project$SegmentContent$encoder = function (content) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'displayMode',
+				$author$project$Data$Project$SegmentContent$typeEncoder(content)),
+				_Utils_Tuple2(
+				'segment',
+				$author$project$Data$Video$Segment$encoder(
+					$author$project$Data$Project$SegmentContent$getSegment(content))),
+				_Utils_Tuple2(
+				'gif',
+				A2(
+					$elm_community$json_extra$Json$Encode$Extra$maybe,
+					$author$project$Data$Video$Gif$encoder,
+					$author$project$Data$Project$SegmentContent$getGif(content)))
+			]));
+};
+var $author$project$Data$Project$UserContent$encoder = function (userContent) {
+	if (userContent.$ === 'PlainText') {
+		var content = userContent.a;
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'plainText',
+					$elm$json$Json$Encode$string(content))
+				]));
+	} else {
+		var objectKey = userContent.a;
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'picture',
+					$author$project$Data$File$Object$keyEncoder(objectKey))
+				]));
+	}
+};
+var $author$project$Data$Project$Content$encoder = function (content) {
+	if (content.$ === 'FromSegment') {
+		var isContentHidden = content.a;
+		var segmentContent = content.b;
+		var contentValue = $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'isHidden',
+					$elm$json$Json$Encode$bool(isContentHidden)),
+					_Utils_Tuple2(
+					'content',
+					$author$project$Data$Project$SegmentContent$encoder(segmentContent))
+				]));
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2('fromSegment', contentValue)
+				]));
+	} else {
+		var index = content.a;
+		var isContentHidden = content.b;
+		var userContent = content.c;
+		var contentValue = $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'index',
+					$elm$json$Json$Encode$int(index)),
+					_Utils_Tuple2(
+					'isHidden',
+					$elm$json$Json$Encode$bool(isContentHidden)),
+					_Utils_Tuple2(
+					'content',
+					$author$project$Data$Project$UserContent$encoder(userContent))
+				]));
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2('fromUser', contentValue)
+				]));
+	}
+};
+var $author$project$Data$Project$workingDataEncoder = function (_v0) {
+	var workingData = _v0.workingData;
+	return A2($elm$json$Json$Encode$array, $author$project$Data$Project$Content$encoder, workingData);
+};
+var $author$project$Data$Project$Saving$encoder = function (project) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'Id',
+				$elm$json$Json$Encode$string(project.uuid)),
+				_Utils_Tuple2(
+				'Data',
+				$author$project$Data$Project$workingDataEncoder(project))
+			]));
+};
+var $author$project$Data$Project$Saving$SourceFileNotFound = {$: 'SourceFileNotFound'};
+var $author$project$Data$Project$Saving$errorDecoder = function (statusCode) {
+	return (statusCode === 404) ? $elm$json$Json$Decode$succeed($author$project$Data$Project$Saving$SourceFileNotFound) : $elm$json$Json$Decode$fail('not to be handled here');
+};
+var $author$project$Request$Project$save = F2(
+	function (handler, project) {
+		return $author$project$API$Request$post(
+			{
+				decoder: $author$project$Request$Helper$whateverDecoder,
+				errorDecoder: $author$project$Data$Project$Saving$errorDecoder,
+				handler: handler,
+				payload: $author$project$Data$Project$Saving$encoder(project),
+				timeout: $elm$core$Maybe$Just(10000),
+				url: A2(
+					$author$project$Request$Helper$apiNativeClient,
+					_List_fromArray(
+						['save']),
+					_List_Nil)
+			});
+	});
+var $author$project$Port$scrollIntoView = _Platform_outgoingPort('scrollIntoView', $elm$json$Json$Encode$string);
+var $author$project$Port$seekTime = _Platform_outgoingPort('seekTime', $elm$json$Json$Encode$int);
+var $author$project$Component$Project$Msg$ChangeBeforeUnloadPrompt = {$: 'ChangeBeforeUnloadPrompt'};
+var $author$project$Component$Project$Msg$GifProcessed = F2(
+	function (a, b) {
+		return {$: 'GifProcessed', a: a, b: b};
+	});
+var $author$project$Component$Project$Msg$HostMessage = function (a) {
+	return {$: 'HostMessage', a: a};
 };
 var $author$project$Data$Project$SegmentContent$addGif = F2(
 	function (gif, content) {
@@ -14149,146 +16574,6 @@ var $elm$core$Array$append = F2(
 		}
 	});
 var $author$project$Data$Project$UserContent$emptyPlainText = $author$project$Data$Project$UserContent$PlainText('');
-var $author$project$Data$File$Object$Remote = function (a) {
-	return {$: 'Remote', a: a};
-};
-var $elm$core$String$reverse = _String_reverse;
-var $author$project$Util$trimTrailingSlash = function (str) {
-	var _v0 = $elm$core$String$uncons(
-		$elm$core$String$reverse(str));
-	if ((_v0.$ === 'Just') && ('/' === _v0.a.a.valueOf())) {
-		var _v1 = _v0.a;
-		var trimmed = _v1.b;
-		return $elm$core$String$reverse(trimmed);
-	} else {
-		return str;
-	}
-};
-var $author$project$Data$File$Object$remoteBaseDecoder = A2(
-	$elm$json$Json$Decode$andThen,
-	function (str) {
-		var _v0 = $elm$url$Url$fromString(str);
-		if (_v0.$ === 'Just') {
-			var url = _v0.a;
-			return $elm$json$Json$Decode$succeed(
-				$author$project$Data$File$Object$Remote(url));
-		} else {
-			return $elm$json$Json$Decode$fail('not a valid URL');
-		}
-	},
-	A2($elm$json$Json$Decode$map, $author$project$Util$trimTrailingSlash, $elm$json$Json$Decode$string));
-var $author$project$Data$Project$HtmlExport$decoder = A3(
-	$elm$json$Json$Decode$map2,
-	$elm$core$Tuple$pair,
-	A2($elm$json$Json$Decode$field, 'Uri', $author$project$Data$File$Object$remoteBaseDecoder),
-	A2($elm$json$Json$Decode$field, 'Info', $elm$json$Json$Decode$string));
-var $author$project$Data$Video$Segment$getKeyFrame = function (_v0) {
-	var keyFrame = _v0.a;
-	return keyFrame;
-};
-var $author$project$Data$Project$SegmentContent$getMedia = function (content) {
-	if (content.$ === 'FrameSequence') {
-		var segment = content.a;
-		return $author$project$Data$Video$Segment$getKeyFrame(segment).localObjectKey;
-	} else {
-		var gif = content.a;
-		return gif.localObjectKey;
-	}
-};
-var $author$project$Data$Project$UserContent$getMedia = function (content) {
-	if (content.$ === 'PlainText') {
-		return $elm$core$Maybe$Nothing;
-	} else {
-		var objectKey = content.a;
-		return $elm$core$Maybe$Just(objectKey);
-	}
-};
-var $author$project$Data$Project$Content$getMedia = function (content) {
-	_v0$2:
-	while (true) {
-		if (content.$ === 'FromSegment') {
-			if (!content.a) {
-				var segmentContent = content.b;
-				return $elm$core$Maybe$Just(
-					$author$project$Data$Project$SegmentContent$getMedia(segmentContent));
-			} else {
-				break _v0$2;
-			}
-		} else {
-			if (!content.b) {
-				var userContent = content.c;
-				return $author$project$Data$Project$UserContent$getMedia(userContent);
-			} else {
-				break _v0$2;
-			}
-		}
-	}
-	return $elm$core$Maybe$Nothing;
-};
-var $author$project$Data$File$Object$keyStrEncoder = function (_v0) {
-	var path = _v0.a;
-	return $elm$json$Json$Encode$string(
-		A2($elm$core$String$join, '/', path));
-};
-var $author$project$Data$Project$HtmlExport$encoder = function (_v0) {
-	var uuid = _v0.uuid;
-	var workingData = _v0.workingData;
-	var mediaList = A2(
-		$elm$core$List$filterMap,
-		$author$project$Data$Project$Content$getMedia,
-		$elm$core$Array$toList(workingData));
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'Id',
-				$elm$json$Json$Encode$string(uuid)),
-				_Utils_Tuple2(
-				'Assets',
-				A2($elm$json$Json$Encode$list, $author$project$Data$File$Object$keyStrEncoder, mediaList))
-			]));
-};
-var $author$project$Data$Project$HtmlExport$SourceFileNotFound = {$: 'SourceFileNotFound'};
-var $author$project$Data$Project$HtmlExport$errorDecoder = function (statusCode) {
-	return (statusCode === 404) ? $elm$json$Json$Decode$succeed($author$project$Data$Project$HtmlExport$SourceFileNotFound) : $elm$json$Json$Decode$fail('not handled here');
-};
-var $author$project$Request$Project$export = F2(
-	function (handler, project) {
-		return $author$project$API$Request$post(
-			{
-				decoder: $author$project$Data$Project$HtmlExport$decoder,
-				errorDecoder: $author$project$Data$Project$HtmlExport$errorDecoder,
-				handler: handler,
-				payload: $author$project$Data$Project$HtmlExport$encoder(project),
-				timeout: $elm$core$Maybe$Just(30000),
-				url: A2(
-					$author$project$Request$Helper$apiNativeClient,
-					_List_fromArray(
-						['export']),
-					_List_Nil)
-			});
-	});
-var $author$project$Util$flip = F3(
-	function (f, b, a) {
-		return A2(f, a, b);
-	});
-var $author$project$Data$Project$HtmlExport$sizeDecoder = A2($elm$json$Json$Decode$field, 'FileSize', $author$project$Data$FileSize$byteDecoder);
-var $author$project$Request$Project$getSize = F2(
-	function (handler, project) {
-		return $author$project$API$Request$post(
-			{
-				decoder: $author$project$Data$Project$HtmlExport$sizeDecoder,
-				errorDecoder: $author$project$Data$Project$HtmlExport$errorDecoder,
-				handler: handler,
-				payload: $author$project$Data$Project$HtmlExport$encoder(project),
-				timeout: $elm$core$Maybe$Just(30000),
-				url: A2(
-					$author$project$Request$Helper$apiNativeClient,
-					_List_fromArray(
-						['estimate']),
-					_List_Nil)
-			});
-	});
 var $elm_community$list_extra$List$Extra$minimumBy = F2(
 	function (f, ls) {
 		var minBy = F2(
@@ -14371,12 +16656,6 @@ var $author$project$Data$Project$Content$gifTimeInterval = F3(
 			nominal: _Utils_Tuple2(nominalStart, nominalEnd)
 		};
 	});
-var $elm$core$Set$insert = F2(
-	function (key, _v0) {
-		var dict = _v0.a;
-		return $elm$core$Set$Set_elm_builtin(
-			A3($elm$core$Dict$insert, key, _Utils_Tuple0, dict));
-	});
 var $author$project$Data$Video$Frame$getIndex = function (_v0) {
 	var index = _v0.index;
 	return index;
@@ -14424,16 +16703,6 @@ var $author$project$Data$Project$Content$isMergeAgreed = F3(
 				A2($author$project$Data$Project$SegmentContent$merge, segmentContent1, segmentContent2));
 		} else {
 			return false;
-		}
-	});
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
 		}
 	});
 var $elm_community$array_extra$Array$Extra$splitAt = F2(
@@ -14587,7 +16856,6 @@ var $author$project$Data$Video$Gif$errorDecoder = function (statusCode) {
 		},
 		A2($elm$json$Json$Decode$field, 'interval', $elm$json$Json$Decode$string));
 };
-var $elm$json$Json$Encode$int = _Json_wrap;
 var $author$project$Data$Video$Gif$processConfigEncoder = F2(
 	function (uuid, _v0) {
 		var start = _v0.a;
@@ -14637,28 +16905,22 @@ var $author$project$Request$Gif$process = F3(
 					_List_Nil)
 			});
 	});
-var $author$project$Page$Project$projectChanged = $elm$core$Platform$Cmd$batch(
+var $author$project$Component$Project$Editing$projectChanged = $elm$core$Platform$Cmd$batch(
 	_List_fromArray(
 		[
 			A2(
 			$elm$core$Task$perform,
 			function (_v0) {
-				return $author$project$Page$Project$RequestProjectSize;
+				return $author$project$Component$Project$Msg$HostMessage($author$project$Component$Project$Msg$RequestProjectSize);
 			},
 			$elm$core$Task$succeed(_Utils_Tuple0)),
 			A2(
 			$elm$core$Task$perform,
 			function (_v1) {
-				return $author$project$Page$Project$ChangeBeforeUnloadPrompt;
+				return $author$project$Component$Project$Msg$HostMessage($author$project$Component$Project$Msg$ChangeBeforeUnloadPrompt);
 			},
 			$elm$core$Task$succeed(_Utils_Tuple0))
 		]));
-var $author$project$Route$pushUrl = function (key) {
-	return A2(
-		$elm$core$Basics$composeL,
-		$elm$browser$Browser$Navigation$pushUrl(key),
-		$author$project$Route$routeToString);
-};
 var $author$project$Data$UndoList$redo = function (_v0) {
 	redo:
 	while (true) {
@@ -14689,235 +16951,11 @@ var $author$project$Port$redoTrix = _Platform_outgoingPort(
 	function ($) {
 		return $elm$json$Json$Encode$null;
 	});
-var $elm$core$Set$remove = F2(
-	function (key, _v0) {
-		var dict = _v0.a;
-		return $elm$core$Set$Set_elm_builtin(
-			A2($elm$core$Dict$remove, key, dict));
-	});
 var $author$project$Data$UndoList$replace = F2(
 	function (event, _v0) {
 		var past = _v0.past;
 		return A3($author$project$Data$UndoList$UndoList, past, event, _List_Nil);
 	});
-var $elm$json$Json$Encode$array = F2(
-	function (func, entries) {
-		return _Json_wrap(
-			A3(
-				$elm$core$Array$foldl,
-				_Json_addEntry(func),
-				_Json_emptyArray(_Utils_Tuple0),
-				entries));
-	});
-var $elm$json$Json$Encode$bool = _Json_wrap;
-var $elm$json$Json$Encode$float = _Json_wrap;
-var $author$project$Data$FileSize$factor = 1024;
-var $author$project$Data$FileSize$toByte = function (fileSize) {
-	switch (fileSize.$) {
-		case 'Bit':
-			var n = fileSize.a;
-			return n / 8;
-		case 'Byte':
-			var x = fileSize.a;
-			return x;
-		case 'Kibibyte':
-			var x = fileSize.a;
-			return x * $author$project$Data$FileSize$factor;
-		default:
-			var x = fileSize.a;
-			return (x * $author$project$Data$FileSize$factor) * $author$project$Data$FileSize$factor;
-	}
-};
-var $author$project$Data$FileSize$byteEncoder = A2($elm$core$Basics$composeR, $author$project$Data$FileSize$toByte, $elm$json$Json$Encode$float);
-var $author$project$Data$File$Object$keyEncoder = function (_v0) {
-	var path = _v0.a;
-	return A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, path);
-};
-var $author$project$Data$Video$Gif$encoder = function (gif) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'localObjectKey',
-				$author$project$Data$File$Object$keyEncoder(gif.localObjectKey)),
-				_Utils_Tuple2(
-				'fileSize',
-				$author$project$Data$FileSize$byteEncoder(gif.fileSize))
-			]));
-};
-var $author$project$Data$Video$Frame$encoder = function (frame) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'index',
-				$elm$json$Json$Encode$int(frame.index)),
-				_Utils_Tuple2(
-				'objectKey',
-				$author$project$Data$File$Object$keyEncoder(frame.localObjectKey)),
-				_Utils_Tuple2(
-				'time',
-				$elm$json$Json$Encode$int(frame.time))
-			]));
-};
-var $author$project$Data$Video$Segment$encoder = function (_v0) {
-	var keyFrame = _v0.a;
-	var others = _v0.b;
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'keyFrame',
-				$author$project$Data$Video$Frame$encoder(keyFrame)),
-				_Utils_Tuple2(
-				'others',
-				A2($elm$json$Json$Encode$list, $author$project$Data$Video$Frame$encoder, others))
-			]));
-};
-var $author$project$Data$Project$SegmentContent$getGif = function (content) {
-	if (content.$ === 'FrameSequence') {
-		var maybeGif = content.b;
-		return maybeGif;
-	} else {
-		var gif = content.a;
-		return $elm$core$Maybe$Just(gif);
-	}
-};
-var $elm_community$json_extra$Json$Encode$Extra$maybe = function (encoder) {
-	return A2(
-		$elm$core$Basics$composeR,
-		$elm$core$Maybe$map(encoder),
-		$elm$core$Maybe$withDefault($elm$json$Json$Encode$null));
-};
-var $author$project$Data$Project$SegmentContent$typeEncoder = function (content) {
-	if (content.$ === 'FrameSequence') {
-		return $elm$json$Json$Encode$string('frame sequence');
-	} else {
-		return $elm$json$Json$Encode$string('GIF');
-	}
-};
-var $author$project$Data$Project$SegmentContent$encoder = function (content) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'displayMode',
-				$author$project$Data$Project$SegmentContent$typeEncoder(content)),
-				_Utils_Tuple2(
-				'segment',
-				$author$project$Data$Video$Segment$encoder(
-					$author$project$Data$Project$SegmentContent$getSegment(content))),
-				_Utils_Tuple2(
-				'gif',
-				A2(
-					$elm_community$json_extra$Json$Encode$Extra$maybe,
-					$author$project$Data$Video$Gif$encoder,
-					$author$project$Data$Project$SegmentContent$getGif(content)))
-			]));
-};
-var $author$project$Data$Project$UserContent$encoder = function (userContent) {
-	if (userContent.$ === 'PlainText') {
-		var content = userContent.a;
-		return $elm$json$Json$Encode$object(
-			_List_fromArray(
-				[
-					_Utils_Tuple2(
-					'plainText',
-					$elm$json$Json$Encode$string(content))
-				]));
-	} else {
-		var objectKey = userContent.a;
-		return $elm$json$Json$Encode$object(
-			_List_fromArray(
-				[
-					_Utils_Tuple2(
-					'picture',
-					$author$project$Data$File$Object$keyEncoder(objectKey))
-				]));
-	}
-};
-var $author$project$Data$Project$Content$encoder = function (content) {
-	if (content.$ === 'FromSegment') {
-		var isContentHidden = content.a;
-		var segmentContent = content.b;
-		var contentValue = $elm$json$Json$Encode$object(
-			_List_fromArray(
-				[
-					_Utils_Tuple2(
-					'isHidden',
-					$elm$json$Json$Encode$bool(isContentHidden)),
-					_Utils_Tuple2(
-					'content',
-					$author$project$Data$Project$SegmentContent$encoder(segmentContent))
-				]));
-		return $elm$json$Json$Encode$object(
-			_List_fromArray(
-				[
-					_Utils_Tuple2('fromSegment', contentValue)
-				]));
-	} else {
-		var index = content.a;
-		var isContentHidden = content.b;
-		var userContent = content.c;
-		var contentValue = $elm$json$Json$Encode$object(
-			_List_fromArray(
-				[
-					_Utils_Tuple2(
-					'index',
-					$elm$json$Json$Encode$int(index)),
-					_Utils_Tuple2(
-					'isHidden',
-					$elm$json$Json$Encode$bool(isContentHidden)),
-					_Utils_Tuple2(
-					'content',
-					$author$project$Data$Project$UserContent$encoder(userContent))
-				]));
-		return $elm$json$Json$Encode$object(
-			_List_fromArray(
-				[
-					_Utils_Tuple2('fromUser', contentValue)
-				]));
-	}
-};
-var $author$project$Data$Project$workingDataEncoder = function (_v0) {
-	var workingData = _v0.workingData;
-	return A2($elm$json$Json$Encode$array, $author$project$Data$Project$Content$encoder, workingData);
-};
-var $author$project$Data$Project$Saving$encoder = function (project) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'Id',
-				$elm$json$Json$Encode$string(project.uuid)),
-				_Utils_Tuple2(
-				'Data',
-				$author$project$Data$Project$workingDataEncoder(project))
-			]));
-};
-var $author$project$Data$Project$Saving$SourceFileNotFound = {$: 'SourceFileNotFound'};
-var $author$project$Data$Project$Saving$errorDecoder = function (statusCode) {
-	return (statusCode === 404) ? $elm$json$Json$Decode$succeed($author$project$Data$Project$Saving$SourceFileNotFound) : $elm$json$Json$Decode$fail('not to be handled here');
-};
-var $author$project$Request$Helper$whateverDecoder = $elm$json$Json$Decode$succeed(_Utils_Tuple0);
-var $author$project$Request$Project$save = F2(
-	function (handler, project) {
-		return $author$project$API$Request$post(
-			{
-				decoder: $author$project$Request$Helper$whateverDecoder,
-				errorDecoder: $author$project$Data$Project$Saving$errorDecoder,
-				handler: handler,
-				payload: $author$project$Data$Project$Saving$encoder(project),
-				timeout: $elm$core$Maybe$Just(10000),
-				url: A2(
-					$author$project$Request$Helper$apiNativeClient,
-					_List_fromArray(
-						['save']),
-					_List_Nil)
-			});
-	});
-var $author$project$Port$scrollIntoView = _Platform_outgoingPort('scrollIntoView', $elm$json$Json$Encode$string);
-var $author$project$Port$seekTime = _Platform_outgoingPort('seekTime', $elm$json$Json$Encode$int);
 var $author$project$Data$Video$Segment$getAllFrames = function (_v0) {
 	var keyFrame = _v0.a;
 	var others = _v0.b;
@@ -15120,24 +17158,6 @@ var $author$project$Data$Video$Segment$setKeyFrame = F2(
 			return segment;
 		}
 	});
-var $elm$core$List$partition = F2(
-	function (pred, list) {
-		var step = F2(
-			function (x, _v0) {
-				var trues = _v0.a;
-				var falses = _v0.b;
-				return pred(x) ? _Utils_Tuple2(
-					A2($elm$core$List$cons, x, trues),
-					falses) : _Utils_Tuple2(
-					trues,
-					A2($elm$core$List$cons, x, falses));
-			});
-		return A3(
-			$elm$core$List$foldr,
-			step,
-			_Utils_Tuple2(_List_Nil, _List_Nil),
-			list);
-	});
 var $author$project$Util$uncurry = F2(
 	function (f, _v0) {
 		var a = _v0.a;
@@ -15286,20 +17306,20 @@ var $author$project$Data$Project$Content$updateSegmentBy = F2(
 			index,
 			$author$project$Data$Project$Content$mapSegment(f));
 	});
-var $author$project$Page$Project$updateLoaded = F4(
+var $author$project$Component$Project$Editing$update = F4(
 	function (key, msg, project, substate) {
 		var present = project.present;
 		var updateState = F2(
-			function (updater, _v19) {
-				var newState = _v19.a;
-				var substate_ = _v19.b;
-				var commands = _v19.c;
+			function (updater, _v18) {
+				var newState = _v18.a;
+				var substate_ = _v18.b;
+				var commands = _v18.c;
 				return _Utils_Tuple3(
 					A3($author$project$Util$flip, updater, project, newState),
 					substate_,
 					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
-							[commands, $author$project$Page$Project$projectChanged])));
+							[commands, $author$project$Component$Project$Editing$projectChanged])));
 			});
 		var replaceState = function (newState) {
 			return _Utils_Tuple3(
@@ -15307,8 +17327,8 @@ var $author$project$Page$Project$updateLoaded = F4(
 				substate,
 				A2(
 					$elm$core$Task$perform,
-					function (_v18) {
-						return $author$project$Page$Project$ChangeBeforeUnloadPrompt;
+					function (_v17) {
+						return $author$project$Component$Project$Msg$HostMessage($author$project$Component$Project$Msg$ChangeBeforeUnloadPrompt);
 					},
 					$elm$core$Task$succeed(_Utils_Tuple0)));
 		};
@@ -15316,23 +17336,9 @@ var $author$project$Page$Project$updateLoaded = F4(
 			return _Utils_Tuple3(
 				A3($author$project$Util$flip, $author$project$Data$UndoList$new, project, newState),
 				substate,
-				$author$project$Page$Project$projectChanged);
+				$author$project$Component$Project$Editing$projectChanged);
 		};
 		switch (msg.$) {
-			case 'PosterLoaded':
-				if (msg.a.$ === 'Ok') {
-					var posterMD = msg.a.a;
-					return _Utils_Tuple3(
-						project,
-						_Utils_update(
-							substate,
-							{
-								poster: $elm$core$Maybe$Just(posterMD)
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					return _Utils_Tuple3(project, substate, $elm$core$Platform$Cmd$none);
-				}
 			case 'ConvertToGif':
 				var index = msg.a;
 				var _v1 = A2($elm$core$Array$get, index, present.workingData);
@@ -15370,7 +17376,7 @@ var $author$project$Page$Project$updateLoaded = F4(
 								}),
 							A3(
 								$author$project$Request$Gif$process,
-								$author$project$Page$Project$GifProcessed(nominal),
+								$author$project$Component$Project$Msg$GifProcessed(nominal),
 								present.uuid,
 								actual));
 					}
@@ -15398,7 +17404,6 @@ var $author$project$Page$Project$updateLoaded = F4(
 							$elm$core$Platform$Cmd$none));
 				} else {
 					var timeInterval = msg.a;
-					var error = msg.b.a;
 					return _Utils_Tuple3(
 						project,
 						_Utils_update(
@@ -15648,6 +17653,53 @@ var $author$project$Page$Project$updateLoaded = F4(
 								$author$project$Data$Video$Segment$setKeyFrame(frameIndex),
 								present.workingData)
 						}));
+			case 'UndoProject':
+				return _Utils_eq(substate.textBeingEdited, $elm$core$Maybe$Nothing) ? _Utils_Tuple3(
+					$author$project$Data$UndoList$undo(project),
+					substate,
+					$author$project$Component$Project$Editing$projectChanged) : _Utils_Tuple3(
+					project,
+					substate,
+					$author$project$Port$undoTrix(_Utils_Tuple0));
+			case 'RedoProject':
+				return _Utils_eq(substate.textBeingEdited, $elm$core$Maybe$Nothing) ? _Utils_Tuple3(
+					$author$project$Data$UndoList$redo(project),
+					substate,
+					$author$project$Component$Project$Editing$projectChanged) : _Utils_Tuple3(
+					project,
+					substate,
+					$author$project$Port$redoTrix(_Utils_Tuple0));
+			default:
+				var hmsg = msg.a;
+				return _Utils_Tuple3(
+					project,
+					substate,
+					A2(
+						$elm$core$Task$perform,
+						function (_v16) {
+							return $author$project$Component$Project$Msg$HostMessage(hmsg);
+						},
+						$elm$core$Task$succeed(_Utils_Tuple0)));
+		}
+	});
+var $author$project$Component$Project$Main$updateLoaded = F4(
+	function (key, msg, project, substate) {
+		var present = project.present;
+		switch (msg.$) {
+			case 'PosterLoaded':
+				if (msg.a.$ === 'Ok') {
+					var posterMD = msg.a.a;
+					return _Utils_Tuple3(
+						project,
+						_Utils_update(
+							substate,
+							{
+								poster: $elm$core$Maybe$Just(posterMD)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple3(project, substate, $elm$core$Platform$Cmd$none);
+				}
 			case 'StartPreviewing':
 				return _Utils_Tuple3(
 					project,
@@ -15685,7 +17737,7 @@ var $author$project$Page$Project$updateLoaded = F4(
 						{savingResult: $elm$core$Maybe$Nothing}),
 					A2(
 						$author$project$Request$Project$save,
-						$author$project$Page$Project$ProjectSaved(redirection),
+						$author$project$Component$Project$Msg$ProjectSaved(redirection),
 						present));
 			case 'ProjectSaved':
 				var redirection = msg.a;
@@ -15699,10 +17751,10 @@ var $author$project$Page$Project$updateLoaded = F4(
 							savingResult: $elm$core$Maybe$Just(result)
 						}),
 					function () {
-						var _v16 = _Utils_Tuple2(redirection, result);
-						if (_v16.b.$ === 'Ok') {
-							if (_v16.a.$ === 'Just') {
-								var targetRoute = _v16.a.a;
+						var _v1 = _Utils_Tuple2(redirection, result);
+						if (_v1.b.$ === 'Ok') {
+							if (_v1.a.$ === 'Just') {
+								var targetRoute = _v1.a.a;
 								return $elm$core$Platform$Cmd$batch(
 									_List_fromArray(
 										[
@@ -15729,12 +17781,12 @@ var $author$project$Page$Project$updateLoaded = F4(
 					_Utils_update(
 						substate,
 						{exportingError: $elm$core$Maybe$Nothing, isExportingInProgress: true}),
-					A2($author$project$Request$Project$export, $author$project$Page$Project$ProjectExported, present));
+					A2($author$project$Request$Project$export, $author$project$Component$Project$Msg$ProjectExported, present));
 			case 'ProjectExported':
 				if (msg.a.$ === 'Ok') {
-					var _v17 = msg.a.a;
-					var base = _v17.a;
-					var info = _v17.b;
+					var _v2 = msg.a.a;
+					var base = _v2.a;
+					var info = _v2.b;
 					return _Utils_Tuple3(
 						project,
 						_Utils_update(
@@ -15774,7 +17826,7 @@ var $author$project$Page$Project$updateLoaded = F4(
 				return _Utils_Tuple3(
 					project,
 					substate,
-					A2($author$project$Request$Project$getSize, $author$project$Page$Project$ProjectSizeRequested, present));
+					A2($author$project$Request$Project$getSize, $author$project$Component$Project$Msg$ProjectSizeRequested, present));
 			case 'ProjectSizeRequested':
 				if (msg.a.$ === 'Ok') {
 					var fileSize = msg.a.a;
@@ -15789,22 +17841,6 @@ var $author$project$Page$Project$updateLoaded = F4(
 				} else {
 					return _Utils_Tuple3(project, substate, $elm$core$Platform$Cmd$none);
 				}
-			case 'UndoProject':
-				return _Utils_eq(substate.textBeingEdited, $elm$core$Maybe$Nothing) ? _Utils_Tuple3(
-					$author$project$Data$UndoList$undo(project),
-					substate,
-					$author$project$Page$Project$projectChanged) : _Utils_Tuple3(
-					project,
-					substate,
-					$author$project$Port$undoTrix(_Utils_Tuple0));
-			case 'RedoProject':
-				return _Utils_eq(substate.textBeingEdited, $elm$core$Maybe$Nothing) ? _Utils_Tuple3(
-					$author$project$Data$UndoList$redo(project),
-					substate,
-					$author$project$Page$Project$projectChanged) : _Utils_Tuple3(
-					project,
-					substate,
-					$author$project$Port$redoTrix(_Utils_Tuple0));
 			case 'JumpTo':
 				var index = msg.a;
 				return _Utils_Tuple3(
@@ -15816,12 +17852,12 @@ var $author$project$Page$Project$updateLoaded = F4(
 				return _Utils_eq(substate.lastSaved, project.present) ? _Utils_Tuple3(
 					project,
 					substate,
-					A2($author$project$Route$pushUrl, key, $author$project$Route$ProjectPortal)) : _Utils_Tuple3(
+					A2($author$project$Route$pushUrl, key, $author$project$Route$Portal)) : _Utils_Tuple3(
 					project,
 					_Utils_update(
 						substate,
 						{
-							confirmNavigatingAway: $elm$core$Maybe$Just($author$project$Route$ProjectPortal)
+							confirmNavigatingAway: $elm$core$Maybe$Just($author$project$Route$Portal)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 'StayOnPage':
@@ -15844,1968 +17880,82 @@ var $author$project$Page$Project$updateLoaded = F4(
 						substate,
 						{viewType: t}),
 					$elm$core$Platform$Cmd$none);
-			case 'NoOp':
+			case 'MsgForEditing':
+				var editingMsg = msg.a;
+				var _v3 = A4($author$project$Component$Project$Editing$update, key, editingMsg, project, substate);
+				var proj = _v3.a;
+				var subs = _v3.b;
+				var cmd = _v3.c;
+				var pcmd = A2(
+					$elm$core$Platform$Cmd$map,
+					function (emsg) {
+						if (emsg.$ === 'HostMessage') {
+							var hmsg = emsg.a;
+							return hmsg;
+						} else {
+							return $author$project$Component$Project$Msg$MsgForEditing(emsg);
+						}
+					},
+					cmd);
+				return _Utils_Tuple3(proj, subs, pcmd);
+			case 'LoadProject':
+				return _Utils_Tuple3(project, substate, $elm$core$Platform$Cmd$none);
+			case 'ProjectLoaded':
 				return _Utils_Tuple3(project, substate, $elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple3(project, substate, $elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Page$Project$update = F3(
+var $author$project$Component$Project$Main$update = F3(
 	function (key, msg, model) {
 		if (model.$ === 'Loaded') {
 			var project = model.a;
 			var substate = model.b;
-			var _v1 = A4($author$project$Page$Project$updateLoaded, key, msg, project, substate);
+			var _v1 = A4($author$project$Component$Project$Main$updateLoaded, key, msg, project, substate);
 			var updatedProject = _v1.a;
 			var updatedSubstate = _v1.b;
 			var command = _v1.c;
 			return _Utils_Tuple2(
-				A2($author$project$Page$Project$Loaded, updatedProject, updatedSubstate),
+				A2($author$project$Component$Project$Model$Loaded, updatedProject, updatedSubstate),
 				command);
 		} else {
 			switch (msg.$) {
 				case 'LoadProject':
 					var uuid = msg.a;
 					return _Utils_Tuple2(
-						$author$project$Page$Project$Loading(uuid),
-						A2($author$project$Request$Project$get, $author$project$Page$Project$ProjectLoaded, uuid));
+						$author$project$Component$Project$Model$Loading(uuid),
+						A2($author$project$Request$Project$get, $author$project$Component$Project$Msg$ProjectLoaded, uuid));
 				case 'ProjectLoaded':
 					if (msg.a.$ === 'Ok') {
 						var project = msg.a.a;
 						return _Utils_Tuple2(
-							$author$project$Page$Project$initLoaded(project),
+							$author$project$Component$Project$Main$initLoaded(project),
 							$elm$core$Platform$Cmd$batch(
 								_List_fromArray(
 									[
 										A2(
 										$elm$core$Task$perform,
 										function (_v3) {
-											return $author$project$Page$Project$RequestProjectSize;
+											return $author$project$Component$Project$Msg$RequestProjectSize;
 										},
 										$elm$core$Task$succeed(_Utils_Tuple0)),
-										$author$project$Request$Poster$get($author$project$Page$Project$PosterLoaded)
+										$author$project$Request$Poster$get($author$project$Component$Project$Msg$PosterLoaded)
 									])));
 					} else {
 						var error = msg.a.a;
 						return _Utils_Tuple2(
-							$author$project$Page$Project$ProjectFailedToLoad(error),
+							$author$project$Component$Project$Model$ProjectFailedToLoad(error),
 							$elm$core$Platform$Cmd$none);
 					}
 				default:
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			}
-		}
-	});
-var $author$project$Page$Project$Portal$CloseUploaderWhenCompleted = {$: 'CloseUploaderWhenCompleted'};
-var $author$project$View$Uploader$FailedToUpload = F2(
-	function (a, b) {
-		return {$: 'FailedToUpload', a: a, b: b};
-	});
-var $author$project$Page$Project$Portal$FilesSelected = F2(
-	function (a, b) {
-		return {$: 'FilesSelected', a: a, b: b};
-	});
-var $author$project$Page$Project$Portal$ParamsLoaded = function (a) {
-	return {$: 'ParamsLoaded', a: a};
-};
-var $author$project$Page$Project$Portal$ParamsSelected = function (a) {
-	return {$: 'ParamsSelected', a: a};
-};
-var $author$project$Page$Project$Portal$ProjectUpdated = function (a) {
-	return {$: 'ProjectUpdated', a: a};
-};
-var $author$project$Page$Project$Portal$ProjectsDeleted = F2(
-	function (a, b) {
-		return {$: 'ProjectsDeleted', a: a, b: b};
-	});
-var $author$project$Page$Project$Portal$SubtitleLoaded = F3(
-	function (a, b, c) {
-		return {$: 'SubtitleLoaded', a: a, b: b, c: c};
-	});
-var $author$project$Page$Project$Portal$SubtitleSelected = F2(
-	function (a, b) {
-		return {$: 'SubtitleSelected', a: a, b: b};
-	});
-var $author$project$Page$Project$Portal$SubtitleUploaded = F2(
-	function (a, b) {
-		return {$: 'SubtitleUploaded', a: a, b: b};
-	});
-var $author$project$Page$Project$Portal$UploadVideo = F3(
-	function (a, b, c) {
-		return {$: 'UploadVideo', a: a, b: b, c: c};
-	});
-var $author$project$View$Uploader$Uploading = F4(
-	function (a, b, c, d) {
-		return {$: 'Uploading', a: a, b: b, c: c, d: d};
-	});
-var $author$project$View$Uploader$UploadingSubtitle = function (a) {
-	return {$: 'UploadingSubtitle', a: a};
-};
-var $author$project$Page$Project$Portal$VideoProcessingStarted = F2(
-	function (a, b) {
-		return {$: 'VideoProcessingStarted', a: a, b: b};
-	});
-var $author$project$Page$Project$Portal$VideoUploaded = F3(
-	function (a, b, c) {
-		return {$: 'VideoUploaded', a: a, b: b, c: c};
-	});
-var $author$project$Data$Project$Concise$subtitleEncoder = F3(
-	function (uuid, ext, content) {
-		return $elm$json$Json$Encode$object(
-			_List_fromArray(
-				[
-					_Utils_Tuple2(
-					'Id',
-					$elm$json$Json$Encode$string(uuid)),
-					_Utils_Tuple2(
-					'Type',
-					$elm$json$Json$Encode$string(ext)),
-					_Utils_Tuple2(
-					'Text',
-					$elm$json$Json$Encode$string(content))
-				]));
-	});
-var $author$project$Data$Project$Concise$InvalidSubtitle = {$: 'InvalidSubtitle'};
-var $author$project$Data$Project$Concise$subtitleErrorDecoder = function (statusCode) {
-	return $elm$json$Json$Decode$succeed($author$project$Data$Project$Concise$InvalidSubtitle);
-};
-var $author$project$Request$Project$addSubtitle = F4(
-	function (handler, uuid, ext, content) {
-		return $author$project$API$Request$post(
-			{
-				decoder: A2($elm$json$Json$Decode$field, 'Video', $author$project$Data$Project$Concise$decoder),
-				errorDecoder: $author$project$Data$Project$Concise$subtitleErrorDecoder,
-				handler: handler(uuid),
-				payload: A3($author$project$Data$Project$Concise$subtitleEncoder, uuid, ext, content),
-				timeout: $elm$core$Maybe$Just(10000),
-				url: A2(
-					$author$project$Request$Helper$apiNativeClient,
-					_List_fromArray(
-						['uploadsubtitle']),
-					_List_Nil)
-			});
-	});
-var $author$project$Request$Helper$expectDeletion = function (toMsg) {
-	return A2(
-		$elm$http$Http$expectStringResponse,
-		toMsg,
-		function (response) {
-			switch (response.$) {
-				case 'BadUrl_':
-					var url = response.a;
-					return $elm$core$Result$Err(
-						$elm$http$Http$BadUrl(url));
-				case 'Timeout_':
-					return $elm$core$Result$Err($elm$http$Http$Timeout);
-				case 'NetworkError_':
-					return $elm$core$Result$Err($elm$http$Http$NetworkError);
-				case 'GoodStatus_':
-					var metadata = response.a;
-					return (metadata.statusCode === 204) ? $elm$core$Result$Ok(_Utils_Tuple0) : $elm$core$Result$Err(
-						$elm$http$Http$BadStatus(metadata.statusCode));
-				default:
-					var metadata = response.a;
-					return (metadata.statusCode === 404) ? $elm$core$Result$Ok(_Utils_Tuple0) : $elm$core$Result$Err(
-						$elm$http$Http$BadStatus(metadata.statusCode));
-			}
-		});
-};
-var $author$project$Request$Helper$deleteResource = function (r) {
-	return $elm$http$Http$request(
-		{
-			body: $elm$http$Http$jsonBody(r.payload),
-			expect: $author$project$Request$Helper$expectDeletion(r.handler),
-			headers: _List_Nil,
-			method: 'POST',
-			timeout: $elm$core$Maybe$Just(5000),
-			tracker: $elm$core$Maybe$Nothing,
-			url: r.url
-		});
-};
-var $author$project$Data$Project$Concise$wrapRequestBody = function (body) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2('Videos', body)
-			]));
-};
-var $author$project$Data$Project$Concise$uuidsEncoder = function (uuids) {
-	var body = A2(
-		$elm$json$Json$Encode$list,
-		$elm$core$Basics$identity,
-		A2(
-			$elm$core$List$map,
-			function (uuid) {
-				return $elm$json$Json$Encode$object(
-					_List_fromArray(
-						[
-							_Utils_Tuple2(
-							'Id',
-							$elm$json$Json$Encode$string(uuid))
-						]));
-			},
-			uuids));
-	return $author$project$Data$Project$Concise$wrapRequestBody(body);
-};
-var $author$project$Request$Project$delete = F2(
-	function (handler, uuids) {
-		return $author$project$Request$Helper$deleteResource(
-			{
-				handler: handler(uuids),
-				payload: $author$project$Data$Project$Concise$uuidsEncoder(
-					$elm$core$Set$toList(uuids)),
-				url: A2(
-					$author$project$Request$Helper$apiNativeClient,
-					_List_fromArray(
-						['deletevideo']),
-					_List_Nil)
-			});
-	});
-var $elm$core$Dict$diff = F2(
-	function (t1, t2) {
-		return A3(
-			$elm$core$Dict$foldl,
-			F3(
-				function (k, v, t) {
-					return A2($elm$core$Dict$remove, k, t);
-				}),
-			t1,
-			t2);
-	});
-var $elm$core$Set$diff = F2(
-	function (_v0, _v1) {
-		var dict1 = _v0.a;
-		var dict2 = _v1.a;
-		return $elm$core$Set$Set_elm_builtin(
-			A2($elm$core$Dict$diff, dict1, dict2));
-	});
-var $author$project$Data$Video$Processing$Params$granularityToInt = function (granularity) {
-	switch (granularity.$) {
-		case 'Rough':
-			return 1;
-		case 'Medium':
-			return 2;
-		default:
-			return 3;
-	}
-};
-var $author$project$Data$Video$Processing$Params$granularityEncoder = A2($elm$core$Basics$composeR, $author$project$Data$Video$Processing$Params$granularityToInt, $elm$json$Json$Encode$int);
-var $author$project$Data$Video$Processing$Params$encoder = function (params) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'Granularity',
-				$author$project$Data$Video$Processing$Params$granularityEncoder(params.granularity)),
-				_Utils_Tuple2(
-				'DifferentTypeMinDifference',
-				$elm$json$Json$Encode$int(params.differentTypeMinDifference)),
-				_Utils_Tuple2(
-				'SameTypeMaxDifference',
-				$elm$json$Json$Encode$int(params.sameTypeMaxDifference)),
-				_Utils_Tuple2(
-				'SimilarTypeMaxDifference',
-				$elm$json$Json$Encode$int(params.similarTypeMaxDifference)),
-				_Utils_Tuple2(
-				'SmoothTypeMinValue',
-				$elm$json$Json$Encode$int(params.smoothTypeMinValue)),
-				_Utils_Tuple2(
-				'IsSameCombined',
-				$elm$json$Json$Encode$bool(params.isSameCombined)),
-				_Utils_Tuple2(
-				'ShortNoneCombiningMaxDurationInMs',
-				$elm$json$Json$Encode$int(params.shortNoneCombiningMaxDurationInMs))
-			]));
-};
-var $author$project$Data$Project$Concise$FailedToProcess = function (a) {
-	return {$: 'FailedToProcess', a: a};
-};
-var $elm$core$Dict$member = F2(
-	function (key, dict) {
-		var _v0 = A2($elm$core$Dict$get, key, dict);
-		if (_v0.$ === 'Just') {
-			return true;
-		} else {
-			return false;
-		}
-	});
-var $elm$core$Set$member = F2(
-	function (key, _v0) {
-		var dict = _v0.a;
-		return A2($elm$core$Dict$member, key, dict);
-	});
-var $author$project$Data$Project$Concise$batchUpdateBy = F2(
-	function (uuids, updater) {
-		return $elm$core$List$map(
-			function (item) {
-				return A2($elm$core$Set$member, item.uuid, uuids) ? updater(item) : item;
-			});
-	});
-var $author$project$Data$Project$Concise$updateStatus = F2(
-	function (status, newStatus) {
-		var _v0 = _Utils_Tuple2(status, newStatus);
-		_v0$1:
-		while (true) {
-			_v0$2:
-			while (true) {
-				_v0$3:
-				while (true) {
-					switch (_v0.a.$) {
-						case 'Uploaded':
-							var _v1 = _v0.a;
-							return newStatus;
-						case 'Processing':
-							switch (_v0.b.$) {
-								case 'Uploaded':
-									break _v0$1;
-								case 'Processing':
-									break _v0$2;
-								default:
-									break _v0$2;
-							}
-						case 'Processed':
-							switch (_v0.b.$) {
-								case 'Uploaded':
-									break _v0$1;
-								case 'Processing':
-									break _v0$3;
-								default:
-									var _v3 = _v0.a;
-									return status;
-							}
-						default:
-							switch (_v0.b.$) {
-								case 'Uploaded':
-									break _v0$1;
-								case 'Processing':
-									break _v0$3;
-								default:
-									return status;
-							}
-					}
-				}
-				return status;
-			}
-			return newStatus;
-		}
-		var _v2 = _v0.b;
-		return status;
-	});
-var $author$project$Data$Project$Concise$setStatus = F2(
-	function (status, item) {
-		return _Utils_update(
-			item,
-			{
-				status: A2($author$project$Data$Project$Concise$updateStatus, item.status, status)
-			});
-	});
-var $author$project$Data$Project$Concise$failedToStartProcessing = F2(
-	function (uuids, error) {
-		return A2(
-			$author$project$Data$Project$Concise$batchUpdateBy,
-			uuids,
-			$author$project$Data$Project$Concise$setStatus(
-				$author$project$Data$Project$Concise$FailedToProcess(error)));
-	});
-var $elm$file$File$Select$file = F2(
-	function (mimes, toMsg) {
-		return A2(
-			$elm$core$Task$perform,
-			toMsg,
-			_File_uploadOne(mimes));
-	});
-var $elm_community$list_extra$List$Extra$filterNot = F2(
-	function (pred, list) {
-		return A2(
-			$elm$core$List$filter,
-			A2($elm$core$Basics$composeL, $elm$core$Basics$not, pred),
-			list);
-	});
-var $author$project$Page$Project$Portal$isProjectSelected = F2(
-	function (selection, _v0) {
-		var uuid = _v0.uuid;
-		return A2($elm$core$Set$member, uuid, selection);
-	});
-var $author$project$Page$Project$Portal$filterSelectedProjects = A2($elm$core$Basics$composeL, $elm$core$List$filter, $author$project$Page$Project$Portal$isProjectSelected);
-var $elm$core$Basics$clamp = F3(
-	function (low, high, number) {
-		return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
-	});
-var $elm$http$Http$fractionSent = function (p) {
-	return (!p.size) ? 1 : A3($elm$core$Basics$clamp, 0, 1, p.sent / p.size);
-};
-var $elm$random$Random$Generate = function (a) {
-	return {$: 'Generate', a: a};
-};
-var $elm$random$Random$Seed = F2(
-	function (a, b) {
-		return {$: 'Seed', a: a, b: b};
-	});
-var $elm$random$Random$next = function (_v0) {
-	var state0 = _v0.a;
-	var incr = _v0.b;
-	return A2($elm$random$Random$Seed, ((state0 * 1664525) + incr) >>> 0, incr);
-};
-var $elm$random$Random$initialSeed = function (x) {
-	var _v0 = $elm$random$Random$next(
-		A2($elm$random$Random$Seed, 0, 1013904223));
-	var state1 = _v0.a;
-	var incr = _v0.b;
-	var state2 = (state1 + x) >>> 0;
-	return $elm$random$Random$next(
-		A2($elm$random$Random$Seed, state2, incr));
-};
-var $elm$time$Time$posixToMillis = function (_v0) {
-	var millis = _v0.a;
-	return millis;
-};
-var $elm$random$Random$init = A2(
-	$elm$core$Task$andThen,
-	function (time) {
-		return $elm$core$Task$succeed(
-			$elm$random$Random$initialSeed(
-				$elm$time$Time$posixToMillis(time)));
-	},
-	$elm$time$Time$now);
-var $elm$random$Random$step = F2(
-	function (_v0, seed) {
-		var generator = _v0.a;
-		return generator(seed);
-	});
-var $elm$random$Random$onEffects = F3(
-	function (router, commands, seed) {
-		if (!commands.b) {
-			return $elm$core$Task$succeed(seed);
-		} else {
-			var generator = commands.a.a;
-			var rest = commands.b;
-			var _v1 = A2($elm$random$Random$step, generator, seed);
-			var value = _v1.a;
-			var newSeed = _v1.b;
-			return A2(
-				$elm$core$Task$andThen,
-				function (_v2) {
-					return A3($elm$random$Random$onEffects, router, rest, newSeed);
-				},
-				A2($elm$core$Platform$sendToApp, router, value));
-		}
-	});
-var $elm$random$Random$onSelfMsg = F3(
-	function (_v0, _v1, seed) {
-		return $elm$core$Task$succeed(seed);
-	});
-var $elm$random$Random$Generator = function (a) {
-	return {$: 'Generator', a: a};
-};
-var $elm$random$Random$map = F2(
-	function (func, _v0) {
-		var genA = _v0.a;
-		return $elm$random$Random$Generator(
-			function (seed0) {
-				var _v1 = genA(seed0);
-				var a = _v1.a;
-				var seed1 = _v1.b;
-				return _Utils_Tuple2(
-					func(a),
-					seed1);
-			});
-	});
-var $elm$random$Random$cmdMap = F2(
-	function (func, _v0) {
-		var generator = _v0.a;
-		return $elm$random$Random$Generate(
-			A2($elm$random$Random$map, func, generator));
-	});
-_Platform_effectManagers['Random'] = _Platform_createManager($elm$random$Random$init, $elm$random$Random$onEffects, $elm$random$Random$onSelfMsg, $elm$random$Random$cmdMap);
-var $elm$random$Random$command = _Platform_leaf('Random');
-var $elm$random$Random$generate = F2(
-	function (tagger, generator) {
-		return $elm$random$Random$command(
-			$elm$random$Random$Generate(
-				A2($elm$random$Random$map, tagger, generator)));
-	});
-var $TSFoster$elm_uuid$UUID$UUID = F4(
-	function (a, b, c, d) {
-		return {$: 'UUID', a: a, b: b, c: c, d: d};
-	});
-var $elm$random$Random$map4 = F5(
-	function (func, _v0, _v1, _v2, _v3) {
-		var genA = _v0.a;
-		var genB = _v1.a;
-		var genC = _v2.a;
-		var genD = _v3.a;
-		return $elm$random$Random$Generator(
-			function (seed0) {
-				var _v4 = genA(seed0);
-				var a = _v4.a;
-				var seed1 = _v4.b;
-				var _v5 = genB(seed1);
-				var b = _v5.a;
-				var seed2 = _v5.b;
-				var _v6 = genC(seed2);
-				var c = _v6.a;
-				var seed3 = _v6.b;
-				var _v7 = genD(seed3);
-				var d = _v7.a;
-				var seed4 = _v7.b;
-				return _Utils_Tuple2(
-					A4(func, a, b, c, d),
-					seed4);
-			});
-	});
-var $TSFoster$elm_uuid$UUID$forceUnsigned = $elm$core$Bitwise$shiftRightZfBy(0);
-var $elm$core$Bitwise$xor = _Bitwise_xor;
-var $elm$random$Random$peel = function (_v0) {
-	var state = _v0.a;
-	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
-	return ((word >>> 22) ^ word) >>> 0;
-};
-var $elm$random$Random$int = F2(
-	function (a, b) {
-		return $elm$random$Random$Generator(
-			function (seed0) {
-				var _v0 = (_Utils_cmp(a, b) < 0) ? _Utils_Tuple2(a, b) : _Utils_Tuple2(b, a);
-				var lo = _v0.a;
-				var hi = _v0.b;
-				var range = (hi - lo) + 1;
-				if (!((range - 1) & range)) {
-					return _Utils_Tuple2(
-						(((range - 1) & $elm$random$Random$peel(seed0)) >>> 0) + lo,
-						$elm$random$Random$next(seed0));
-				} else {
-					var threshhold = (((-range) >>> 0) % range) >>> 0;
-					var accountForBias = function (seed) {
-						accountForBias:
-						while (true) {
-							var x = $elm$random$Random$peel(seed);
-							var seedN = $elm$random$Random$next(seed);
-							if (_Utils_cmp(x, threshhold) < 0) {
-								var $temp$seed = seedN;
-								seed = $temp$seed;
-								continue accountForBias;
-							} else {
-								return _Utils_Tuple2((x % range) + lo, seedN);
-							}
-						}
-					};
-					return accountForBias(seed0);
-				}
-			});
-	});
-var $elm$random$Random$maxInt = 2147483647;
-var $elm$random$Random$minInt = -2147483648;
-var $TSFoster$elm_uuid$UUID$randomU32 = A2(
-	$elm$random$Random$map,
-	$TSFoster$elm_uuid$UUID$forceUnsigned,
-	A2($elm$random$Random$int, $elm$random$Random$minInt, $elm$random$Random$maxInt));
-var $elm$core$Bitwise$or = _Bitwise_or;
-var $TSFoster$elm_uuid$UUID$toVariant1 = function (_v0) {
-	var a = _v0.a;
-	var b = _v0.b;
-	var c = _v0.c;
-	var d = _v0.d;
-	return A4(
-		$TSFoster$elm_uuid$UUID$UUID,
-		a,
-		b,
-		$TSFoster$elm_uuid$UUID$forceUnsigned(2147483648 | (1073741823 & c)),
-		d);
-};
-var $TSFoster$elm_uuid$UUID$toVersion = F2(
-	function (v, _v0) {
-		var a = _v0.a;
-		var b = _v0.b;
-		var c = _v0.c;
-		var d = _v0.d;
-		return A4(
-			$TSFoster$elm_uuid$UUID$UUID,
-			a,
-			$TSFoster$elm_uuid$UUID$forceUnsigned((v << 12) | (4294905855 & b)),
-			c,
-			d);
-	});
-var $TSFoster$elm_uuid$UUID$generator = A2(
-	$elm$random$Random$map,
-	A2(
-		$elm$core$Basics$composeR,
-		$TSFoster$elm_uuid$UUID$toVersion(4),
-		$TSFoster$elm_uuid$UUID$toVariant1),
-	A5($elm$random$Random$map4, $TSFoster$elm_uuid$UUID$UUID, $TSFoster$elm_uuid$UUID$randomU32, $TSFoster$elm_uuid$UUID$randomU32, $TSFoster$elm_uuid$UUID$randomU32, $TSFoster$elm_uuid$UUID$randomU32));
-var $krisajenkins$remotedata$RemoteData$Loading = {$: 'Loading'};
-var $krisajenkins$remotedata$RemoteData$map = F2(
-	function (f, data) {
-		switch (data.$) {
-			case 'Success':
-				var value = data.a;
-				return $krisajenkins$remotedata$RemoteData$Success(
-					f(value));
-			case 'Loading':
-				return $krisajenkins$remotedata$RemoteData$Loading;
-			case 'NotAsked':
-				return $krisajenkins$remotedata$RemoteData$NotAsked;
-			default:
-				var error = data.a;
-				return $krisajenkins$remotedata$RemoteData$Failure(error);
-		}
-	});
-var $elm$core$Tuple$mapSecond = F2(
-	function (func, _v0) {
-		var x = _v0.a;
-		var y = _v0.b;
-		return _Utils_Tuple2(
-			x,
-			func(y));
-	});
-var $author$project$Util$cropFileExtension = function (fileName) {
-	var _v0 = A2(
-		$elm$core$String$split,
-		'.',
-		$elm$core$String$reverse(fileName));
-	if (!_v0.b) {
-		return '';
-	} else {
-		if (!_v0.b.b) {
-			return '';
-		} else {
-			var xs = _v0.b;
-			return $elm$core$String$reverse(
-				A2($elm$core$String$join, '.', xs));
-		}
-	}
-};
-var $elm$file$File$name = _File_name;
-var $author$project$Data$Uploader$Media$subtitleToName = function (_v0) {
-	var file = _v0.b;
-	return $author$project$Util$cropFileExtension(
-		$elm$file$File$name(file));
-};
-var $author$project$Data$Uploader$Media$videoToName = function (_v0) {
-	var file = _v0.a;
-	return $author$project$Util$cropFileExtension(
-		$elm$file$File$name(file));
-};
-var $author$project$Data$Uploader$Media$doMatch = F3(
-	function (videos, subtitles, groupings) {
-		doMatch:
-		while (true) {
-			if (!videos.b) {
-				return groupings;
-			} else {
-				var x = videos.a;
-				var xs = videos.b;
-				var grouping = A2(
-					$elm$core$Tuple$pair,
-					x,
-					A2(
-						$elm$core$List$filter,
-						function (sub) {
-							return _Utils_eq(
-								$author$project$Data$Uploader$Media$subtitleToName(sub),
-								$author$project$Data$Uploader$Media$videoToName(x));
-						},
-						subtitles));
-				var $temp$videos = xs,
-					$temp$subtitles = subtitles,
-					$temp$groupings = A2($elm$core$List$cons, grouping, groupings);
-				videos = $temp$videos;
-				subtitles = $temp$subtitles;
-				groupings = $temp$groupings;
-				continue doMatch;
-			}
-		}
-	});
-var $author$project$Data$Uploader$Media$match = F2(
-	function (videos, subtitles) {
-		return A3($author$project$Data$Uploader$Media$doMatch, videos, subtitles, _List_Nil);
-	});
-var $author$project$Data$Uploader$Media$Subtitle = F2(
-	function (a, b) {
-		return {$: 'Subtitle', a: a, b: b};
-	});
-var $author$project$Data$Uploader$Media$Video = function (a) {
-	return {$: 'Video', a: a};
-};
-var $elm_community$list_extra$List$Extra$indexedFoldr = F3(
-	function (func, acc, list) {
-		var step = F2(
-			function (x, _v0) {
-				var i = _v0.a;
-				var thisAcc = _v0.b;
-				return _Utils_Tuple2(
-					i - 1,
-					A3(func, i, x, thisAcc));
-			});
-		return A3(
-			$elm$core$List$foldr,
-			step,
-			_Utils_Tuple2(
-				$elm$core$List$length(list) - 1,
-				acc),
-			list).b;
-	});
-var $elm$core$String$toLower = _String_toLower;
-var $author$project$Util$getFileExtension = function (fileName) {
-	var _v0 = A2(
-		$elm$core$String$split,
-		'.',
-		$elm$core$String$reverse(fileName));
-	if (!_v0.b) {
-		return '';
-	} else {
-		if (!_v0.b.b) {
-			return '';
-		} else {
-			var x = _v0.a;
-			return $elm$core$String$toLower(
-				$elm$core$String$reverse(x));
-		}
-	}
-};
-var $elm$file$File$mime = _File_mime;
-var $elm$core$Set$fromList = function (list) {
-	return A3($elm$core$List$foldl, $elm$core$Set$insert, $elm$core$Set$empty, list);
-};
-var $author$project$Data$File$Type$toExtensions = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Set$fromList,
-	A2(
-		$elm$core$List$foldr,
-		F2(
-			function (identifier, extensions) {
-				if (identifier.$ === 'Ext') {
-					var extension = identifier.a;
-					return A2($elm$core$List$cons, extension, extensions);
-				} else {
-					return extensions;
-				}
-			}),
-		_List_Nil));
-var $author$project$Data$File$Type$toMimes = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Set$fromList,
-	A2(
-		$elm$core$List$foldr,
-		F2(
-			function (identifier, mimes) {
-				if (identifier.$ === 'Mime') {
-					var mime = identifier.a;
-					return A2($elm$core$List$cons, mime, mimes);
-				} else {
-					return mimes;
-				}
-			}),
-		_List_Nil));
-var $author$project$Data$File$Type$isOneOf = F2(
-	function (file, identifiers) {
-		var mime = $elm$file$File$mime(file);
-		var ext = $author$project$Util$getFileExtension(
-			$elm$file$File$name(file));
-		return A2(
-			$elm$core$Set$member,
-			mime,
-			$author$project$Data$File$Type$toMimes(identifiers)) || ($elm$core$String$isEmpty(mime) && A2(
-			$elm$core$Set$member,
-			ext,
-			$author$project$Data$File$Type$toExtensions(identifiers)));
-	});
-var $author$project$Data$File$Type$Ext = function (a) {
-	return {$: 'Ext', a: a};
-};
-var $author$project$Data$File$Type$supportedSubtitles = _List_fromArray(
-	[
-		$author$project$Data$File$Type$Ext('srt'),
-		$author$project$Data$File$Type$Ext('vtt')
-	]);
-var $author$project$Data$File$Type$isSupportedSubtitle = function (file) {
-	return A2($author$project$Data$File$Type$isOneOf, file, $author$project$Data$File$Type$supportedSubtitles);
-};
-var $author$project$Data$File$Type$Mime = function (a) {
-	return {$: 'Mime', a: a};
-};
-var $author$project$Data$File$Type$supportedVideos = _List_fromArray(
-	[
-		$author$project$Data$File$Type$Mime('video/mp4'),
-		$author$project$Data$File$Type$Mime('video/webm'),
-		$author$project$Data$File$Type$Mime('video/mpeg'),
-		$author$project$Data$File$Type$Mime('video/quicktime'),
-		$author$project$Data$File$Type$Mime('video/MP2T'),
-		$author$project$Data$File$Type$Ext('flv'),
-		$author$project$Data$File$Type$Mime('video/avi'),
-		$author$project$Data$File$Type$Mime('video/x-ms-wmv')
-	]);
-var $author$project$Data$File$Type$isSupportedVideo = function (file) {
-	return A2($author$project$Data$File$Type$isOneOf, file, $author$project$Data$File$Type$supportedVideos);
-};
-var $author$project$Data$File$Type$unsupportedSubtitles = _List_fromArray(
-	[
-		$author$project$Data$File$Type$Ext('ass'),
-		$author$project$Data$File$Type$Ext('ssa')
-	]);
-var $author$project$Data$File$Type$isUnsupportedSubtitle = function (file) {
-	return A2($author$project$Data$File$Type$isOneOf, file, $author$project$Data$File$Type$unsupportedSubtitles);
-};
-var $author$project$Data$File$Type$unsupportedVideos = _List_fromArray(
-	[
-		$author$project$Data$File$Type$Mime('video/x-matroska')
-	]);
-var $author$project$Data$File$Type$isUnsupportedVideo = function (file) {
-	return A2($author$project$Data$File$Type$isOneOf, file, $author$project$Data$File$Type$unsupportedVideos);
-};
-var $author$project$Data$Uploader$Media$partitionFiles = function () {
-	var reducer = F3(
-		function (index, file, partitioned) {
-			return $author$project$Data$File$Type$isSupportedVideo(file) ? _Utils_update(
-				partitioned,
-				{
-					videos: A2(
-						$elm$core$List$cons,
-						$author$project$Data$Uploader$Media$Video(file),
-						partitioned.videos)
-				}) : ($author$project$Data$File$Type$isSupportedSubtitle(file) ? _Utils_update(
-				partitioned,
-				{
-					subtitles: A2(
-						$elm$core$List$cons,
-						A2($author$project$Data$Uploader$Media$Subtitle, index, file),
-						partitioned.subtitles)
-				}) : ($author$project$Data$File$Type$isUnsupportedVideo(file) ? _Utils_update(
-				partitioned,
-				{
-					unsupportedVideos: A2($elm$core$List$cons, file, partitioned.unsupportedVideos)
-				}) : ($author$project$Data$File$Type$isUnsupportedSubtitle(file) ? _Utils_update(
-				partitioned,
-				{
-					unsupportedSubtitles: A2($elm$core$List$cons, file, partitioned.unsupportedSubtitles)
-				}) : _Utils_update(
-				partitioned,
-				{
-					unsupportedFiles: A2($elm$core$List$cons, file, partitioned.unsupportedFiles)
-				}))));
-		});
-	return A2(
-		$elm_community$list_extra$List$Extra$indexedFoldr,
-		reducer,
-		{subtitles: _List_Nil, unsupportedFiles: _List_Nil, unsupportedSubtitles: _List_Nil, unsupportedVideos: _List_Nil, videos: _List_Nil});
-}();
-var $author$project$Data$Uploader$Media$AmbiguousSubs = F3(
-	function (a, b, c) {
-		return {$: 'AmbiguousSubs', a: a, b: b, c: c};
-	});
-var $author$project$Data$Uploader$Media$HasSub = function (a) {
-	return {$: 'HasSub', a: a};
-};
-var $author$project$Data$Uploader$Media$NoSub = {$: 'NoSub'};
-var $author$project$Data$Uploader$Media$subtitleCandidatesFromList = function (subs) {
-	if (!subs.b) {
-		return $author$project$Data$Uploader$Media$NoSub;
-	} else {
-		if (!subs.b.b) {
-			var head = subs.a;
-			return $author$project$Data$Uploader$Media$HasSub(head);
-		} else {
-			var head = subs.a;
-			var _v1 = subs.b;
-			var neck = _v1.a;
-			var tails = _v1.b;
-			return A3($author$project$Data$Uploader$Media$AmbiguousSubs, head, neck, tails);
-		}
-	}
-};
-var $author$project$Data$Uploader$Media$morph = function (files) {
-	var _v0 = $author$project$Data$Uploader$Media$partitionFiles(files);
-	var videos = _v0.videos;
-	var subtitles = _v0.subtitles;
-	var unsupportedVideos = _v0.unsupportedVideos;
-	var unsupportedSubtitles = _v0.unsupportedSubtitles;
-	var unsupportedFiles = _v0.unsupportedFiles;
-	var matchedFileNames = A2($elm$core$List$map, $author$project$Data$Uploader$Media$videoToName, videos);
-	return {
-		matches: A2(
-			$elm$core$List$map,
-			$elm$core$Tuple$mapSecond($author$project$Data$Uploader$Media$subtitleCandidatesFromList),
-			A2($author$project$Data$Uploader$Media$match, videos, subtitles)),
-		unsupportedFiles: unsupportedFiles,
-		unsupportedSubtitles: unsupportedSubtitles,
-		unsupportedVideos: unsupportedVideos,
-		widows: A2(
-			$elm$core$List$filter,
-			A2(
-				$elm$core$Basics$composeL,
-				A2(
-					$elm$core$Basics$composeL,
-					$elm$core$Basics$not,
-					A2($author$project$Util$flip, $elm$core$List$member, matchedFileNames)),
-				$author$project$Data$Uploader$Media$subtitleToName),
-			subtitles)
-	};
-};
-var $elm$http$Http$filePart = _Http_pair;
-var $elm$http$Http$multipartBody = function (parts) {
-	return A2(
-		_Http_pair,
-		'',
-		_Http_toFormData(parts));
-};
-var $author$project$Request$Project$new = F3(
-	function (handler, videoFile, trackerID) {
-		return $elm$http$Http$request(
-			{
-				body: $elm$http$Http$multipartBody(
-					_List_fromArray(
-						[
-							A2($elm$http$Http$filePart, 'File', videoFile)
-						])),
-				expect: A2(
-					$elm$http$Http$expectJson,
-					handler,
-					A2($elm$json$Json$Decode$field, 'Video', $author$project$Data$Project$Concise$decoder)),
-				headers: _List_Nil,
-				method: 'POST',
-				timeout: $elm$core$Maybe$Just(60000),
-				tracker: $elm$core$Maybe$Just(trackerID),
-				url: A2(
-					$author$project$Request$Helper$apiNativeClient,
-					_List_fromArray(
-						['uploadvideo']),
-					_List_Nil)
-			});
-	});
-var $elm$core$List$singleton = function (value) {
-	return _List_fromArray(
-		[value]);
-};
-var $author$project$Data$Project$Concise$paramsUpdateEncoder = F2(
-	function (uuid, params) {
-		return $author$project$Data$Project$Concise$wrapRequestBody(
-			A2(
-				$elm$json$Json$Encode$list,
-				$elm$core$Basics$identity,
-				$elm$core$List$singleton(
-					$elm$json$Json$Encode$object(
-						_List_fromArray(
-							[
-								_Utils_Tuple2(
-								'Id',
-								$elm$json$Json$Encode$string(uuid)),
-								_Utils_Tuple2(
-								'Parameters',
-								$author$project$Data$Video$Processing$Params$encoder(params))
-							])))));
-	});
-var $elm_community$list_extra$List$Extra$find = F2(
-	function (predicate, list) {
-		find:
-		while (true) {
-			if (!list.b) {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var first = list.a;
-				var rest = list.b;
-				if (predicate(first)) {
-					return $elm$core$Maybe$Just(first);
-				} else {
-					var $temp$predicate = predicate,
-						$temp$list = rest;
-					predicate = $temp$predicate;
-					list = $temp$list;
-					continue find;
-				}
-			}
-		}
-	});
-var $elm_community$list_extra$List$Extra$updateIf = F3(
-	function (predicate, update, list) {
-		return A2(
-			$elm$core$List$map,
-			function (item) {
-				return predicate(item) ? update(item) : item;
-			},
-			list);
-	});
-var $elm_community$list_extra$List$Extra$setIf = F3(
-	function (predicate, replacement, list) {
-		return A3(
-			$elm_community$list_extra$List$Extra$updateIf,
-			predicate,
-			$elm$core$Basics$always(replacement),
-			list);
-	});
-var $author$project$Data$Project$Concise$updateCollection = function (item) {
-	return A2(
-		$elm_community$list_extra$List$Extra$setIf,
-		function (_v0) {
-			var uuid = _v0.uuid;
-			return _Utils_eq(uuid, item.uuid);
-		},
-		item);
-};
-var $author$project$Data$Project$Concise$putInCollection = F2(
-	function (item, collection) {
-		var _v0 = A2(
-			$elm_community$list_extra$List$Extra$find,
-			function (_v1) {
-				var uuid = _v1.uuid;
-				return _Utils_eq(uuid, item.uuid);
-			},
-			collection);
-		if (_v0.$ === 'Just') {
-			return A2($author$project$Data$Project$Concise$updateCollection, item, collection);
-		} else {
-			return A2($elm$core$List$cons, item, collection);
-		}
-	});
-var $author$project$Data$Project$Concise$updateErrorDecoder = function (statusCode) {
-	return $elm$json$Json$Decode$fail('');
-};
-var $author$project$Request$Project$removeSubtitle = F2(
-	function (handler, uuid) {
-		return $author$project$API$Request$post(
-			{
-				decoder: A2(
-					$elm$json$Json$Decode$field,
-					'Videos',
-					A2($elm$json$Json$Decode$index, 0, $author$project$Data$Project$Concise$decoder)),
-				errorDecoder: $author$project$Data$Project$Concise$updateErrorDecoder,
-				handler: handler,
-				payload: $author$project$Data$Project$Concise$uuidsEncoder(
-					_List_fromArray(
-						[uuid])),
-				timeout: $elm$core$Maybe$Just(10000),
-				url: A2(
-					$author$project$Request$Helper$apiNativeClient,
-					_List_fromArray(
-						['deletesubtitle']),
-					_List_Nil)
-			});
-	});
-var $author$project$Data$Project$Concise$updateBy = function (uuid) {
-	return $elm_community$list_extra$List$Extra$updateIf(
-		function (item) {
-			return _Utils_eq(item.uuid, uuid);
-		});
-};
-var $author$project$Data$Project$Concise$resetProcessingStatusBy = function (uuid) {
-	return A2(
-		$author$project$Data$Project$Concise$updateBy,
-		uuid,
-		function (item) {
-			return _Utils_update(
-				item,
-				{status: $author$project$Data$Project$Concise$Uploaded});
-		});
-};
-var $elm$core$String$cons = _String_cons;
-var $author$project$Data$File$Type$identifierToString = function (identifier) {
-	if (identifier.$ === 'Ext') {
-		var extension = identifier.a;
-		return A2(
-			$elm$core$String$cons,
-			_Utils_chr('.'),
-			extension);
-	} else {
-		var mime = identifier.a;
-		return mime;
-	}
-};
-var $author$project$Data$File$Type$acceptableSubtitleFormats = A2($elm$core$List$map, $author$project$Data$File$Type$identifierToString, $author$project$Data$File$Type$supportedSubtitles);
-var $author$project$Data$File$Type$acceptableVideoFormats = A2($elm$core$List$map, $author$project$Data$File$Type$identifierToString, $author$project$Data$File$Type$supportedVideos);
-var $author$project$Data$Uploader$Media$acceptableSpecifiers = _Utils_ap($author$project$Data$File$Type$acceptableVideoFormats, $author$project$Data$File$Type$acceptableSubtitleFormats);
-var $elm$file$File$Select$files = F2(
-	function (mimes, toMsg) {
-		return A2(
-			$elm$core$Task$perform,
-			function (_v0) {
-				var f = _v0.a;
-				var fs = _v0.b;
-				return A2(toMsg, f, fs);
-			},
-			_File_uploadOneOrMore(mimes));
-	});
-var $author$project$Data$Uploader$Media$selectFiles = $elm$file$File$Select$files($author$project$Data$Uploader$Media$acceptableSpecifiers);
-var $author$project$Data$Uploader$Media$selectSubtitle = $elm$file$File$Select$file($author$project$Data$File$Type$acceptableSubtitleFormats);
-var $author$project$Data$Project$Concise$setProcessingStatusBy = F2(
-	function (uuid, status) {
-		return A2(
-			$author$project$Data$Project$Concise$updateBy,
-			uuid,
-			$author$project$Data$Project$Concise$setStatus(status));
-	});
-var $elm$core$Dict$singleton = F2(
-	function (key, value) {
-		return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
-	});
-var $elm$core$Set$singleton = function (key) {
-	return $elm$core$Set$Set_elm_builtin(
-		A2($elm$core$Dict$singleton, key, _Utils_Tuple0));
-};
-var $author$project$Data$Project$Concise$BadParameters = {$: 'BadParameters'};
-var $author$project$Data$Project$Concise$CannotDecodeVideo = {$: 'CannotDecodeVideo'};
-var $author$project$Data$Project$Concise$FileNotFound = {$: 'FileNotFound'};
-var $author$project$Data$Project$Concise$processingErrorDecoder = function (statusCode) {
-	return (statusCode === 400) ? $elm$json$Json$Decode$oneOf(
-		_List_fromArray(
-			[
-				A2(
-				$elm$json$Json$Decode$field,
-				'ErrorCode',
-				A2($author$project$Util$errorCodeDecoder, 130, $author$project$Data$Project$Concise$FileNotFound)),
-				A2(
-				$elm$json$Json$Decode$field,
-				'ErrorCode',
-				A2($author$project$Util$errorCodeDecoder, 110, $author$project$Data$Project$Concise$BadParameters))
-			])) : ((statusCode === 422) ? $elm$json$Json$Decode$succeed($author$project$Data$Project$Concise$CannotDecodeVideo) : $elm$json$Json$Decode$fail('not to be handled here'));
-};
-var $author$project$Request$Video$Processing$start = F2(
-	function (handler, uuids) {
-		return $author$project$API$Request$post(
-			{
-				decoder: $author$project$Request$Helper$whateverDecoder,
-				errorDecoder: $author$project$Data$Project$Concise$processingErrorDecoder,
-				handler: handler(uuids),
-				payload: $author$project$Data$Project$Concise$uuidsEncoder(
-					$elm$core$Set$toList(uuids)),
-				timeout: $elm$core$Maybe$Just(20000),
-				url: A2(
-					$author$project$Request$Helper$apiNativeClient,
-					_List_fromArray(
-						['process']),
-					_List_Nil)
-			});
-	});
-var $author$project$Data$Project$Concise$startProcessing = function (uuids) {
-	return A2(
-		$author$project$Data$Project$Concise$batchUpdateBy,
-		uuids,
-		$author$project$Data$Project$Concise$setStatus(
-			$author$project$Data$Project$Concise$Processing(0)));
-};
-var $elm$file$File$Download$string = F3(
-	function (name, mime, content) {
-		return A2(
-			$elm$core$Task$perform,
-			$elm$core$Basics$never,
-			A3(_File_download, name, mime, content));
-	});
-var $author$project$Data$Uploader$Media$subtitleToExt = function (_v0) {
-	var file = _v0.b;
-	return $author$project$Util$getFileExtension(
-		$elm$file$File$name(file));
-};
-var $author$project$Data$Uploader$Media$subtitleToFile = function (_v0) {
-	var file = _v0.b;
-	return file;
-};
-var $elm$file$File$toString = _File_toString;
-var $elm$core$String$fromChar = function (_char) {
-	return A2($elm$core$String$cons, _char, '');
-};
-var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
-var $elm$core$String$repeatHelp = F3(
-	function (n, chunk, result) {
-		return (n <= 0) ? result : A3(
-			$elm$core$String$repeatHelp,
-			n >> 1,
-			_Utils_ap(chunk, chunk),
-			(!(n & 1)) ? result : _Utils_ap(result, chunk));
-	});
-var $elm$core$String$repeat = F2(
-	function (n, chunk) {
-		return A3($elm$core$String$repeatHelp, n, chunk, '');
-	});
-var $elm$core$String$padLeft = F3(
-	function (n, _char, string) {
-		return _Utils_ap(
-			A2(
-				$elm$core$String$repeat,
-				n - $elm$core$String$length(string),
-				$elm$core$String$fromChar(_char)),
-			string);
-	});
-var $elm$core$String$fromList = _String_fromList;
-var $TSFoster$elm_uuid$UUID$toHex = F2(
-	function (acc, _int) {
-		toHex:
-		while (true) {
-			if (!_int) {
-				return $elm$core$String$fromList(acc);
-			} else {
-				var _char = function () {
-					var _v0 = 15 & _int;
-					switch (_v0) {
-						case 0:
-							return _Utils_chr('0');
-						case 1:
-							return _Utils_chr('1');
-						case 2:
-							return _Utils_chr('2');
-						case 3:
-							return _Utils_chr('3');
-						case 4:
-							return _Utils_chr('4');
-						case 5:
-							return _Utils_chr('5');
-						case 6:
-							return _Utils_chr('6');
-						case 7:
-							return _Utils_chr('7');
-						case 8:
-							return _Utils_chr('8');
-						case 9:
-							return _Utils_chr('9');
-						case 10:
-							return _Utils_chr('a');
-						case 11:
-							return _Utils_chr('b');
-						case 12:
-							return _Utils_chr('c');
-						case 13:
-							return _Utils_chr('d');
-						case 14:
-							return _Utils_chr('e');
-						default:
-							return _Utils_chr('f');
-					}
-				}();
-				var $temp$acc = A2($elm$core$List$cons, _char, acc),
-					$temp$int = _int >>> 4;
-				acc = $temp$acc;
-				_int = $temp$int;
-				continue toHex;
-			}
-		}
-	});
-var $TSFoster$elm_uuid$UUID$toStringWith = F2(
-	function (sep, _v0) {
-		var a = _v0.a;
-		var b = _v0.b;
-		var c = _v0.c;
-		var d = _v0.d;
-		return _Utils_ap(
-			A3(
-				$elm$core$String$padLeft,
-				8,
-				_Utils_chr('0'),
-				A2($TSFoster$elm_uuid$UUID$toHex, _List_Nil, a)),
-			_Utils_ap(
-				sep,
-				_Utils_ap(
-					A3(
-						$elm$core$String$padLeft,
-						4,
-						_Utils_chr('0'),
-						A2($TSFoster$elm_uuid$UUID$toHex, _List_Nil, b >>> 16)),
-					_Utils_ap(
-						sep,
-						_Utils_ap(
-							A3(
-								$elm$core$String$padLeft,
-								4,
-								_Utils_chr('0'),
-								A2($TSFoster$elm_uuid$UUID$toHex, _List_Nil, 65535 & b)),
-							_Utils_ap(
-								sep,
-								_Utils_ap(
-									A3(
-										$elm$core$String$padLeft,
-										4,
-										_Utils_chr('0'),
-										A2($TSFoster$elm_uuid$UUID$toHex, _List_Nil, c >>> 16)),
-									_Utils_ap(
-										sep,
-										_Utils_ap(
-											A3(
-												$elm$core$String$padLeft,
-												4,
-												_Utils_chr('0'),
-												A2($TSFoster$elm_uuid$UUID$toHex, _List_Nil, 65535 & c)),
-											A3(
-												$elm$core$String$padLeft,
-												8,
-												_Utils_chr('0'),
-												A2($TSFoster$elm_uuid$UUID$toHex, _List_Nil, d)))))))))));
-	});
-var $TSFoster$elm_uuid$UUID$toString = $TSFoster$elm_uuid$UUID$toStringWith('-');
-var $author$project$Data$File$Type$toSubtitleExtension = function (file) {
-	return $author$project$Data$File$Type$isSupportedSubtitle(file) ? $elm$core$Maybe$Just(
-		$author$project$Util$getFileExtension(
-			$elm$file$File$name(file))) : $elm$core$Maybe$Nothing;
-};
-var $author$project$Data$Uploader$Media$toUploadableSubtitle = function (candidates) {
-	switch (candidates.$) {
-		case 'NoSub':
-			return $elm$core$Maybe$Nothing;
-		case 'HasSub':
-			var subtitle = candidates.a;
-			return $elm$core$Maybe$Just(subtitle);
-		default:
-			var subtitle = candidates.a;
-			return $elm$core$Maybe$Just(subtitle);
-	}
-};
-var $author$project$Request$Project$update = F2(
-	function (handler, changes) {
-		return $author$project$API$Request$post(
-			{
-				decoder: A2(
-					$elm$json$Json$Decode$field,
-					'Videos',
-					A2($elm$json$Json$Decode$index, 0, $author$project$Data$Project$Concise$decoder)),
-				errorDecoder: $author$project$Data$Project$Concise$updateErrorDecoder,
-				handler: handler,
-				payload: changes,
-				timeout: $elm$core$Maybe$Just(10000),
-				url: A2(
-					$author$project$Request$Helper$apiNativeClient,
-					_List_fromArray(
-						['updatevideo']),
-					_List_Nil)
-			});
-	});
-var $author$project$View$Video$Processing$Params$update = F2(
-	function (msg, params) {
-		switch (msg.$) {
-			case 'SetGranularity':
-				var granularity = msg.a;
-				return _Utils_update(
-					params,
-					{granularity: granularity});
-			case 'SetDifferentTypeMinDifference':
-				var n = msg.a;
-				return _Utils_update(
-					params,
-					{differentTypeMinDifference: n});
-			case 'SetSameTypeMaxDifference':
-				var n = msg.a;
-				return _Utils_update(
-					params,
-					{sameTypeMaxDifference: n});
-			case 'SetSimilarTypeMaxDifference':
-				var n = msg.a;
-				return _Utils_update(
-					params,
-					{similarTypeMaxDifference: n});
-			case 'SetSmoothTypeMinValue':
-				var n = msg.a;
-				return _Utils_update(
-					params,
-					{smoothTypeMinValue: n});
-			case 'SetIsSameCombined':
-				var isSameCombined = msg.a;
-				return _Utils_update(
-					params,
-					{isSameCombined: isSameCombined});
-			case 'SetShortNoneCombiningMaxDurationInMs':
-				var n = msg.a;
-				return _Utils_update(
-					params,
-					{shortNoneCombiningMaxDurationInMs: n});
-			default:
-				return params;
-		}
-	});
-var $author$project$View$Uploader$updateProgress = F2(
-	function (targetTrackerID, progress) {
-		return $elm$core$List$map(
-			function (item) {
-				if (item.$ === 'Uploading') {
-					var trackerID = item.a;
-					var video = item.b;
-					var availableSubtitle = item.c;
-					var sendingProgress = item.d;
-					return _Utils_eq(trackerID, targetTrackerID) ? A4($author$project$View$Uploader$Uploading, trackerID, video, availableSubtitle, progress) : item;
-				} else {
-					return item;
-				}
-			});
-	});
-var $elm$core$Set$size = function (_v0) {
-	var dict = _v0.a;
-	return $elm$core$Dict$size(dict);
-};
-var $author$project$Util$updateSelection = F3(
-	function (entryID, isSelectingMultiple, currentlySelectedEntries) {
-		var isEntryAlreadySelected = A2($elm$core$Set$member, entryID, currentlySelectedEntries);
-		var _v0 = _Utils_Tuple2(isSelectingMultiple, isEntryAlreadySelected);
-		if (!_v0.a) {
-			if (!_v0.b) {
-				return $elm$core$Set$singleton(entryID);
-			} else {
-				return ($elm$core$Set$size(currentlySelectedEntries) > 1) ? $elm$core$Set$singleton(entryID) : $elm$core$Set$empty;
-			}
-		} else {
-			if (!_v0.b) {
-				return A2($elm$core$Set$insert, entryID, currentlySelectedEntries);
-			} else {
-				return A2($elm$core$Set$remove, entryID, currentlySelectedEntries);
-			}
-		}
-	});
-var $author$project$Data$Uploader$Media$videoToFile = function (_v0) {
-	var file = _v0.a;
-	return file;
-};
-var $author$project$Page$Project$Portal$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 'ToggleExpertMode':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{expertMode: !model.expertMode, importingError: $elm$core$Maybe$Nothing, paramsToExport: $elm$core$Maybe$Nothing}),
-					$elm$core$Platform$Cmd$none);
-			case 'PresetsLoaded':
-				var result = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{availablePresets: result}),
-					$elm$core$Platform$Cmd$none);
-			case 'ProjectsLoaded':
-				var result = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							projects: A2($krisajenkins$remotedata$RemoteData$map, $elm$core$List$reverse, result)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'PickFiles':
-				return _Utils_Tuple2(
-					model,
-					$author$project$Data$Uploader$Media$selectFiles($author$project$Page$Project$Portal$FilesSelected));
-			case 'FilesSelected':
-				var h = msg.a;
-				var t = msg.b;
-				var _v1 = $author$project$Data$Uploader$Media$morph(
-					A2($elm$core$List$cons, h, t));
-				var matches = _v1.matches;
-				var widows = _v1.widows;
-				var unsupportedVideos = _v1.unsupportedVideos;
-				var unsupportedSubtitles = _v1.unsupportedSubtitles;
-				var unsupportedFiles = _v1.unsupportedFiles;
-				var uploadablePairs = A2(
-					$elm$core$List$map,
-					$elm$core$Tuple$mapSecond($author$project$Data$Uploader$Media$toUploadableSubtitle),
-					matches);
-				return _Utils_Tuple2(
-					model,
-					$elm$core$Platform$Cmd$batch(
-						A2(
-							$elm$core$List$map,
-							function (_v2) {
-								var video = _v2.a;
-								var availableSubtitle = _v2.b;
-								return A2(
-									$elm$random$Random$generate,
-									A2(
-										$elm$core$Basics$composeL,
-										A2($author$project$Page$Project$Portal$UploadVideo, video, availableSubtitle),
-										$TSFoster$elm_uuid$UUID$toString),
-									$TSFoster$elm_uuid$UUID$generator);
-							},
-							uploadablePairs)));
-			case 'UploadVideo':
-				var targetVideo = msg.a;
-				var availableSubtitle = msg.b;
-				var trackerID = msg.c;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							isDisplayingUploader: true,
-							items: A2(
-								$elm$core$List$cons,
-								A4($author$project$View$Uploader$Uploading, trackerID, targetVideo, availableSubtitle, 0),
-								model.items)
-						}),
-					A3(
-						$author$project$Request$Project$new,
-						A2($author$project$Page$Project$Portal$VideoUploaded, targetVideo, availableSubtitle),
-						$author$project$Data$Uploader$Media$videoToFile(targetVideo),
-						trackerID));
-			case 'VideoUploading':
-				var trackerID = msg.a;
-				var progress = msg.b;
-				if (progress.$ === 'Sending') {
-					var sendingProgress = progress.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								items: A3(
-									$author$project$View$Uploader$updateProgress,
-									trackerID,
-									$elm$http$Http$fractionSent(sendingProgress),
-									model.items)
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				}
-			case 'VideoUploaded':
-				var targetVideo = msg.a;
-				var availableSubtitle = msg.b;
-				var result = msg.c;
-				var isTargetVideo = function (item) {
-					if (item.$ === 'Uploading') {
-						var video = item.b;
-						return _Utils_eq(video, targetVideo);
-					} else {
-						return false;
-					}
-				};
-				var _v4 = _Utils_Tuple2(result, availableSubtitle);
-				if (_v4.a.$ === 'Ok') {
-					if (_v4.b.$ === 'Nothing') {
-						var concise = _v4.a.a;
-						var _v5 = _v4.b;
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									items: A2($elm_community$list_extra$List$Extra$filterNot, isTargetVideo, model.items),
-									projects: A2(
-										$krisajenkins$remotedata$RemoteData$map,
-										$elm$core$List$cons(concise),
-										model.projects)
-								}),
-							A2(
-								$elm$core$Task$perform,
-								function (_v6) {
-									return $author$project$Page$Project$Portal$CloseUploaderWhenCompleted;
-								},
-								$elm$core$Task$succeed(_Utils_Tuple0)));
-					} else {
-						var concise = _v4.a.a;
-						var subtitle = _v4.b.a;
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									items: A3(
-										$elm_community$list_extra$List$Extra$setIf,
-										isTargetVideo,
-										$author$project$View$Uploader$UploadingSubtitle(concise),
-										model.items)
-								}),
-							A2(
-								$elm$core$Task$perform,
-								A2(
-									$author$project$Page$Project$Portal$SubtitleLoaded,
-									concise.uuid,
-									$author$project$Data$Uploader$Media$subtitleToExt(subtitle)),
-								$elm$file$File$toString(
-									$author$project$Data$Uploader$Media$subtitleToFile(subtitle))));
-					}
-				} else {
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								items: A3(
-									$elm_community$list_extra$List$Extra$setIf,
-									isTargetVideo,
-									A2($author$project$View$Uploader$FailedToUpload, targetVideo, availableSubtitle),
-									model.items)
-							}),
-						$elm$core$Platform$Cmd$none);
-				}
-			case 'PickSubtitleFor':
-				var uuid = msg.a;
-				return _Utils_Tuple2(
-					model,
-					$author$project$Data$Uploader$Media$selectSubtitle(
-						$author$project$Page$Project$Portal$SubtitleSelected(uuid)));
-			case 'SubtitleSelected':
-				var uuid = msg.a;
-				var file = msg.b;
-				var _v8 = $author$project$Data$File$Type$toSubtitleExtension(file);
-				if (_v8.$ === 'Just') {
-					var ext = _v8.a;
-					return _Utils_Tuple2(
-						model,
-						A2(
-							$elm$core$Task$perform,
-							A2($author$project$Page$Project$Portal$SubtitleLoaded, uuid, ext),
-							$elm$file$File$toString(file)));
-				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				}
-			case 'SubtitleLoaded':
-				var uuid = msg.a;
-				var ext = msg.b;
-				var subtitleContent = msg.c;
-				return _Utils_Tuple2(
-					model,
-					A4($author$project$Request$Project$addSubtitle, $author$project$Page$Project$Portal$SubtitleUploaded, uuid, ext, subtitleContent));
-			case 'SubtitleUploaded':
-				if (msg.b.$ === 'Ok') {
-					var concise = msg.b.a;
-					var isTargetVideo = function (item) {
-						if (item.$ === 'UploadingSubtitle') {
-							var uuid = item.a.uuid;
-							return _Utils_eq(uuid, concise.uuid);
-						} else {
-							return false;
-						}
-					};
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								items: A2($elm_community$list_extra$List$Extra$filterNot, isTargetVideo, model.items),
-								projects: A2(
-									$krisajenkins$remotedata$RemoteData$map,
-									$author$project$Data$Project$Concise$putInCollection(concise),
-									model.projects),
-								reviewingSubtitle: $elm$core$Maybe$Nothing
-							}),
-						A2(
-							$elm$core$Task$perform,
-							function (_v9) {
-								return $author$project$Page$Project$Portal$CloseUploaderWhenCompleted;
-							},
-							$elm$core$Task$succeed(_Utils_Tuple0)));
-				} else {
-					var targetUUID = msg.a;
-					var isTarget = function (item) {
-						if (item.$ === 'UploadingSubtitle') {
-							var uuid = item.a.uuid;
-							return _Utils_eq(uuid, targetUUID);
-						} else {
-							return false;
-						}
-					};
-					var _v11 = A2($elm$core$List$partition, isTarget, model.items);
-					if (_v11.a.b && (_v11.a.a.$ === 'UploadingSubtitle')) {
-						var _v12 = _v11.a;
-						var concise = _v12.a.a;
-						var remaining = _v11.b;
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									items: remaining,
-									projects: A2(
-										$krisajenkins$remotedata$RemoteData$map,
-										$elm$core$List$cons(concise),
-										model.projects)
-								}),
-							$elm$core$Platform$Cmd$none);
-					} else {
-						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-					}
-				}
-			case 'OpenUploader':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{isDisplayingUploader: true}),
-					$elm$core$Platform$Cmd$none);
-			case 'CloseUploader':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{isDisplayingUploader: false}),
-					$elm$core$Platform$Cmd$none);
-			case 'CloseUploaderWhenCompleted':
-				return $elm$core$List$isEmpty(model.items) ? _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{isDisplayingUploader: false}),
-					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'ReviewSubtitle':
-				var uuid = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							reviewingSubtitle: $elm$core$Maybe$Just(uuid)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'StopReviewingSubtitle':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{reviewingSubtitle: $elm$core$Maybe$Nothing}),
-					$elm$core$Platform$Cmd$none);
-			case 'RemoveSubtitleFor':
-				var uuid = msg.a;
-				return _Utils_Tuple2(
-					model,
-					A2($author$project$Request$Project$removeSubtitle, $author$project$Page$Project$Portal$ProjectUpdated, uuid));
-			case 'SelectProject':
-				var uuid = msg.a;
-				var isSelectingMultiple = msg.b;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							selectedProjects: A3($author$project$Util$updateSelection, uuid, isSelectingMultiple, model.selectedProjects)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'ConfirmDeletion':
-				var deletion = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							pendingDeletion: $elm$core$Maybe$Just(deletion)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'StopConfirmation':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{pendingDeletion: $elm$core$Maybe$Nothing}),
-					$elm$core$Platform$Cmd$none);
-			case 'DeleteProject':
-				var uuid = msg.a;
-				return _Utils_Tuple2(
-					model,
-					A2(
-						$author$project$Request$Project$delete,
-						$author$project$Page$Project$Portal$ProjectsDeleted,
-						$elm$core$Set$singleton(uuid)));
-			case 'BatchDeleteProjects':
-				return _Utils_Tuple2(
-					model,
-					A2($author$project$Request$Project$delete, $author$project$Page$Project$Portal$ProjectsDeleted, model.selectedProjects));
-			case 'ProjectsDeleted':
-				if (msg.b.$ === 'Ok') {
-					var uuids = msg.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								pendingDeletion: $elm$core$Maybe$Nothing,
-								projects: A2(
-									$krisajenkins$remotedata$RemoteData$map,
-									$elm_community$list_extra$List$Extra$filterNot(
-										function (_v14) {
-											var uuid = _v14.uuid;
-											return A2($elm$core$Set$member, uuid, uuids);
-										}),
-									model.projects)
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				}
-			case 'StartProcessingVideos':
-				return _Utils_Tuple2(
-					model,
-					A2($author$project$Request$Video$Processing$start, $author$project$Page$Project$Portal$VideoProcessingStarted, model.selectedProjects));
-			case 'VideoProcessingStarted':
-				if (msg.b.$ === 'Ok') {
-					var uuidsStarted = msg.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								projects: A2(
-									$krisajenkins$remotedata$RemoteData$map,
-									$author$project$Data$Project$Concise$startProcessing(uuidsStarted),
-									model.projects),
-								selectedProjects: A2($elm$core$Set$diff, model.selectedProjects, uuidsStarted)
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					var uuidsNotStarted = msg.a;
-					var error = msg.b.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								projects: A2(
-									$krisajenkins$remotedata$RemoteData$map,
-									A2($author$project$Data$Project$Concise$failedToStartProcessing, uuidsNotStarted, error),
-									model.projects)
-							}),
-						$elm$core$Platform$Cmd$none);
-				}
-			case 'ProcessingStatusUpdate':
-				if (msg.a.$ === 'Ok') {
-					var uuid = msg.a.a.uuid;
-					var status = msg.a.a.status;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								projects: A2(
-									$krisajenkins$remotedata$RemoteData$map,
-									A2($author$project$Data$Project$Concise$setProcessingStatusBy, uuid, status),
-									model.projects)
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				}
-			case 'StartOver':
-				var uuid = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							projects: A2(
-								$krisajenkins$remotedata$RemoteData$map,
-								$author$project$Data$Project$Concise$resetProcessingStatusBy(uuid),
-								model.projects)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'SetProcessingPreset':
-				var uuid = msg.a;
-				var params = msg.b.params;
-				return _Utils_Tuple2(
-					model,
-					A2(
-						$author$project$Request$Project$update,
-						$author$project$Page$Project$Portal$ProjectUpdated,
-						A2($author$project$Data$Project$Concise$paramsUpdateEncoder, uuid, params)));
-			case 'ProjectUpdated':
-				if (msg.a.$ === 'Ok') {
-					var project = msg.a.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								projects: A2(
-									$krisajenkins$remotedata$RemoteData$map,
-									$author$project$Data$Project$Concise$putInCollection(project),
-									model.projects),
-								reviewingSubtitle: $elm$core$Maybe$Nothing
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					var error = msg.a.a;
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				}
-			case 'ParamsMsg':
-				var uuid = msg.a;
-				var params = msg.b;
-				var subMsg = msg.c;
-				var updatedParams = A2($author$project$View$Video$Processing$Params$update, subMsg, params);
-				return _Utils_Tuple2(
-					model,
-					A2(
-						$author$project$Request$Project$update,
-						$author$project$Page$Project$Portal$ProjectUpdated,
-						A2($author$project$Data$Project$Concise$paramsUpdateEncoder, uuid, updatedParams)));
-			case 'StartExportingParams':
-				var params = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							paramsToExport: $elm$core$Maybe$Just(params)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'CancelExportingParams':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{paramsToExport: $elm$core$Maybe$Nothing}),
-					$elm$core$Platform$Cmd$none);
-			case 'ExportParams':
-				var filename = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{paramsToExport: $elm$core$Maybe$Nothing}),
-					function () {
-						var _v15 = model.paramsToExport;
-						if (_v15.$ === 'Just') {
-							var params = _v15.a;
-							return A3(
-								$elm$file$File$Download$string,
-								filename,
-								'application/json',
-								A2(
-									$elm$json$Json$Encode$encode,
-									2,
-									$author$project$Data$Video$Processing$Params$encoder(params)));
-						} else {
-							return $elm$core$Platform$Cmd$none;
-						}
-					}());
-			case 'ParamsRequested':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{importingError: $elm$core$Maybe$Nothing}),
-					A2(
-						$elm$file$File$Select$file,
-						_List_fromArray(
-							['application/json']),
-						$author$project$Page$Project$Portal$ParamsSelected));
-			case 'ParamsSelected':
-				var file = msg.a;
-				return _Utils_Tuple2(
-					model,
-					A2(
-						$elm$core$Task$perform,
-						$author$project$Page$Project$Portal$ParamsLoaded,
-						$elm$file$File$toString(file)));
-			case 'ParamsLoaded':
-				var content = msg.a;
-				var _v16 = _Utils_Tuple2(
-					A2($elm$json$Json$Decode$decodeString, $author$project$Data$Video$Processing$Params$decoder, content),
-					A2(
-						$krisajenkins$remotedata$RemoteData$map,
-						$author$project$Page$Project$Portal$filterSelectedProjects(model.selectedProjects),
-						model.projects));
-				_v16$2:
-				while (true) {
-					if (_v16.a.$ === 'Ok') {
-						if (((_v16.b.$ === 'Success') && _v16.b.a.b) && (!_v16.b.a.b.b)) {
-							var params = _v16.a.a;
-							var _v17 = _v16.b.a;
-							var uuid = _v17.a.uuid;
-							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-						} else {
-							break _v16$2;
-						}
-					} else {
-						if (((_v16.b.$ === 'Success') && _v16.b.a.b) && (!_v16.b.a.b.b)) {
-							var error = _v16.a.a;
-							var _v18 = _v16.b.a;
-							return _Utils_Tuple2(
-								_Utils_update(
-									model,
-									{
-										importingError: $elm$core$Maybe$Just(error)
-									}),
-								$elm$core$Platform$Cmd$none);
-						} else {
-							break _v16$2;
-						}
-					}
-				}
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'DismissImportingError':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{importingError: $elm$core$Maybe$Nothing}),
-					$elm$core$Platform$Cmd$none);
-			case 'SetSearchStr':
-				var str = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{searchStr: str}),
-					$elm$core$Platform$Cmd$none);
-			default:
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		var currentPage = model.currentPage;
 		switch (msg.$) {
-			case 'SetRoute':
-				var targetUrl = msg.a;
-				return A2($author$project$Main$setRoute, targetUrl, model);
 			case 'ClickedLink':
 				var urlRequest = msg.a;
 				if (urlRequest.$ === 'Internal') {
@@ -17822,66 +17972,40 @@ var $author$project$Main$update = F2(
 						model,
 						$elm$browser$Browser$Navigation$load(url));
 				}
-			case 'RequestMetaOfNativeClient':
-				return _Utils_Tuple2(model, $author$project$Main$requestMetaOfNativeClient);
-			case 'NativeClientVersionInfoRequested':
-				if (msg.a.$ === 'Ok') {
-					var meta = msg.a.a;
-					var newStatus = $author$project$Data$NativeClient$statusFromMeta(meta);
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{nativeClientStatus: newStatus}),
-						$elm$core$Platform$Cmd$batch(
-							_List_fromArray(
-								[
-									$author$project$Port$connectSocket(_Utils_Tuple0),
-									function () {
-									var _v2 = _Utils_Tuple2(
-										$author$project$Data$NativeClient$isStatusNormal(newStatus),
-										$author$project$Data$NativeClient$isStatusNormal(model.nativeClientStatus));
-									if (_v2.a && (!_v2.b)) {
-										switch (currentPage.$) {
-											case 'Project':
-												var subModel = currentPage.a;
-												return $author$project$Page$Project$isLoaded(subModel) ? $elm$core$Platform$Cmd$none : $author$project$Route$reload;
-											case 'ProjectPortal':
-												return $author$project$Page$Project$Portal$isLoaded(model.projectPortal) ? $elm$core$Platform$Cmd$none : $author$project$Route$reload;
-											default:
-												return $elm$core$Platform$Cmd$none;
-										}
-									} else {
-										return $elm$core$Platform$Cmd$none;
-									}
-								}()
-								])));
-				} else {
-					var error = msg.a.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								nativeClientStatus: $author$project$Data$NativeClient$statusFromError(error)
-							}),
-						$elm$core$Platform$Cmd$none);
-				}
-			case 'ProjectPortalMsg':
+			case 'SetRoute':
+				var targetUrl = msg.a;
+				return A2($author$project$Main$setRoute, targetUrl, model);
+			case 'TryReload':
+				return _Utils_Tuple2(
+					model,
+					function () {
+						switch (currentPage.$) {
+							case 'Project':
+								var subModel = currentPage.a;
+								return $author$project$Component$Project$Main$isLoaded(subModel) ? $elm$core$Platform$Cmd$none : $author$project$Route$reload;
+							case 'Portal':
+								return $author$project$Component$Portal$Main$isLoaded(model.portal) ? $elm$core$Platform$Cmd$none : $author$project$Route$reload;
+							default:
+								return $elm$core$Platform$Cmd$none;
+						}
+					}());
+			case 'PortalMsg':
 				var subMsg = msg.a;
-				var _v4 = A2($author$project$Page$Project$Portal$update, subMsg, model.projectPortal);
-				var pageModel = _v4.a;
-				var pageCmd = _v4.b;
+				var _v3 = A2($author$project$Component$Portal$Main$update, subMsg, model.portal);
+				var pageModel = _v3.a;
+				var pageCmd = _v3.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{projectPortal: pageModel}),
-					A2($elm$core$Platform$Cmd$map, $author$project$Main$ProjectPortalMsg, pageCmd));
+						{portal: pageModel}),
+					A2($elm$core$Platform$Cmd$map, $author$project$Main$PortalMsg, pageCmd));
 			case 'ProjectMsg':
 				var subMsg = msg.a;
 				if (currentPage.$ === 'Project') {
 					var subModel = currentPage.a;
-					var _v6 = A3($author$project$Page$Project$update, model.key, subMsg, subModel);
-					var pageModel = _v6.a;
-					var pageCmd = _v6.b;
+					var _v5 = A3($author$project$Component$Project$Main$update, model.key, subMsg, subModel);
+					var pageModel = _v5.a;
+					var pageCmd = _v5.b;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -17893,8 +18017,32 @@ var $author$project$Main$update = F2(
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			default:
-				var statusCode = msg.a;
-				return _Utils_Tuple2(model, $author$project$Main$requestMetaOfNativeClient);
+				var subMsg = msg.a;
+				var _v6 = A2($author$project$Component$NativeClient$Main$update, subMsg, model.nativeClient);
+				var pageModel = _v6.a;
+				var pageCmd = _v6.b;
+				var hostMsg = _v6.c;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{nativeClient: pageModel}),
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								A2($elm$core$Platform$Cmd$map, $author$project$Main$NativeClientMsg, pageCmd),
+								function () {
+								if (hostMsg.$ === 'TryReload') {
+									return A2(
+										$elm$core$Task$perform,
+										function (_v8) {
+											return $author$project$Main$TryReload;
+										},
+										$elm$core$Task$succeed(_Utils_Tuple0));
+								} else {
+									return $elm$core$Platform$Cmd$none;
+								}
+							}()
+							])));
 		}
 	});
 var $ChristophP$elm_i18next$I18Next$t = F2(
@@ -17916,2597 +18064,8 @@ var $author$project$Data$NativeClient$getVersion = function (status) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$Page$Project$NavigateToPortal = {$: 'NavigateToPortal'};
-var $elm$core$List$repeatHelp = F3(
-	function (result, n, value) {
-		repeatHelp:
-		while (true) {
-			if (n <= 0) {
-				return result;
-			} else {
-				var $temp$result = A2($elm$core$List$cons, value, result),
-					$temp$n = n - 1,
-					$temp$value = value;
-				result = $temp$result;
-				n = $temp$n;
-				value = $temp$value;
-				continue repeatHelp;
-			}
-		}
-	});
-var $elm$core$List$repeat = F2(
-	function (n, value) {
-		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
-	});
-var $author$project$View$Spinner$pageLoader = A2(
-	$elm$html$Html$div,
-	_List_fromArray(
-		[
-			$elm$html$Html$Attributes$class('lds-ring')
-		]),
-	A2(
-		$elm$core$List$repeat,
-		4,
-		A2($elm$html$Html$div, _List_Nil, _List_Nil)));
-var $author$project$View$Layout$appbarHeight = '4.5rem';
-var $elm$html$Html$img = _VirtualDom_node('img');
-var $author$project$Route$linkTo = A2($elm$core$Basics$composeL, $elm$html$Html$Attributes$href, $author$project$Route$routeToString);
-var $elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
-};
-var $author$project$View$Layout$viewAppbar = function (action) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('w-screen flex flex-row justify-between items-stretch bg-theme-600'),
-				A2($elm$html$Html$Attributes$style, 'height', $author$project$View$Layout$appbarHeight)
-			]),
-		_List_fromArray(
-			[
-				function () {
-				if (action.$ === 'Just') {
-					var act = action.a;
-					return A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Events$onClick(act),
-								$elm$html$Html$Attributes$id('logo'),
-								$elm$html$Html$Attributes$class('px-2')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$img,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$src('/assets/logo.png'),
-										$elm$html$Html$Attributes$class('h-full w-auto')
-									]),
-								_List_Nil)
-							]));
-				} else {
-					return A2(
-						$elm$html$Html$a,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$id('logo'),
-								$elm$html$Html$Attributes$class('px-2'),
-								$author$project$Route$linkTo($author$project$Route$Home)
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$img,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$src('/assets/logo.png'),
-										$elm$html$Html$Attributes$class('h-full w-auto')
-									]),
-								_List_Nil)
-							]));
-				}
-			}()
-			]));
-};
-var $author$project$View$Layout$viewBody = function (attrs) {
-	return $elm$html$Html$div(
-		_Utils_ap(
-			_List_fromArray(
-				[
-					A2($elm$html$Html$Attributes$style, 'height', 'calc(100vh - ' + ($author$project$View$Layout$appbarHeight + ')')),
-					A2($elm$html$Html$Attributes$style, 'top', $author$project$View$Layout$appbarHeight),
-					$elm$html$Html$Attributes$class('absolute pin-b inset-x-0 overflow-x-hidden')
-				]),
-			attrs));
-};
-var $elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
-var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
-var $author$project$View$Icon$fillCurrent = $elm$svg$Svg$Attributes$fill('currentColor');
-var $author$project$View$Icon$noFill = $elm$svg$Svg$Attributes$fill('none');
-var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
-var $elm$svg$Svg$path = $elm$svg$Svg$trustedNode('path');
-var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
-var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
-var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
-var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
-var $author$project$View$Icon$wrapper = F2(
-	function (viewBox_, size) {
-		var viewBoxStr = A2(
-			$elm$core$String$join,
-			' ',
-			A2($elm$core$List$map, $elm$core$String$fromInt, viewBox_));
-		var sizeStr = $elm$core$String$fromInt(size);
-		return $elm$svg$Svg$svg(
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Attributes$width(sizeStr),
-					$elm$svg$Svg$Attributes$height(sizeStr),
-					$elm$svg$Svg$Attributes$viewBox(viewBoxStr)
-				]));
-	});
-var $author$project$View$Icon$materialIcon = F2(
-	function (size, content) {
-		var framing = A2(
-			$elm$svg$Svg$path,
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Attributes$d('M0 0h24v24H0z'),
-					$author$project$View$Icon$noFill
-				]),
-			_List_Nil);
-		return A3(
-			$author$project$View$Icon$wrapper,
-			_List_fromArray(
-				[0, 0, 24, 24]),
-			size,
-			A2($elm$core$List$cons, framing, content));
-	});
-var $author$project$View$Icon$materialIconSimple = F2(
-	function (size, drawing) {
-		return A2(
-			$author$project$View$Icon$materialIcon,
-			size,
-			_List_fromArray(
-				[
-					A2(
-					$elm$svg$Svg$path,
-					_List_fromArray(
-						[
-							$elm$svg$Svg$Attributes$d(drawing),
-							$author$project$View$Icon$fillCurrent
-						]),
-					_List_Nil)
-				]));
-	});
-var $author$project$View$Icon$error = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z');
-var $author$project$Translations$Request$Error$badBody = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.error.bad_body');
-};
-var $author$project$Translations$Request$Error$badUrl = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.error.bad_url');
-};
-var $author$project$Translations$Request$Error$networkError = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.error.network_error');
-};
-var $ChristophP$elm_i18next$I18Next$Curly = {$: 'Curly'};
-var $ChristophP$elm_i18next$I18Next$delimsToTuple = function (delims) {
-	switch (delims.$) {
-		case 'Curly':
-			return _Utils_Tuple2('{{', '}}');
-		case 'Underscore':
-			return _Utils_Tuple2('__', '__');
-		default:
-			var tuple = delims.a;
-			return tuple;
-	}
-};
-var $elm$core$String$replace = F3(
-	function (before, after, string) {
-		return A2(
-			$elm$core$String$join,
-			after,
-			A2($elm$core$String$split, before, string));
-	});
-var $ChristophP$elm_i18next$I18Next$replacePlaceholders = F3(
-	function (replacements, delims, str) {
-		var _v0 = $ChristophP$elm_i18next$I18Next$delimsToTuple(delims);
-		var start = _v0.a;
-		var end = _v0.b;
-		return A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v1, acc) {
-					var key = _v1.a;
-					var value = _v1.b;
-					return A3(
-						$elm$core$String$replace,
-						_Utils_ap(
-							start,
-							_Utils_ap(key, end)),
-						value,
-						acc);
-				}),
-			str,
-			replacements);
-	});
-var $ChristophP$elm_i18next$I18Next$tr = F4(
-	function (_v0, delims, key, replacements) {
-		var translations = _v0.a;
-		var _v1 = A2($elm$core$Dict$get, key, translations);
-		if (_v1.$ === 'Just') {
-			var str = _v1.a;
-			return A3($ChristophP$elm_i18next$I18Next$replacePlaceholders, replacements, delims, str);
-		} else {
-			return key;
-		}
-	});
-var $author$project$Translations$Request$StatusCode$otherStatusCodes = F2(
-	function (translations, statusCode) {
-		return A4(
-			$ChristophP$elm_i18next$I18Next$tr,
-			translations,
-			$ChristophP$elm_i18next$I18Next$Curly,
-			'request.status_code.other_status_codes',
-			_List_fromArray(
-				[
-					_Utils_Tuple2('status_code', statusCode)
-				]));
-	});
-var $author$project$Translations$Request$StatusCode$t400 = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.400');
-};
-var $author$project$Translations$Request$StatusCode$t401 = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.401');
-};
-var $author$project$Translations$Request$StatusCode$t403 = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.403');
-};
-var $author$project$Translations$Request$StatusCode$t404 = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.404');
-};
-var $author$project$Translations$Request$StatusCode$t413 = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.413');
-};
-var $author$project$Translations$Request$StatusCode$t422 = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.422');
-};
-var $author$project$Translations$Request$StatusCode$t500 = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.500');
-};
-var $author$project$Translations$Request$StatusCode$t502 = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.502');
-};
-var $author$project$Translations$Request$StatusCode$t503 = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.503');
-};
-var $author$project$Translations$Request$StatusCode$t504 = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.504');
-};
-var $author$project$API$Request$statusCodeToString = F2(
-	function (trn, statusCode) {
-		switch (statusCode) {
-			case 400:
-				return $author$project$Translations$Request$StatusCode$t400(trn);
-			case 401:
-				return $author$project$Translations$Request$StatusCode$t401(trn);
-			case 403:
-				return $author$project$Translations$Request$StatusCode$t403(trn);
-			case 404:
-				return $author$project$Translations$Request$StatusCode$t404(trn);
-			case 413:
-				return $author$project$Translations$Request$StatusCode$t413(trn);
-			case 422:
-				return $author$project$Translations$Request$StatusCode$t422(trn);
-			case 500:
-				return $author$project$Translations$Request$StatusCode$t500(trn);
-			case 502:
-				return $author$project$Translations$Request$StatusCode$t502(trn);
-			case 503:
-				return $author$project$Translations$Request$StatusCode$t503(trn);
-			case 504:
-				return $author$project$Translations$Request$StatusCode$t504(trn);
-			default:
-				return A2(
-					$author$project$Translations$Request$StatusCode$otherStatusCodes,
-					trn,
-					$elm$core$String$fromInt(statusCode));
-		}
-	});
-var $author$project$Translations$Request$Error$timeout = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.error.timeout');
-};
-var $author$project$API$Request$errorToString = F3(
-	function (trn, subErrorToString, error) {
-		switch (error.$) {
-			case 'BadUrl':
-				var url = error.a;
-				return $author$project$Translations$Request$Error$badUrl(trn) + ('：' + url);
-			case 'Timeout':
-				return $author$project$Translations$Request$Error$timeout(trn);
-			case 'NetworkError':
-				return $author$project$Translations$Request$Error$networkError(trn);
-			case 'BadStatus':
-				var statusCode = error.a;
-				var subError = error.b;
-				return A2(subErrorToString, trn, subError);
-			default:
-				var statusCode = error.a;
-				var decodeError = error.b;
-				return (((statusCode / 100) | 0) === 2) ? $author$project$Translations$Request$Error$badBody(trn) : A2($author$project$API$Request$statusCodeToString, trn, statusCode);
-		}
-	});
-var $author$project$Translations$Project$projectNotFound = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project.project_not_found');
-};
-var $author$project$Data$Project$errorToString = F2(
-	function (trn, error) {
-		return $author$project$Translations$Project$projectNotFound(trn);
-	});
-var $author$project$Page$Project$viewError = F2(
-	function (trn, error) {
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('w-full h-full flex flex-col justify-center items-center')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('text-warning-700 mb-8')
-						]),
-					_List_fromArray(
-						[
-							$author$project$View$Icon$error(96)
-						])),
-					A2(
-					$elm$html$Html$p,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('p-2 text-lg')
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text(
-							A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$errorToString, error))
-						]))
-				]));
-	});
-var $author$project$Page$Project$ChangeViewType = function (a) {
-	return {$: 'ChangeViewType', a: a};
-};
-var $author$project$Page$Project$DismissExportingErrorPrompt = {$: 'DismissExportingErrorPrompt'};
-var $author$project$Page$Project$JumpTo = function (a) {
-	return {$: 'JumpTo', a: a};
-};
-var $author$project$Page$Project$NoOp = {$: 'NoOp'};
-var $author$project$Page$Project$StayOnPage = {$: 'StayOnPage'};
-var $author$project$Page$Project$StopPreviewing = {$: 'StopPreviewing'};
-var $author$project$Data$Project$Content$allKeyFramesHelp = F2(
-	function (contents, keyFrames) {
-		allKeyFramesHelp:
-		while (true) {
-			if (!contents.b) {
-				return $elm$core$List$reverse(keyFrames);
-			} else {
-				if ((contents.a.b.$ === 'FromSegment') && (!contents.a.b.a)) {
-					var _v1 = contents.a;
-					var index = _v1.a;
-					var _v2 = _v1.b;
-					var segmentContent = _v2.b;
-					var xs = contents.b;
-					return A2(
-						$author$project$Data$Project$Content$allKeyFramesHelp,
-						xs,
-						A2(
-							$elm$core$List$cons,
-							_Utils_Tuple2(
-								index,
-								$author$project$Data$Video$Segment$getKeyFrame(
-									$author$project$Data$Project$SegmentContent$getSegment(segmentContent))),
-							keyFrames));
-				} else {
-					var xs = contents.b;
-					var $temp$contents = xs,
-						$temp$keyFrames = keyFrames;
-					contents = $temp$contents;
-					keyFrames = $temp$keyFrames;
-					continue allKeyFramesHelp;
-				}
-			}
-		}
-	});
-var $elm$core$Array$toIndexedList = function (array) {
-	var len = array.a;
-	var helper = F2(
-		function (entry, _v0) {
-			var index = _v0.a;
-			var list = _v0.b;
-			return _Utils_Tuple2(
-				index - 1,
-				A2(
-					$elm$core$List$cons,
-					_Utils_Tuple2(index, entry),
-					list));
-		});
-	return A3(
-		$elm$core$Array$foldr,
-		helper,
-		_Utils_Tuple2(len - 1, _List_Nil),
-		array).b;
-};
-var $author$project$Data$Project$Content$allKeyFrames = function (contents) {
-	return A3(
-		$author$project$Util$flip,
-		$author$project$Data$Project$Content$allKeyFramesHelp,
-		_List_Nil,
-		$elm$core$Array$toIndexedList(contents));
-};
-var $elm$html$Html$Attributes$classList = function (classes) {
-	return $elm$html$Html$Attributes$class(
-		A2(
-			$elm$core$String$join,
-			' ',
-			A2(
-				$elm$core$List$map,
-				$elm$core$Tuple$first,
-				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
-};
-var $author$project$Translations$ProjectExport$mediaFilesMissing = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project_export.media_files_missing');
-};
-var $author$project$Translations$ProjectExport$sourceFileNotFound = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project_export.source_file_not_found');
-};
-var $author$project$Data$Project$HtmlExport$errorToString = F2(
-	function (trn, error) {
-		if (error.$ === 'MediaFilesMissing') {
-			return $author$project$Translations$ProjectExport$mediaFilesMissing(trn);
-		} else {
-			return $author$project$Translations$ProjectExport$sourceFileNotFound(trn);
-		}
-	});
-var $author$project$View$Alert$viewError = F2(
-	function (attrs, textContent) {
-		return A2(
-			$elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('bg-warning-100 text-warning-700 px-6 py-3 cursor-pointer shadow')
-					]),
-				attrs),
-			_List_fromArray(
-				[
-					$elm$html$Html$text(textContent)
-				]));
-	});
-var $author$project$View$Project$Alert$viewExportingError = F3(
-	function (trn, dismissExportingErrorPrompt, error) {
-		return A2(
-			$author$project$View$Alert$viewError,
-			_List_fromArray(
-				[
-					$elm$html$Html$Events$onClick(dismissExportingErrorPrompt)
-				]),
-			A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$HtmlExport$errorToString, error));
-	});
-var $author$project$Translations$Page$Project$Prompt$exporting = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.exporting');
-};
-var $author$project$View$Alert$viewSuccess = F2(
-	function (attrs, textContent) {
-		return A2(
-			$elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('bg-grey-700 text-grey-50 px-6 py-3 cursor-pointer shadow')
-					]),
-				attrs),
-			_List_fromArray(
-				[
-					$elm$html$Html$text(textContent)
-				]));
-	});
-var $author$project$View$Project$Alert$viewExportingInProgress = function (trn) {
-	return A2(
-		$author$project$View$Alert$viewSuccess,
-		_List_Nil,
-		$author$project$Translations$Page$Project$Prompt$exporting(trn));
-};
-var $author$project$Util$viewIfPresent = F2(
-	function (maybeValue, viewer) {
-		if (maybeValue.$ === 'Just') {
-			var a = maybeValue.a;
-			return viewer(a);
-		} else {
-			return $elm$html$Html$text('');
-		}
-	});
-var $author$project$Translations$Page$Project$Prompt$failedToSave = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.failed_to_save');
-};
-var $author$project$Translations$Page$Project$Prompt$successfullySaved = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.successfully_saved');
-};
-var $author$project$View$Project$Alert$viewSavingResult = F3(
-	function (trn, dismissSavingResultPrompt, result) {
-		if (result.$ === 'Ok') {
-			return A2(
-				$author$project$View$Alert$viewSuccess,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick(dismissSavingResultPrompt)
-					]),
-				$author$project$Translations$Page$Project$Prompt$successfullySaved(trn));
-		} else {
-			var error = result.a;
-			return A2(
-				$author$project$View$Alert$viewError,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick(dismissSavingResultPrompt)
-					]),
-				$author$project$Translations$Page$Project$Prompt$failedToSave(trn));
-		}
-	});
-var $author$project$Util$viewIf = F2(
-	function (condition, content) {
-		return condition ? content : $elm$html$Html$text('');
-	});
-var $author$project$Util$viewUnless = function (condition) {
-	return $author$project$Util$viewIf(!condition);
-};
-var $author$project$View$Project$Alert$view = F6(
-	function (trn, dismissSavingResultPrompt, dismissExportingErrorPrompt, exportingError, savingResult, isExportingInProgress) {
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('absolute inset-0 invisible flex flex-col justify-start items-center')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$classList(
-							_List_fromArray(
-								[
-									_Utils_Tuple2('w-64 flex flex-col justify-start items-stretch py-8 ', true),
-									_Utils_Tuple2(
-									'visible',
-									!(_Utils_eq(exportingError, $elm$core$Maybe$Nothing) && (_Utils_eq(savingResult, $elm$core$Maybe$Nothing) && (!isExportingInProgress))))
-								]))
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$author$project$Util$viewIfPresent,
-							savingResult,
-							A2($author$project$View$Project$Alert$viewSavingResult, trn, dismissSavingResultPrompt)),
-							A2(
-							$author$project$Util$viewIfPresent,
-							exportingError,
-							A2($author$project$View$Project$Alert$viewExportingError, trn, dismissExportingErrorPrompt)),
-							A2(
-							$author$project$Util$viewUnless,
-							!isExportingInProgress,
-							$author$project$View$Project$Alert$viewExportingInProgress(trn))
-						]))
-				]));
-	});
-var $author$project$View$Project$Hidden = {$: 'Hidden'};
-var $author$project$View$Project$Large = {$: 'Large'};
-var $author$project$View$Project$Normal = {$: 'Normal'};
-var $author$project$Translations$Page$Project$ViewType$hidden = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.view_type.hidden');
-};
-var $author$project$Translations$Page$Project$ViewType$large = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.view_type.large');
-};
-var $author$project$Translations$Page$Project$ViewType$leadingText = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.view_type.leading_text');
-};
-var $author$project$Translations$Page$Project$ViewType$normal = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.view_type.normal');
-};
-var $author$project$View$Icon$photo_size_select_actual = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M21 3H3C2 3 1 4 1 5v14c0 1.1.9 2 2 2h18c1 0 2-1 2-2V5c0-1-1-2-2-2zM5 17l3.5-4.5 2.5 3.01L14.5 11l4.5 6H5z');
-var $author$project$View$Icon$photo_size_select_large = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M21 15h2v2h-2v-2zm0-4h2v2h-2v-2zm2 8h-2v2c1 0 2-1 2-2zM13 3h2v2h-2V3zm8 4h2v2h-2V7zm0-4v2h2c0-1-1-2-2-2zM1 7h2v2H1V7zm16-4h2v2h-2V3zm0 16h2v2h-2v-2zM3 3C2 3 1 4 1 5h2V3zm6 0h2v2H9V3zM5 3h2v2H5V3zm-4 8v8c0 1.1.9 2 2 2h12V11H1zm2 8l2.5-3.21 1.79 2.15 2.5-3.22L13 19H3z');
-var $author$project$View$Icon$photo_size_select_small = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M23 15h-2v2h2v-2zm0-4h-2v2h2v-2zm0 8h-2v2c1 0 2-1 2-2zM15 3h-2v2h2V3zm8 4h-2v2h2V7zm-2-4v2h2c0-1-1-2-2-2zM3 21h8v-6H1v4c0 1.1.9 2 2 2zM3 7H1v2h2V7zm12 12h-2v2h2v-2zm4-16h-2v2h2V3zm0 16h-2v2h2v-2zM3 3C2 3 1 4 1 5h2V3zm0 8H1v2h2v-2zm8-8H9v2h2V3zM7 3H5v2h2V3z');
-var $author$project$Translations$Page$Project$LeftPanel$projectSize = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.project_size');
-};
-var $author$project$Translations$Page$Project$ViewType$small = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.view_type.small');
-};
-var $author$project$View$Icon$texture = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19.51 3.08L3.08 19.51c.09.34.27.65.51.9.25.24.56.42.9.51L20.93 4.49c-.19-.69-.73-1.23-1.42-1.41zM11.88 3L3 11.88v2.83L14.71 3h-2.83zM5 3c-1.1 0-2 .9-2 2v2l4-4H5zm14 18c.55 0 1.05-.22 1.41-.59.37-.36.59-.86.59-1.41v-2l-4 4h2zm-9.71 0h2.83L21 12.12V9.29L9.29 21z');
-var $elm$core$String$dropRight = F2(
-	function (n, string) {
-		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
-	});
-var $author$project$Data$FileSize$cropDecimal = function (x) {
-	if (x < 0.1) {
-		return '0.0' + A2($elm$core$Basics$composeL, $elm$core$String$fromInt, $elm$core$Basics$floor)(x * 100);
-	} else {
-		var _v0 = function (str) {
-			return _Utils_Tuple2(
-				A2($elm$core$String$dropRight, 2, str),
-				A2($elm$core$String$right, 2, str));
-		}(
-			$elm$core$String$fromInt(
-				$elm$core$Basics$floor(x * 100)));
-		if (_v0.a === '') {
-			var decimalPartStr = _v0.b;
-			return '0.' + decimalPartStr;
-		} else {
-			var integerPartStr = _v0.a;
-			var decimalPartStr = _v0.b;
-			return (decimalPartStr === '00') ? integerPartStr : (integerPartStr + ('.' + decimalPartStr));
-		}
-	}
-};
-var $author$project$Data$FileSize$toString = function (fileSize) {
-	var bytes = $author$project$Data$FileSize$toByte(fileSize);
-	if (bytes < 1) {
-		var _v0 = $elm$core$Basics$floor(bytes * 8);
-		if (_v0 === 1) {
-			return '1 bit';
-		} else {
-			var n = _v0;
-			return $elm$core$String$fromInt(n) + ' bits';
-		}
-	} else {
-		if (_Utils_cmp(bytes, $author$project$Data$FileSize$factor) < 0) {
-			return $author$project$Data$FileSize$cropDecimal(bytes) + ' Bytes';
-		} else {
-			if (_Utils_cmp(bytes, $author$project$Data$FileSize$factor * $author$project$Data$FileSize$factor) < 0) {
-				return $author$project$Data$FileSize$cropDecimal(bytes / $author$project$Data$FileSize$factor) + ' KB';
-			} else {
-				return $author$project$Data$FileSize$cropDecimal((bytes / $author$project$Data$FileSize$factor) / $author$project$Data$FileSize$factor) + ' MB';
-			}
-		}
-	}
-};
-var $author$project$View$Project$viewFileName = F2(
-	function (isProjectModified, projectName) {
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('px-4 py-2 truncate'),
-					$elm$html$Html$Attributes$title(projectName)
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$author$project$Util$viewIf,
-					isProjectModified,
-					$elm$html$Html$text(' * ')),
-					$elm$html$Html$text(projectName)
-				]));
-	});
-var $elm_explorations$markdown$Markdown$defaultOptions = {
-	defaultHighlighting: $elm$core$Maybe$Nothing,
-	githubFlavored: $elm$core$Maybe$Just(
-		{breaks: false, tables: false}),
-	sanitize: true,
-	smartypants: false
-};
-var $elm_explorations$markdown$Markdown$toHtmlWith = _Markdown_toHtml;
-var $author$project$View$Markdown$viewUnsanitized = function () {
-	var defaultOpts = $elm_explorations$markdown$Markdown$defaultOptions;
-	var opts = _Utils_update(
-		defaultOpts,
-		{sanitize: false});
-	return $elm_explorations$markdown$Markdown$toHtmlWith(opts);
-}();
-var $author$project$View$Project$viewPoster = $author$project$View$Markdown$viewUnsanitized(
-	_List_fromArray(
-		[
-			$elm$html$Html$Attributes$class('md-content my-4 px-4 py-2 bg-white shadow')
-		]));
-var $author$project$Translations$Page$Project$LeftPanel$frontendVersion = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.frontend_version');
-};
-var $elm$html$Html$h4 = _VirtualDom_node('h4');
-var $author$project$Translations$Page$Project$LeftPanel$nativeClientVersion = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.native_client_version');
-};
-var $author$project$View$Project$viewVersions = F2(
-	function (trn, _v0) {
-		var nativeClient = _v0.a;
-		var frontend = _v0.b;
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('w-full bg-white shadow text-grey-700 text-center my-4 p-2')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('my-2')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$h4,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$elm$html$Html$text(
-									$author$project$Translations$Page$Project$LeftPanel$frontendVersion(trn))
-								])),
-							A2(
-							$elm$html$Html$p,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$elm$html$Html$text(
-									$author$project$Data$Version$toString(frontend))
-								]))
-						])),
-					function () {
-					if (nativeClient.$ === 'Just') {
-						var version = nativeClient.a;
-						return A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('my-2')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$h4,
-									_List_Nil,
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Translations$Page$Project$LeftPanel$nativeClientVersion(trn))
-										])),
-									A2(
-									$elm$html$Html$p,
-									_List_Nil,
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Data$Version$toString(version))
-										]))
-								]));
-					} else {
-						return $elm$html$Html$text('');
-					}
-				}()
-				]));
-	});
-var $author$project$Data$File$Object$Local = {$: 'Local'};
-var $elm$html$Html$Attributes$boolProperty = F2(
-	function (key, bool) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$bool(bool));
-	});
-var $elm$html$Html$Attributes$autoplay = $elm$html$Html$Attributes$boolProperty('autoplay');
-var $elm$html$Html$Attributes$controls = $elm$html$Html$Attributes$boolProperty('controls');
-var $author$project$Data$File$Object$baseToString = function (base) {
-	if (base.$ === 'Local') {
-		return 'http://localhost:16661';
-	} else {
-		var url = base.a;
-		return $elm$url$Url$toString(url);
-	}
-};
-var $author$project$Data$File$Object$pathToUrl = F2(
-	function (base, path) {
-		return A3(
-			$elm$url$Url$Builder$crossOrigin,
-			$author$project$Data$File$Object$baseToString(base),
-			path,
-			_List_Nil);
-	});
-var $elm$html$Html$Attributes$preload = $elm$html$Html$Attributes$stringProperty('preload');
-var $elm$html$Html$source = _VirtualDom_node('source');
-var $elm$html$Html$video = _VirtualDom_node('video');
-var $author$project$View$Project$viewVideo = function (uuid) {
-	var sourceUrl = A2(
-		$author$project$Data$File$Object$pathToUrl,
-		$author$project$Data$File$Object$Local,
-		_List_fromArray(
-			['file', uuid, 'video.mp4']));
-	return A2(
-		$elm$html$Html$video,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$id('source-file'),
-				$elm$html$Html$Attributes$controls(true),
-				$elm$html$Html$Attributes$preload('metadata'),
-				$elm$html$Html$Attributes$autoplay(false)
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$source,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$src(sourceUrl)
-					]),
-				_List_Nil)
-			]));
-};
-var $author$project$View$Project$viewAuxiliary = F8(
-	function (trn, uuid, projectName, isModified, versions, projectSize, poster, resizeView) {
-		var resizeButton = F3(
-			function (viewType, label, icon) {
-				return A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onClick(
-							resizeView(viewType)),
-							$elm$html$Html$Attributes$title(label),
-							$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain')
-						]),
-					_List_fromArray(
-						[
-							icon(32)
-						]));
-			});
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('px-4 py-6 w-1/3 lg:w-1/4 flex-shrink-0 overflow-y-auto')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('w-full bg-white shadow')
-						]),
-					_List_fromArray(
-						[
-							A2($author$project$View$Project$viewFileName, isModified, projectName),
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('px-4 py-2')
-								]),
-							_List_fromArray(
-								[
-									$author$project$View$Project$viewVideo(uuid)
-								])),
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('px-4 py-1 flex flex-row justify-end')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$span,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('flex items-center text-grey-600')
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Translations$Page$Project$ViewType$leadingText(trn))
-										])),
-									A3(
-									resizeButton,
-									$author$project$View$Project$Hidden,
-									$author$project$Translations$Page$Project$ViewType$hidden(trn),
-									$author$project$View$Icon$texture),
-									A3(
-									resizeButton,
-									$author$project$View$Project$Small,
-									$author$project$Translations$Page$Project$ViewType$small(trn),
-									$author$project$View$Icon$photo_size_select_small),
-									A3(
-									resizeButton,
-									$author$project$View$Project$Normal,
-									$author$project$Translations$Page$Project$ViewType$normal(trn),
-									$author$project$View$Icon$photo_size_select_large),
-									A3(
-									resizeButton,
-									$author$project$View$Project$Large,
-									$author$project$Translations$Page$Project$ViewType$large(trn),
-									$author$project$View$Icon$photo_size_select_actual)
-								]))
-						])),
-					A2($author$project$View$Project$viewVersions, trn, versions),
-					A2(
-					$author$project$Util$viewIfPresent,
-					projectSize,
-					function (size) {
-						return A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('flex flex-col justify-around items-center text-grey-700 bg-white shadow my-4 p-2')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$div,
-									_List_Nil,
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Translations$Page$Project$LeftPanel$projectSize(trn))
-										])),
-									A2(
-									$elm$html$Html$div,
-									_List_Nil,
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Data$FileSize$toString(size))
-										]))
-								]));
-					}),
-					A2($author$project$Util$viewIfPresent, poster, $author$project$View$Project$viewPoster)
-				]));
-	});
-var $author$project$Data$Project$SegmentContent$toUniqueIdentifier = function (content) {
-	var _v0 = $author$project$Data$Video$Segment$getTimeInterval(
-		$author$project$Data$Project$SegmentContent$getSegment(content));
-	var start = _v0.a;
-	var end = _v0.b;
-	return $elm$core$String$fromInt(start) + ('-' + $elm$core$String$fromInt(end));
-};
-var $author$project$Data$Project$Content$toUniqueIdentifier = function (content) {
-	if (content.$ === 'FromSegment') {
-		var segmentContent = content.b;
-		return 'segment-' + $author$project$Data$Project$SegmentContent$toUniqueIdentifier(segmentContent);
-	} else {
-		var index = content.a;
-		return 'user-' + $elm$core$String$fromInt(index);
-	}
-};
-var $author$project$Data$Project$DisplaySection$Control = function (a) {
-	return {$: 'Control', a: a};
-};
-var $author$project$Data$Project$DisplaySection$ControlSection = F2(
-	function (index, merge) {
-		return {index: index, merge: merge};
-	});
-var $author$project$Data$Project$DisplaySection$Empty = function (a) {
-	return {$: 'Empty', a: a};
-};
-var $author$project$Data$Video$Segment$getIndexInterval = $author$project$Data$Video$Segment$getInterval($author$project$Data$Video$Frame$getIndex);
-var $author$project$Data$Video$Segment$isNeighbouring = F2(
-	function (segment1, segment2) {
-		var _v0 = $author$project$Data$Video$Segment$getIndexInterval(segment2);
-		var min2 = _v0.a;
-		var max2 = _v0.b;
-		var _v1 = $author$project$Data$Video$Segment$getIndexInterval(segment1);
-		var min1 = _v1.a;
-		var max1 = _v1.b;
-		return _Utils_eq(max1 + 1, min2) || _Utils_eq(max2 + 1, min1);
-	});
-var $author$project$Data$Project$SegmentContent$isNeighbouring = F2(
-	function (content1, content2) {
-		return A2(
-			$author$project$Data$Video$Segment$isNeighbouring,
-			$author$project$Data$Project$SegmentContent$getSegment(content1),
-			$author$project$Data$Project$SegmentContent$getSegment(content2));
-	});
-var $author$project$Data$Project$Content$findMergeableContent = F2(
-	function (content, candidates) {
-		findMergeableContent:
-		while (true) {
-			if ((content.$ === 'FromSegment') && (!content.a)) {
-				var x = content.b;
-				if (!candidates.b) {
-					return $elm$core$Maybe$Nothing;
-				} else {
-					if ((candidates.a.b.$ === 'FromSegment') && (!candidates.a.b.a)) {
-						var _v2 = candidates.a;
-						var i = _v2.a;
-						var _v3 = _v2.b;
-						var y = _v3.b;
-						return A2($author$project$Data$Project$SegmentContent$isNeighbouring, x, y) ? $elm$core$Maybe$Just(
-							_Utils_Tuple2(
-								i,
-								A2($author$project$Data$Project$SegmentContent$merge, x, y))) : $elm$core$Maybe$Nothing;
-					} else {
-						var ys = candidates.b;
-						var $temp$content = content,
-							$temp$candidates = ys;
-						content = $temp$content;
-						candidates = $temp$candidates;
-						continue findMergeableContent;
-					}
-				}
-			} else {
-				return $elm$core$Maybe$Nothing;
-			}
-		}
-	});
-var $author$project$Data$Project$Content$isHidden = function (content) {
-	if (content.$ === 'FromSegment') {
-		var isContentHidden = content.a;
-		return isContentHidden;
-	} else {
-		var isContentHidden = content.b;
-		return isContentHidden;
-	}
-};
-var $author$project$Data$Project$DisplaySection$toFillerSections = function (indexedContents) {
-	var go = F2(
-		function (indexedContents_, displaySections) {
-			go:
-			while (true) {
-				if (indexedContents_.b) {
-					var _v1 = indexedContents_.a;
-					var index = _v1.a;
-					var content = _v1.b;
-					var remaining = indexedContents_.b;
-					var control = A2(
-						$author$project$Data$Project$DisplaySection$ControlSection,
-						index,
-						A2($author$project$Data$Project$Content$findMergeableContent, content, remaining));
-					if ($author$project$Data$Project$Content$isHidden(content)) {
-						var $temp$indexedContents_ = remaining,
-							$temp$displaySections = A2(
-							$elm$core$List$cons,
-							$author$project$Data$Project$DisplaySection$Empty(index),
-							displaySections);
-						indexedContents_ = $temp$indexedContents_;
-						displaySections = $temp$displaySections;
-						continue go;
-					} else {
-						var $temp$indexedContents_ = remaining,
-							$temp$displaySections = A2(
-							$elm$core$List$cons,
-							$author$project$Data$Project$DisplaySection$Control(control),
-							displaySections);
-						indexedContents_ = $temp$indexedContents_;
-						displaySections = $temp$displaySections;
-						continue go;
-					}
-				} else {
-					return $elm$core$List$reverse(displaySections);
-				}
-			}
-		});
-	return A2(go, indexedContents, _List_Nil);
-};
-var $author$project$Data$Project$DisplaySection$tupledListFromContents = function (contents) {
-	return A3(
-		$elm$core$List$map2,
-		$elm$core$Tuple$pair,
-		$elm$core$Array$toList(contents),
-		$elm$core$List$reverse(
-			$author$project$Data$Project$DisplaySection$toFillerSections(
-				$elm$core$List$reverse(
-					$elm$core$Array$toIndexedList(contents)))));
-};
-var $author$project$Page$Project$MoveSection = F2(
-	function (a, b) {
-		return {$: 'MoveSection', a: a, b: b};
-	});
-var $author$project$Page$Project$MovingOver = function (a) {
-	return {$: 'MovingOver', a: a};
-};
-var $author$project$Page$Project$StopMovingSection = {$: 'StopMovingSection'};
-var $elm$html$Html$Attributes$draggable = _VirtualDom_attribute('draggable');
-var $author$project$Util$onDragEnd = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'dragend',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $author$project$Util$onDragEnter = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'dragenter',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $author$project$Util$onDrop = function (msg) {
-	return A2(
-		$elm$html$Html$Events$stopPropagationOn,
-		'drop',
-		$elm$json$Json$Decode$succeed(
-			_Utils_Tuple2(msg, true)));
-};
-var $author$project$Page$Project$ToggleContentVisibility = function (a) {
-	return {$: 'ToggleContentVisibility', a: a};
-};
-var $author$project$Translations$Page$Project$RightPanel$hiddenContent = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.hidden_content');
-};
-var $author$project$Translations$Page$Project$RightPanel$restoreHiddenContent = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.restore_hidden_content');
-};
-var $author$project$Page$Project$viewHiddenContent = F2(
-	function (trn, index) {
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('h-8 my-1 text-sm flex flex-row justify-center items-center')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('w-16 text-grey-600')
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text(
-							$author$project$Translations$Page$Project$RightPanel$hiddenContent(trn))
-						])),
-					A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onClick(
-							$author$project$Page$Project$ToggleContentVisibility(index)),
-							$elm$html$Html$Attributes$class('w-16 h-7 btn btn--light-grey')
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text(
-							$author$project$Translations$Page$Project$RightPanel$restoreHiddenContent(trn))
-						]))
-				]));
-	});
-var $author$project$Page$Project$EditPlainText = F2(
-	function (a, b) {
-		return {$: 'EditPlainText', a: a, b: b};
-	});
-var $author$project$Page$Project$FinishEditing = function (a) {
-	return {$: 'FinishEditing', a: a};
-};
-var $author$project$Page$Project$PreEdit = function (a) {
-	return {$: 'PreEdit', a: a};
-};
-var $author$project$Page$Project$RemoveContent = function (a) {
-	return {$: 'RemoveContent', a: a};
-};
-var $author$project$View$Icon$deleteForever = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z');
-var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
-var $author$project$View$Trix$onBlur = function (tagger) {
-	return A2(
-		$elm$html$Html$Events$stopPropagationOn,
-		'trix-blur',
-		A2(
-			$elm$json$Json$Decode$map,
-			function (x) {
-				return _Utils_Tuple2(x, true);
-			},
-			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
-};
-var $author$project$View$Trix$onChange = function (tagger) {
-	return A2(
-		$elm$html$Html$Events$stopPropagationOn,
-		'trix-change',
-		A2(
-			$elm$json$Json$Decode$map,
-			function (x) {
-				return _Utils_Tuple2(x, true);
-			},
-			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
-};
-var $author$project$View$Trix$onFocus = function (tagger) {
-	return A2(
-		$elm$html$Html$Events$stopPropagationOn,
-		'trix-focus',
-		A2(
-			$elm$json$Json$Decode$map,
-			function (x) {
-				return _Utils_Tuple2(x, true);
-			},
-			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
-};
-var $author$project$View$Trix$editor = function (_v0) {
-	var phantomID = _v0.phantomID;
-	var toolbarID = _v0.toolbarID;
-	var startEditing = _v0.startEditing;
-	var editingContent = _v0.editingContent;
-	var finishEditing = _v0.finishEditing;
-	return A3(
-		$elm$html$Html$node,
-		'trix-editor',
-		_List_fromArray(
-			[
-				A2($elm$html$Html$Attributes$attribute, 'input', phantomID),
-				A2($elm$html$Html$Attributes$attribute, 'toolbar', toolbarID),
-				$author$project$View$Trix$onFocus(
-				function (_v1) {
-					return startEditing;
-				}),
-				$author$project$View$Trix$onChange(editingContent),
-				$author$project$View$Trix$onBlur(
-				function (_v2) {
-					return finishEditing;
-				})
-			]),
-		_List_Nil);
-};
-var $author$project$View$Trix$hiddenToolbar = function (toolbarID) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$id(toolbarID)
-			]),
-		_List_Nil);
-};
-var $author$project$View$Trix$phantom = F2(
-	function (phantomID, content) {
-		return A2(
-			$elm$html$Html$input,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$id(phantomID),
-					$elm$html$Html$Attributes$value(content),
-					$elm$html$Html$Attributes$type_('hidden')
-				]),
-			_List_Nil);
-	});
-var $author$project$Page$Project$AddPlainTextAfter = function (a) {
-	return {$: 'AddPlainTextAfter', a: a};
-};
-var $author$project$Translations$Page$Project$RightPanel$btnAddText = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_add_text');
-};
-var $author$project$View$Icon$postAdd = function (size) {
-	return A2(
-		$author$project$View$Icon$materialIcon,
-		size,
-		_List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M17 19.22H5V7h7V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h-2v7.22z'),
-						$author$project$View$Icon$fillCurrent
-					]),
-				_List_Nil),
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M19 2h-2v3h-3c.01.01 0 2 0 2h3v2.99c.01.01 2 0 2 0V7h3V5h-3V2zM7 9h8v2H7zM7 12v2h8v-2h-3zM7 15h8v2H7z'),
-						$author$project$View$Icon$fillCurrent
-					]),
-				_List_Nil)
-			]));
-};
-var $author$project$Page$Project$viewAddPlainText = F2(
-	function (trn, index) {
-		return A2(
-			$elm$html$Html$button,
-			_List_fromArray(
-				[
-					$elm$html$Html$Events$onClick(
-					$author$project$Page$Project$AddPlainTextAfter(index)),
-					$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
-					$elm$html$Html$Attributes$title(
-					$author$project$Translations$Page$Project$RightPanel$btnAddText(trn))
-				]),
-			_List_fromArray(
-				[
-					$author$project$View$Icon$postAdd(24)
-				]));
-	});
-var $author$project$Page$Project$StartMovingSection = function (a) {
-	return {$: 'StartMovingSection', a: a};
-};
-var $author$project$Translations$Page$Project$RightPanel$btnDragHandle = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_drag_handle');
-};
-var $author$project$View$Icon$dragHandle = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M20 9H4v2h16V9zM4 15h16v-2H4v2z');
-var $author$project$Page$Project$viewDragHandle = F2(
-	function (trn, index) {
-		return A2(
-			$elm$html$Html$button,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain w-full cursor-move'),
-					$elm$html$Html$Attributes$title(
-					$author$project$Translations$Page$Project$RightPanel$btnDragHandle(trn)),
-					$elm$html$Html$Events$onMouseDown(
-					$author$project$Page$Project$StartMovingSection(index)),
-					$elm$html$Html$Events$onMouseUp($author$project$Page$Project$StopMovingSection)
-				]),
-			_List_fromArray(
-				[
-					$author$project$View$Icon$dragHandle(32)
-				]));
-	});
-var $author$project$Translations$Page$Project$RightPanel$btnDelete = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_delete');
-};
-var $author$project$View$Icon$delete = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z');
-var $author$project$Page$Project$viewToggleContentVisibility = F2(
-	function (trn, index) {
-		return A2(
-			$elm$html$Html$button,
-			_List_fromArray(
-				[
-					$elm$html$Html$Events$onClick(
-					$author$project$Page$Project$ToggleContentVisibility(index)),
-					$elm$html$Html$Attributes$class('btn btn--white text-warning-400 p-2'),
-					$elm$html$Html$Attributes$title(
-					$author$project$Translations$Page$Project$RightPanel$btnDelete(trn))
-				]),
-			_List_fromArray(
-				[
-					$author$project$View$Icon$delete(24)
-				]));
-	});
-var $author$project$Page$Project$viewPlainText = F3(
-	function (trn, index, content) {
-		var _v0 = _Utils_Tuple2(
-			'phantom-' + $elm$core$String$fromInt(index),
-			'toolbar-' + $elm$core$String$fromInt(index));
-		var phantomID = _v0.a;
-		var toolbarID = _v0.b;
-		return _List_fromArray(
-			[
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('w-12')
-					]),
-				_List_fromArray(
-					[
-						A2($author$project$Page$Project$viewDragHandle, trn, index)
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('plain-text w-1/2 lg:w-1/3')
-					]),
-				_List_fromArray(
-					[
-						A2($author$project$View$Trix$phantom, phantomID, content),
-						$author$project$View$Trix$editor(
-						{
-							editingContent: $author$project$Page$Project$EditPlainText(index),
-							finishEditing: $author$project$Page$Project$FinishEditing(index),
-							phantomID: phantomID,
-							startEditing: $author$project$Page$Project$PreEdit(index),
-							toolbarID: toolbarID
-						}),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('hidden')
-							]),
-						_List_fromArray(
-							[
-								$author$project$View$Trix$hiddenToolbar(toolbarID)
-							]))
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('w-10 flex flex-col h-full justify-start items-center')
-					]),
-				_List_fromArray(
-					[
-						A2($author$project$Page$Project$viewAddPlainText, trn, index),
-						$author$project$Util$isInFactBlankString(content) ? A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Events$onClick(
-								$author$project$Page$Project$RemoveContent(index)),
-								$elm$html$Html$Attributes$class('btn btn--white p-2 text-warning-500')
-							]),
-						_List_fromArray(
-							[
-								$author$project$View$Icon$deleteForever(24)
-							])) : A2($author$project$Page$Project$viewToggleContentVisibility, trn, index)
-					]))
-			]);
-	});
-var $author$project$Page$Project$ConvertToGif = function (a) {
-	return {$: 'ConvertToGif', a: a};
-};
-var $author$project$Page$Project$PreviewAsCover = function (a) {
-	return {$: 'PreviewAsCover', a: a};
-};
-var $author$project$Page$Project$RevertGif = function (a) {
-	return {$: 'RevertGif', a: a};
-};
-var $author$project$Page$Project$SeekTime = function (a) {
-	return {$: 'SeekTime', a: a};
-};
-var $author$project$Page$Project$SetKeyFrame = F2(
-	function (a, b) {
-		return {$: 'SetKeyFrame', a: a, b: b};
-	});
-var $author$project$Page$Project$SplitSection = F2(
-	function (a, b) {
-		return {$: 'SplitSection', a: a, b: b};
-	});
-var $author$project$Page$Project$StopPreviewingAsCover = function (a) {
-	return {$: 'StopPreviewingAsCover', a: a};
-};
-var $author$project$Translations$Page$Project$RightPanel$btnConvertToGif = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_convert_to_gif');
-};
-var $author$project$Translations$Page$Project$RightPanel$btnRevertBackToFrames = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_revert_back_to_frames');
-};
-var $author$project$Util$formatTimeInSeconds = function (time) {
-	var toPaddedString = A2(
-		$elm$core$Basics$composeR,
-		$elm$core$String$fromInt,
-		A2(
-			$elm$core$String$padLeft,
-			2,
-			_Utils_chr('0')));
-	var go = F2(
-		function (n, ns) {
-			go:
-			while (true) {
-				var _v0 = _Utils_Tuple2(
-					$elm$core$List$length(ns) >= 2,
-					n);
-				if (_v0.a) {
-					if (!_v0.b) {
-						return ns;
-					} else {
-						var hour = _v0.b;
-						return A2($elm$core$List$cons, hour, ns);
-					}
-				} else {
-					var $temp$n = (n / 60) | 0,
-						$temp$ns = A2($elm$core$List$cons, n % 60, ns);
-					n = $temp$n;
-					ns = $temp$ns;
-					continue go;
-				}
-			}
-		});
-	return A2(
-		$elm$core$String$join,
-		':',
-		A2(
-			$elm$core$List$map,
-			toPaddedString,
-			A2(go, (time / 1000) | 0, _List_Nil)));
-};
-var $author$project$Data$File$Object$relativeTo = F2(
-	function (padPath, _v0) {
-		var path = _v0.a;
-		return $author$project$Data$File$Object$Key(
-			_Utils_ap(padPath, path));
-	});
-var $author$project$Data$File$Object$fromPartialKey = F2(
-	function (friendlyUnionID, _v0) {
-		var localObjectKey = _v0.localObjectKey;
-		return A2(
-			$author$project$Data$File$Object$relativeTo,
-			_List_fromArray(
-				['file', friendlyUnionID]),
-			localObjectKey);
-	});
-var $author$project$Data$File$Object$toUrl = F2(
-	function (base, _v0) {
-		var path = _v0.a;
-		return A2($author$project$Data$File$Object$pathToUrl, base, path);
-	});
-var $author$project$Data$Video$Frame$getUrl = F3(
-	function (base, friendlyUnionID, frame) {
-		return A2(
-			$author$project$Data$File$Object$toUrl,
-			base,
-			A2($author$project$Data$File$Object$fromPartialKey, friendlyUnionID, frame));
-	});
-var $author$project$View$Spinner$skChase = A2(
-	$elm$html$Html$div,
-	_List_fromArray(
-		[
-			$elm$html$Html$Attributes$class('sk-chase w-6 h-6')
-		]),
-	A2(
-		$elm$core$List$repeat,
-		6,
-		A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('sk-chase-dot')
-				]),
-			_List_Nil)));
-var $author$project$Data$Video$Gif$toFileSizeStr = function (_v0) {
-	var fileSize = _v0.fileSize;
-	return $author$project$Data$FileSize$toString(fileSize);
-};
-var $author$project$Data$Video$Gif$toUrl = F3(
-	function (base, friendlyUnionID, gif) {
-		return A2(
-			$author$project$Data$File$Object$toUrl,
-			base,
-			A2($author$project$Data$File$Object$fromPartialKey, friendlyUnionID, gif));
-	});
-var $author$project$View$Icon$videocam = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z');
-var $author$project$View$Icon$videocamOff = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z');
-var $author$project$View$Icon$link = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z');
-var $author$project$View$Icon$linkOff = function (size) {
-	return A2(
-		$author$project$View$Icon$materialIcon,
-		size,
-		_List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M17 7h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.43-.98 2.63-2.31 2.98l1.46 1.46C20.88 15.61 22 13.95 22 12c0-2.76-2.24-5-5-5zm-1 4h-2.19l2 2H16zM2 4.27l3.11 3.11C3.29 8.12 2 9.91 2 12c0 2.76 2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1 0-1.59 1.21-2.9 2.76-3.07L8.73 11H8v2h2.73L13 15.27V17h1.73l4.01 4L20 19.74 3.27 3 2 4.27'),
-						$author$project$View$Icon$fillCurrent
-					]),
-				_List_Nil),
-				A2(
-				$elm$svg$Svg$path,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$d('M0 24V0'),
-						$author$project$View$Icon$fillCurrent
-					]),
-				_List_Nil)
-			]));
-};
-var $author$project$Util$onMouseEnter = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'mouseenter',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $author$project$Util$onMouseLeave = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'mouseleave',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $author$project$View$Project$viewFrame = F3(
-	function (_v0, keyFrameID, frame) {
-		var uuid = _v0.uuid;
-		var splitSection = _v0.splitSection;
-		var setKeyFrame = _v0.setKeyFrame;
-		var hoverOn = _v0.hoverOn;
-		var hoverOff = _v0.hoverOff;
-		var viewType = _v0.viewType;
-		var size = 16;
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('flex flex-row-reverse items-stretch justify-start element')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('relative btn group ml-1 last-element:hidden text-grey-600')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$button,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('group-hover:opacity-0')
-								]),
-							_List_fromArray(
-								[
-									$author$project$View$Icon$link(size)
-								])),
-							A2(
-							$elm$html$Html$button,
-							_List_fromArray(
-								[
-									$elm$html$Html$Events$onClick(
-									splitSection(frame.index + 1)),
-									$elm$html$Html$Attributes$class('absolute inset-0 btn text-secondary-600 hidden group-hover:flex')
-								]),
-							_List_fromArray(
-								[
-									$author$project$View$Icon$linkOff(size)
-								]))
-						])),
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$classList(
-							_List_fromArray(
-								[
-									_Utils_Tuple2('frame-collection__item', true),
-									_Utils_Tuple2(
-									'lg:w-48 w-24',
-									_Utils_eq(viewType, $author$project$View$Project$Large)),
-									_Utils_Tuple2(
-									'lg:w-24 w-12',
-									_Utils_eq(viewType, $author$project$View$Project$Normal)),
-									_Utils_Tuple2(
-									'lg:w-12 w-6',
-									_Utils_eq(viewType, $author$project$View$Project$Small)),
-									_Utils_Tuple2(
-									'w-0',
-									_Utils_eq(viewType, $author$project$View$Project$Hidden)),
-									_Utils_Tuple2(
-									'frame-collection__item--active',
-									_Utils_eq(
-										keyFrameID,
-										$author$project$Data$Video$Frame$getIndex(frame)))
-								])),
-							$elm$html$Html$Events$onClick(
-							setKeyFrame(frame.index))
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$img,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$src(
-									A3($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid, frame)),
-									$author$project$Util$onMouseEnter(
-									hoverOn(frame)),
-									$author$project$Util$onMouseLeave(
-									hoverOff(frame))
-								]),
-							_List_Nil)
-						]))
-				]));
-	});
-var $author$project$View$Project$viewAllFrames = F2(
-	function (segment, config) {
-		var keyFrameID = $author$project$Data$Video$Frame$getIndex(
-			$author$project$Data$Video$Segment$getKeyFrame(segment));
-		var _v0 = config.viewType;
-		if (_v0.$ === 'Hidden') {
-			return A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('frame-collection')
-					]),
-				_List_Nil);
-		} else {
-			return A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('frame-collection')
-					]),
-				A2(
-					$elm$core$List$map,
-					A2($author$project$View$Project$viewFrame, config, keyFrameID),
-					$author$project$Data$Video$Segment$getAllFrames(segment)));
-		}
-	});
-var $author$project$Page$Project$MergeSections = F3(
-	function (a, b, c) {
-		return {$: 'MergeSections', a: a, b: b, c: c};
-	});
-var $author$project$View$Icon$arrowUpward = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z');
-var $author$project$Translations$Page$Project$RightPanel$btnMerge = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_merge');
-};
-var $author$project$Page$Project$viewMergeButton = F2(
-	function (trn, between) {
-		if (between.$ === 'Control') {
-			var index = between.a.index;
-			var merge = between.a.merge;
-			return A2(
-				$author$project$Util$viewIfPresent,
-				merge,
-				function (_v1) {
-					var indexFrom = _v1.a;
-					var segmentContent = _v1.b;
-					return A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Events$onClick(
-								A3($author$project$Page$Project$MergeSections, index, indexFrom, segmentContent)),
-								$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
-								$elm$html$Html$Attributes$title(
-								$author$project$Translations$Page$Project$RightPanel$btnMerge(trn))
-							]),
-						_List_fromArray(
-							[
-								$author$project$View$Icon$arrowUpward(24)
-							]));
-				});
-		} else {
-			return $elm$html$Html$text('');
-		}
-	});
-var $author$project$Page$Project$viewSegmentContent = F6(
-	function (trn, uuid, _v0, index, content, between) {
-		var pendingGifJobs = _v0.pendingGifJobs;
-		var frameToPreview = _v0.frameToPreview;
-		var viewType = _v0.viewType;
-		var segment = $author$project$Data$Project$SegmentContent$getSegment(content);
-		var viewGifBtn = function () {
-			var _v7 = _Utils_Tuple2(
-				content,
-				A2(
-					$elm$core$Set$member,
-					$author$project$Data$Video$Segment$getTimeInterval(segment),
-					pendingGifJobs));
-			if (_v7.a.$ === 'FrameSequence') {
-				if (_v7.b) {
-					var _v8 = _v7.a;
-					return A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('btn p-2')
-							]),
-						_List_fromArray(
-							[$author$project$View$Spinner$skChase]));
-				} else {
-					var _v9 = _v7.a;
-					return A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Events$onClick(
-								$author$project$Page$Project$ConvertToGif(index)),
-								$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
-								$elm$html$Html$Attributes$title(
-								$author$project$Translations$Page$Project$RightPanel$btnConvertToGif(trn))
-							]),
-						_List_fromArray(
-							[
-								$author$project$View$Icon$videocam(24)
-							]));
-				}
-			} else {
-				var _v10 = _v7.a;
-				return A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onClick(
-							$author$project$Page$Project$RevertGif(index)),
-							$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
-							$elm$html$Html$Attributes$title(
-							$author$project$Translations$Page$Project$RightPanel$btnRevertBackToFrames(trn))
-						]),
-					_List_fromArray(
-						[
-							$author$project$View$Icon$videocamOff(24)
-						]));
-			}
-		}();
-		var keyFrameUrl = A2(
-			$elm$core$Basics$composeR,
-			$author$project$Data$Video$Segment$getKeyFrame,
-			A2($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid));
-		var coverUrl = function () {
-			var _v2 = _Utils_Tuple2(content, frameToPreview);
-			if (_v2.a.$ === 'FrameSequence') {
-				if (_v2.b.$ === 'Nothing') {
-					var _v3 = _v2.a;
-					var _v4 = _v2.b;
-					return keyFrameUrl(segment);
-				} else {
-					var _v5 = _v2.a;
-					var frame = _v2.b.a;
-					return A2(
-						$elm$core$List$member,
-						frame,
-						$author$project$Data$Video$Segment$getAllFrames(segment)) ? A3($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid, frame) : A3(
-						$author$project$Data$Video$Frame$getUrl,
-						$author$project$Data$File$Object$Local,
-						uuid,
-						$author$project$Data$Video$Segment$getKeyFrame(segment));
-				}
-			} else {
-				var _v6 = _v2.a;
-				var gif = _v6.a;
-				return A3($author$project$Data$Video$Gif$toUrl, $author$project$Data$File$Object$Local, uuid, gif);
-			}
-		}();
-		return _List_fromArray(
-			[
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('flex flex-col justify-start items-center w-12')
-					]),
-				_List_fromArray(
-					[
-						A2($author$project$Page$Project$viewDragHandle, trn, index),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Events$onClick(
-								$author$project$Page$Project$SeekTime(
-									$author$project$Data$Video$Segment$getStartingTime(segment))),
-								$elm$html$Html$Attributes$class('cursor-pointer text-grey-600 text-xs')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text(
-								$author$project$Util$formatTimeInSeconds(
-									$author$project$Data$Video$Segment$getStartingTime(segment)))
-							]))
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('w-1/2 lg:w-1/3 p-1 relative')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$img,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$src(coverUrl),
-								$elm$html$Html$Attributes$class('w-full object-contain select-none my-2')
-							]),
-						_List_Nil),
-						function () {
-						if (content.$ === 'FrameSequence') {
-							return $elm$html$Html$text('');
-						} else {
-							var gif = content.a;
-							return A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('absolute bg-grey-800 text-grey-50 opacity-50 hover:opacity-100 py-1 px-2 text-sm'),
-										A2($elm$html$Html$Attributes$style, 'right', '.5rem'),
-										A2($elm$html$Html$Attributes$style, 'top', '1rem')
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text(
-										$author$project$Data$Video$Gif$toFileSizeStr(gif))
-									]));
-						}
-					}()
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('w-10 flex flex-col h-full justify-start items-center')
-					]),
-				_List_fromArray(
-					[
-						A2($author$project$Page$Project$viewMergeButton, trn, between),
-						viewGifBtn,
-						A2($author$project$Page$Project$viewAddPlainText, trn, index),
-						A2($author$project$Page$Project$viewToggleContentVisibility, trn, index)
-					])),
-				A2(
-				$author$project$View$Project$viewAllFrames,
-				segment,
-				{
-					hoverOff: $author$project$Page$Project$StopPreviewingAsCover,
-					hoverOn: $author$project$Page$Project$PreviewAsCover,
-					setKeyFrame: $author$project$Page$Project$SetKeyFrame(index),
-					splitSection: $author$project$Page$Project$SplitSection(index),
-					uuid: uuid,
-					viewType: viewType
-				})
-			]);
-	});
-var $author$project$Page$Project$viewBlock = F5(
-	function (trn, uuid, substate, index, _v0) {
-		var content = _v0.a;
-		var between = _v0.b;
-		var attrs = function () {
-			var _v2 = substate.movingSection;
-			if (_v2.$ === 'Just') {
-				var indexFrom = _v2.a;
-				return _List_fromArray(
-					[
-						$author$project$Util$onDrop(
-						A2($author$project$Page$Project$MoveSection, indexFrom, index)),
-						$author$project$Util$onDragEnter(
-						$author$project$Page$Project$MovingOver(index)),
-						_Utils_eq(indexFrom, index) ? $elm$html$Html$Attributes$draggable('true') : $elm$html$Html$Attributes$class(''),
-						$author$project$Util$onDragEnd($author$project$Page$Project$StopMovingSection),
-						$elm$html$Html$Attributes$classList(
-						_List_fromArray(
-							[
-								_Utils_Tuple2(
-								'is-dragging-over',
-								_Utils_eq(
-									substate.movingOver,
-									$elm$core$Maybe$Just(index)))
-							]))
-					]);
-			} else {
-				return _List_Nil;
-			}
-		}();
-		return $author$project$Data$Project$Content$isHidden(content) ? A2($author$project$Page$Project$viewHiddenContent, trn, index) : A2(
-			$elm$html$Html$div,
-			A2(
-				$elm$core$List$cons,
-				$elm$html$Html$Attributes$class('content-block p-0'),
-				A2(
-					$elm$core$List$cons,
-					$elm$html$Html$Attributes$id(
-						'block-' + $elm$core$String$fromInt(index)),
-					attrs)),
-			_List_fromArray(
-				[
-					function () {
-					if (content.$ === 'FromSegment') {
-						var segmentContent = content.b;
-						return A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('w-full flex flex-row justify-between items-start')
-								]),
-							A6($author$project$Page$Project$viewSegmentContent, trn, uuid, substate, index, segmentContent, between));
-					} else {
-						if (content.c.$ === 'PlainText') {
-							var plainText = content.c.a;
-							return A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('w-full flex flex-row justify-start items-start')
-									]),
-								A3($author$project$Page$Project$viewPlainText, trn, index, plainText));
-						} else {
-							return $elm$html$Html$text('');
-						}
-					}
-				}()
-				]));
-	});
-var $author$project$Page$Project$viewBlocks = F4(
-	function (trn, uuid, substate, contents) {
-		var identifiers = A2(
-			$elm$core$List$map,
-			$author$project$Data$Project$Content$toUniqueIdentifier,
-			$elm$core$Array$toList(contents));
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('ml-4 lg:ml-16 px-4 py-6 overflow-y-scroll')
-				]),
-			$elm$core$List$singleton(
-				A3(
-					$elm$html$Html$Keyed$node,
-					'div',
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('bg-white shadow flex flex-col items-stretch justify-start')
-						]),
-					A3(
-						$elm$core$List$map2,
-						$elm$core$Tuple$pair,
-						identifiers,
-						A2(
-							$elm$core$List$indexedMap,
-							A3($author$project$Page$Project$viewBlock, trn, uuid, substate),
-							$author$project$Data$Project$DisplaySection$tupledListFromContents(contents))))));
-	});
-var $author$project$Translations$Page$Project$LeftPanel$discardChangesAndLeave = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.discard_changes_and_leave');
-};
-var $elm$html$Html$h3 = _VirtualDom_node('h3');
-var $author$project$Translations$Page$Project$LeftPanel$promptUnsavedChanges = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.prompt_unsaved_changes');
-};
-var $author$project$Translations$Page$Project$LeftPanel$saveProjectAndLeave = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.save_project_and_leave');
-};
-var $author$project$Translations$Page$Project$LeftPanel$stayOnPage = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.stay_on_page');
-};
-var $author$project$Util$onClickStopPropagation = function (msg) {
-	return A2(
-		$elm$html$Html$Events$stopPropagationOn,
-		'click',
-		$elm$json$Json$Decode$succeed(
-			_Utils_Tuple2(msg, true)));
-};
-var $author$project$View$Layout$viewOverlay = F4(
-	function (noOp, closeOverlay, attrs, content) {
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('absolute inset-0 bg-overlay flex flex-col justify-center items-center'),
-					$elm$html$Html$Events$onClick(closeOverlay)
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					A2(
-						$elm$core$List$cons,
-						$author$project$Util$onClickStopPropagation(noOp),
-						attrs),
-					content)
-				]));
-	});
-var $author$project$Translations$ProjectSaving$sourceFileNotFound = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project_saving.source_file_not_found');
-};
-var $author$project$Data$Project$Saving$errorToString = F2(
-	function (trn, error) {
-		return $author$project$Translations$ProjectSaving$sourceFileNotFound(trn);
-	});
-var $author$project$View$Project$viewAlert = F3(
-	function (viewer, dismissMsg, textContent) {
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('px-4 py-2')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					viewer,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('text-sm'),
-							$elm$html$Html$Events$onClick(dismissMsg)
-						]),
-					textContent)
-				]));
-	});
-var $author$project$View$Project$viewSavingError = F3(
-	function (trn, dismissMsg, error) {
-		return A3(
-			$author$project$View$Project$viewAlert,
-			$author$project$View$Alert$viewError,
-			dismissMsg,
-			$author$project$Translations$Page$Project$Prompt$failedToSave(trn) + ('：' + A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$Saving$errorToString, error)));
-	});
-var $author$project$View$Project$viewConfirmNavigatingAway = F6(
-	function (trn, noOp, stayOnPage, saveAndLeave, savingResult, confirmNavigatingAway) {
-		return A2(
-			$author$project$Util$viewIfPresent,
-			confirmNavigatingAway,
-			function (targetRoute) {
-				return A4(
-					$author$project$View$Layout$viewOverlay,
-					noOp,
-					stayOnPage,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('h-48 w-full max-w-xl flex flex-col justify-around items-center bg-white shadow')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$h3,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$elm$html$Html$text(
-									$author$project$Translations$Page$Project$LeftPanel$promptUnsavedChanges(trn))
-								])),
-							function () {
-							if ((savingResult.$ === 'Just') && (savingResult.a.$ === 'Err')) {
-								var error = savingResult.a.a;
-								return A3($author$project$View$Project$viewSavingError, trn, noOp, error);
-							} else {
-								return $elm$html$Html$text('');
-							}
-						}(),
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('w-full flex flex-row justify-around text-sm')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$button,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('btn btn--theme w-24 h-10'),
-											$elm$html$Html$Events$onClick(
-											saveAndLeave(targetRoute))
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Translations$Page$Project$LeftPanel$saveProjectAndLeave(trn))
-										])),
-									A2(
-									$elm$html$Html$a,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('btn btn--warning btn--outlined w-24 h-10'),
-											$author$project$Route$linkTo($author$project$Route$ProjectPortal)
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Translations$Page$Project$LeftPanel$discardChangesAndLeave(trn))
-										])),
-									A2(
-									$elm$html$Html$button,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('btn btn--outlined w-24 h-10'),
-											$elm$html$Html$Events$onClick(stayOnPage)
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Translations$Page$Project$LeftPanel$stayOnPage(trn))
-										]))
-								]))
-						]));
-			});
-	});
-var $author$project$Translations$Page$Project$RightPanel$projectSizeLabel = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.project_size_label');
-};
-var $author$project$Translations$Page$Project$LeftPanel$stopPreviewing = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.stop_previewing');
-};
-var $author$project$Data$File$Object$unpadGif = function (key) {
-	if (key.a.b && (key.a.a === 'gif')) {
-		var _v1 = key.a;
-		var fixedKey = _v1.b;
-		return $author$project$Data$File$Object$Key(fixedKey);
-	} else {
-		return key;
-	}
-};
-var $author$project$Data$Project$SegmentContent$getMediaForRemote = function (content) {
-	if (content.$ === 'FrameSequence') {
-		var segment = content.a;
-		return $author$project$Data$Video$Segment$getKeyFrame(segment).localObjectKey;
-	} else {
-		var gif = content.a;
-		return $author$project$Data$File$Object$unpadGif(gif.localObjectKey);
-	}
-};
-var $author$project$View$Project$Preview$viewSegmentContent = F3(
-	function (uuid, base, content) {
-		return A2(
-			$elm$html$Html$img,
-			_List_fromArray(
-				[
-					function () {
-					if (base.$ === 'Local') {
-						return $elm$html$Html$Attributes$src(
-							A2(
-								$author$project$Data$File$Object$toUrl,
-								base,
-								A2(
-									$author$project$Data$File$Object$relativeTo,
-									_List_fromArray(
-										['file', uuid]),
-									$author$project$Data$Project$SegmentContent$getMedia(content))));
-					} else {
-						return $elm$html$Html$Attributes$src(
-							A2(
-								$author$project$Data$File$Object$toUrl,
-								base,
-								$author$project$Data$Project$SegmentContent$getMediaForRemote(content)));
-					}
-				}(),
-					$elm$html$Html$Attributes$class('my-1 w-full h-auto')
-				]),
-			_List_Nil);
-	});
-var $author$project$Data$Project$UserContent$pictureBase = $author$project$Data$File$Object$Remote(
-	{fragment: $elm$core$Maybe$Nothing, host: 'whatever.com', path: '/path/to/', port_: $elm$core$Maybe$Nothing, protocol: $elm$url$Url$Https, query: $elm$core$Maybe$Nothing});
-var $author$project$Data$Project$UserContent$pictureUrl = $author$project$Data$File$Object$toUrl($author$project$Data$Project$UserContent$pictureBase);
-var $author$project$View$Trix$preview = F2(
-	function (attrs, content) {
-		return A3(
-			$elm$html$Html$node,
-			'rich-text-preview',
-			_Utils_ap(
-				_List_fromArray(
-					[
-						A2($elm$html$Html$Attributes$attribute, 'content-value', content)
-					]),
-				attrs),
-			_List_Nil);
-	});
-var $author$project$View$Project$Preview$viewUserContent = function (content) {
-	if (content.$ === 'PlainText') {
-		var plainText = content.a;
-		return A2(
-			$author$project$View$Trix$preview,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('p-2')
-				]),
-			plainText);
-	} else {
-		var objectKey = content.a;
-		return A2(
-			$elm$html$Html$img,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$src(
-					$author$project$Data$Project$UserContent$pictureUrl(objectKey)),
-					$elm$html$Html$Attributes$class('w-full h-auto')
-				]),
-			_List_Nil);
-	}
-};
-var $author$project$View$Project$Preview$viewContent = F3(
-	function (uuid, base, content) {
-		_v0$2:
-		while (true) {
-			if (content.$ === 'FromSegment') {
-				if (!content.a) {
-					var segmentContent = content.b;
-					return A3($author$project$View$Project$Preview$viewSegmentContent, uuid, base, segmentContent);
-				} else {
-					break _v0$2;
-				}
-			} else {
-				if (!content.b) {
-					var userContent = content.c;
-					return $author$project$View$Project$Preview$viewUserContent(userContent);
-				} else {
-					break _v0$2;
-				}
-			}
-		}
-		return $elm$html$Html$text('');
-	});
-var $author$project$View$Project$Preview$view = F2(
-	function (_v0, base) {
-		var uuid = _v0.uuid;
-		var workingData = _v0.workingData;
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('flex flex-col items-stretch justify-start')
-				]),
-			A2(
-				$elm$core$List$map,
-				A2($author$project$View$Project$Preview$viewContent, uuid, base),
-				$elm$core$Array$toList(workingData)));
-	});
-var $author$project$View$Project$viewPreviewer = F7(
-	function (trn, noOp, stopPreviewing, projectSize, projectExported, isPreviewing, project) {
-		var viewFrom = F2(
-			function (base, info) {
-				return A4(
-					$author$project$View$Layout$viewOverlay,
-					noOp,
-					noOp,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('h-full px-12 py-4 flex flex-col items-center')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('h-10 flex-shrink-0 flex px-4 justify-between items-center shadow bg-grey-700 text-white text-sm')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$span,
-									_List_Nil,
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Translations$Page$Project$RightPanel$projectSizeLabel(trn))
-										])),
-									A2(
-									$author$project$Util$viewIfPresent,
-									projectSize,
-									function (size) {
-										return A2(
-											$elm$html$Html$span,
-											_List_Nil,
-											_List_fromArray(
-												[
-													$elm$html$Html$text(
-													$author$project$Data$FileSize$toString(size))
-												]));
-									}),
-									A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('h-10 flex-shrink-0 flex px-4 justify-between items-right text-white text-sm')
-										]),
-									_List_fromArray(
-										[
-											A2(
-											$elm$html$Html$button,
-											_List_fromArray(
-												[
-													$elm$html$Html$Attributes$class('btn btn--theme w-24 h-10'),
-													$elm$html$Html$Events$onClick(stopPreviewing)
-												]),
-											_List_fromArray(
-												[
-													$elm$html$Html$text(
-													$author$project$Translations$Page$Project$LeftPanel$stopPreviewing(trn))
-												]))
-										]))
-								])),
-							A2(
-							$author$project$Util$viewIfPresent,
-							info,
-							$author$project$View$Markdown$viewUnsanitized(
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('md-content bg-white w-mobile mt-2 mb-0 p-3 bg-grey-300')
-									]))),
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('flex-1 mt-4 overflow-y-hidden')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('h-full w-mobile bg-white shadow overflow-y-scroll p-3')
-										]),
-									_List_fromArray(
-										[
-											A2($author$project$View$Project$Preview$view, project, base)
-										]))
-								]))
-						]));
-			});
-		var _v0 = _Utils_Tuple2(projectExported, isPreviewing);
-		if (_v0.a.$ === 'Just') {
-			var _v1 = _v0.a.a;
-			var base = _v1.a;
-			var info = _v1.b;
-			return A2(
-				viewFrom,
-				base,
-				$elm$core$Maybe$Just(info));
-		} else {
-			if (_v0.b) {
-				var _v2 = _v0.a;
-				return A2(viewFrom, $author$project$Data$File$Object$Local, $elm$core$Maybe$Nothing);
-			} else {
-				return $elm$html$Html$text('');
-			}
-		}
-	});
-var $author$project$View$Project$viewSectionNavItem = F3(
-	function (jumpTo, uuid, _v0) {
-		var sectionID = _v0.a;
-		var frame = _v0.b;
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('cursor-pointer')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$img,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$src(
-							A3($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid, frame)),
-							$elm$html$Html$Attributes$class('w-full object-contain select-none'),
-							$elm$html$Html$Events$onClick(
-							jumpTo(sectionID))
-						]),
-					_List_Nil)
-				]));
-	});
-var $author$project$View$Project$viewSectionNav = F3(
-	function (jumpTo, uuid, frames) {
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('flex-none w-0 md:w-12 overflow-y-auto opacity-25 hover:opacity-75 transition-opacity ease-in duration-150')
-				]),
-			A2(
-				$elm$core$List$map,
-				A2($author$project$View$Project$viewSectionNavItem, jumpTo, uuid),
-				frames));
-	});
-var $author$project$Page$Project$ExportProject = {$: 'ExportProject'};
-var $author$project$Page$Project$StartPreviewing = {$: 'StartPreviewing'};
-var $author$project$Translations$Page$Project$Nav$backToPortal = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.back_to_portal');
-};
-var $author$project$View$Icon$cloudUpload = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3zM8 13h2.55v3h2.9v-3H16l-4-4z');
-var $author$project$Translations$Page$Project$Nav$exportProject = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.export_project');
-};
-var $author$project$View$Icon$lowPriority = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M14 5h8v2h-8zm0 5.5h8v2h-8zm0 5.5h8v2h-8zM2 11.5C2 15.08 4.92 18 8.5 18H9v2l3-3-3-3v2h-.5C6.02 16 4 13.98 4 11.5S6.02 7 8.5 7H12V5H8.5C4.92 5 2 7.92 2 11.5z');
-var $author$project$Translations$Page$Project$Nav$previewProject = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.preview_project');
-};
-var $author$project$View$Icon$save = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z');
-var $author$project$Translations$Page$Project$Nav$saveProject = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.save_project');
-};
-var $author$project$View$Icon$visibility = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M12 6c3.79 0 7.17 2.13 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5C4.83 8.13 8.21 6 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5c1.38 0 2.5 1.12 2.5 2.5S13.38 14 12 14s-2.5-1.12-2.5-2.5S10.62 9 12 9m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z');
-var $author$project$Page$Project$viewSidenav = function (trn) {
-	var viewNavItem = function (_v0) {
-		var label = _v0.a;
-		var icon = _v0.b;
-		var action = _v0.c;
-		return A2(
-			$elm$html$Html$button,
-			_List_fromArray(
-				[
-					$elm$html$Html$Events$onClick(action),
-					$elm$html$Html$Attributes$title(label),
-					$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain flex flex-col items-center my-2')
-				]),
-			_List_fromArray(
-				[
-					icon(32),
-					$elm$html$Html$text(label)
-				]));
-	};
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('nav flex-none py-8 bg-grey-200')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('flex flex-col w-12 lg:w-20 items-center')
-					]),
-				A2(
-					$elm$core$List$map,
-					viewNavItem,
-					_List_fromArray(
-						[
-							_Utils_Tuple3(
-							$author$project$Translations$Page$Project$Nav$saveProject(trn),
-							$author$project$View$Icon$save,
-							$author$project$Page$Project$SaveProject($elm$core$Maybe$Nothing)),
-							_Utils_Tuple3(
-							$author$project$Translations$Page$Project$Nav$previewProject(trn),
-							$author$project$View$Icon$visibility,
-							$author$project$Page$Project$StartPreviewing),
-							_Utils_Tuple3(
-							$author$project$Translations$Page$Project$Nav$exportProject(trn),
-							$author$project$View$Icon$cloudUpload,
-							$author$project$Page$Project$ExportProject),
-							_Utils_Tuple3(
-							$author$project$Translations$Page$Project$Nav$backToPortal(trn),
-							$author$project$View$Icon$lowPriority,
-							$author$project$Page$Project$NavigateToPortal)
-						])))
-			]));
-};
-var $author$project$Page$Project$viewLoaded = F4(
-	function (trn, versions, project, substate) {
-		var isModified = !_Utils_eq(substate.lastSaved, project);
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('h-full flex flex-row justify-between items-stretch bg-grey-100')
-				]),
-			_List_fromArray(
-				[
-					$author$project$Page$Project$viewSidenav(trn),
-					A8($author$project$View$Project$viewAuxiliary, trn, project.uuid, project.name, isModified, versions, substate.projectSize, substate.poster, $author$project$Page$Project$ChangeViewType),
-					A4($author$project$Page$Project$viewBlocks, trn, project.uuid, substate, project.workingData),
-					A3(
-					$author$project$View$Project$viewSectionNav,
-					$author$project$Page$Project$JumpTo,
-					project.uuid,
-					$author$project$Data$Project$Content$allKeyFrames(project.workingData)),
-					A7($author$project$View$Project$viewPreviewer, trn, $author$project$Page$Project$NoOp, $author$project$Page$Project$StopPreviewing, substate.projectSize, substate.projectExported, substate.isPreviewing, project),
-					A6(
-					$author$project$View$Project$viewConfirmNavigatingAway,
-					trn,
-					$author$project$Page$Project$NoOp,
-					$author$project$Page$Project$StayOnPage,
-					A2($elm$core$Basics$composeL, $author$project$Page$Project$SaveProject, $elm$core$Maybe$Just),
-					substate.savingResult,
-					substate.confirmNavigatingAway),
-					A6($author$project$View$Project$Alert$view, trn, $author$project$Page$Project$DismissSavingResultPrompt, $author$project$Page$Project$DismissExportingErrorPrompt, substate.exportingError, substate.savingResult, substate.isExportingInProgress)
-				]));
-	});
-var $author$project$Page$Project$view = F3(
-	function (trn, versions, model) {
-		return _List_fromArray(
-			[
-				$author$project$View$Layout$viewAppbar(
-				$elm$core$Maybe$Just($author$project$Page$Project$NavigateToPortal)),
-				A2(
-				$author$project$View$Layout$viewBody,
-				_List_Nil,
-				_List_fromArray(
-					[
-						function () {
-						switch (model.$) {
-							case 'Loading':
-								return A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('absolute inset-0 flex justify-center items-center')
-										]),
-									_List_fromArray(
-										[$author$project$View$Spinner$pageLoader]));
-							case 'Loaded':
-								var project = model.a;
-								var substate = model.b;
-								return A4($author$project$Page$Project$viewLoaded, trn, versions, project.present, substate);
-							default:
-								var error = model.a;
-								return A2($author$project$Page$Project$viewError, trn, error);
-						}
-					}()
-					]))
-			]);
-	});
-var $author$project$Page$Project$Portal$CloseUploader = {$: 'CloseUploader'};
-var $author$project$Page$Project$Portal$NoOp = {$: 'NoOp'};
+var $author$project$Component$Portal$Msg$CloseUploader = {$: 'CloseUploader'};
+var $author$project$Component$Portal$Msg$NoOp = {$: 'NoOp'};
 var $elm$file$File$decoder = _File_decoder;
 var $elm$json$Json$Decode$oneOrMoreHelp = F2(
 	function (toValue, xs) {
@@ -20552,7 +18111,7 @@ var $author$project$Translations$Uploader$uploadingSubtitle = function (translat
 var $author$project$Translations$Uploader$uploadingVideo = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'uploader.uploading_video');
 };
-var $author$project$View$Uploader$viewItem = F2(
+var $author$project$Component$Portal$Uploader$viewItem = F2(
 	function (trn, item) {
 		switch (item.$) {
 			case 'Uploading':
@@ -20722,7 +18281,7 @@ var $author$project$View$Uploader$viewItem = F2(
 						]));
 		}
 	});
-var $author$project$View$Uploader$viewCollection = F2(
+var $author$project$Component$Portal$Uploader$viewCollection = F2(
 	function (trn, items) {
 		return A2(
 			$elm$html$Html$div,
@@ -20732,10 +18291,37 @@ var $author$project$View$Uploader$viewCollection = F2(
 				]),
 			A2(
 				$elm$core$List$map,
-				$author$project$View$Uploader$viewItem(trn),
+				$author$project$Component$Portal$Uploader$viewItem(trn),
 				items));
 	});
-var $author$project$View$Uploader$view = F4(
+var $author$project$Util$onClickStopPropagation = function (msg) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'click',
+		$elm$json$Json$Decode$succeed(
+			_Utils_Tuple2(msg, true)));
+};
+var $author$project$View$Layout$viewOverlay = F4(
+	function (noOp, closeOverlay, attrs, content) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('absolute inset-0 bg-overlay flex flex-col justify-center items-center'),
+					$elm$html$Html$Events$onClick(closeOverlay)
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					A2(
+						$elm$core$List$cons,
+						$author$project$Util$onClickStopPropagation(noOp),
+						attrs),
+					content)
+				]));
+	});
+var $author$project$Component$Portal$Uploader$view = F4(
 	function (trn, noOp, closeOverlay, items) {
 		return A4(
 			$author$project$View$Layout$viewOverlay,
@@ -20747,15 +18333,91 @@ var $author$project$View$Uploader$view = F4(
 				]),
 			_List_fromArray(
 				[
-					A2($author$project$View$Uploader$viewCollection, trn, items)
+					A2($author$project$Component$Portal$Uploader$viewCollection, trn, items)
 				]));
 	});
-var $author$project$Page$Project$Portal$PickFiles = {$: 'PickFiles'};
-var $author$project$Page$Project$Portal$SetSearchStr = function (a) {
+var $author$project$View$Layout$appbarHeight = '4.5rem';
+var $elm$html$Html$img = _VirtualDom_node('img');
+var $author$project$Route$linkTo = A2($elm$core$Basics$composeL, $elm$html$Html$Attributes$href, $author$project$Route$routeToString);
+var $elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
+var $author$project$View$Layout$viewAppbar = function (action) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('w-screen flex flex-row justify-between items-stretch bg-theme-600'),
+				A2($elm$html$Html$Attributes$style, 'height', $author$project$View$Layout$appbarHeight)
+			]),
+		_List_fromArray(
+			[
+				function () {
+				if (action.$ === 'Just') {
+					var act = action.a;
+					return A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(act),
+								$elm$html$Html$Attributes$id('logo'),
+								$elm$html$Html$Attributes$class('px-2')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$img,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$src('/assets/logo.png'),
+										$elm$html$Html$Attributes$class('h-full w-auto')
+									]),
+								_List_Nil)
+							]));
+				} else {
+					return A2(
+						$elm$html$Html$a,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$id('logo'),
+								$elm$html$Html$Attributes$class('px-2'),
+								$author$project$Route$linkTo($author$project$Route$Home)
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$img,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$src('/assets/logo.png'),
+										$elm$html$Html$Attributes$class('h-full w-auto')
+									]),
+								_List_Nil)
+							]));
+				}
+			}()
+			]));
+};
+var $author$project$View$Layout$viewBody = function (attrs) {
+	return $elm$html$Html$div(
+		_Utils_ap(
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Attributes$style, 'height', 'calc(100vh - ' + ($author$project$View$Layout$appbarHeight + ')')),
+					A2($elm$html$Html$Attributes$style, 'top', $author$project$View$Layout$appbarHeight),
+					$elm$html$Html$Attributes$class('absolute pin-b inset-x-0 overflow-x-hidden')
+				]),
+			attrs));
+};
+var $author$project$Component$Portal$Msg$PickFiles = {$: 'PickFiles'};
+var $author$project$Component$Portal$Msg$SetSearchStr = function (a) {
 	return {$: 'SetSearchStr', a: a};
 };
-var $author$project$Translations$Page$ProjectPortal$addFiles = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.add_files');
+var $author$project$Translations$Page$Portal$addFiles = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.add_files');
 };
 var $elm$core$String$trim = _String_trim;
 var $author$project$Data$FilterSearch$filter = F2(
@@ -20778,28 +18440,97 @@ var $author$project$Data$FilterSearch$filter = F2(
 			_List_Nil);
 	});
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $author$project$Translations$Page$ProjectPortal$searchBoxPlaceholder = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.search_box_placeholder');
+var $author$project$Translations$Page$Portal$searchBoxPlaceholder = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.search_box_placeholder');
 };
-var $author$project$Page$Project$Portal$projectCollectionID = 'picked-videos';
-var $author$project$Page$Project$Portal$ConfirmDeletion = function (a) {
+var $author$project$Component$Portal$View$Collection$projectCollectionID = 'picked-videos';
+var $author$project$Component$Portal$Msg$ConfirmDeletion = function (a) {
 	return {$: 'ConfirmDeletion', a: a};
 };
 var $toastal$either$Either$Left = function (a) {
 	return {$: 'Left', a: a};
 };
-var $author$project$Page$Project$Portal$SelectProject = F2(
+var $author$project$Component$Portal$Msg$SelectProject = F2(
 	function (a, b) {
 		return {$: 'SelectProject', a: a, b: b};
 	});
-var $author$project$Translations$Page$ProjectPortal$btnDeleteProject = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.btn_delete_project');
+var $author$project$Translations$Page$Portal$btnDeleteProject = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.btn_delete_project');
 };
-var $author$project$Translations$Page$ProjectPortal$btnEditProject = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.btn_edit_project');
+var $author$project$Translations$Page$Portal$btnEditProject = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.btn_edit_project');
 };
+var $elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
+var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
+var $author$project$View$Icon$fillCurrent = $elm$svg$Svg$Attributes$fill('currentColor');
+var $author$project$View$Icon$noFill = $elm$svg$Svg$Attributes$fill('none');
+var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var $elm$svg$Svg$path = $elm$svg$Svg$trustedNode('path');
+var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
+var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
+var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
+var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
+var $author$project$View$Icon$wrapper = F2(
+	function (viewBox_, size) {
+		var viewBoxStr = A2(
+			$elm$core$String$join,
+			' ',
+			A2($elm$core$List$map, $elm$core$String$fromInt, viewBox_));
+		var sizeStr = $elm$core$String$fromInt(size);
+		return $elm$svg$Svg$svg(
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$width(sizeStr),
+					$elm$svg$Svg$Attributes$height(sizeStr),
+					$elm$svg$Svg$Attributes$viewBox(viewBoxStr)
+				]));
+	});
+var $author$project$View$Icon$materialIcon = F2(
+	function (size, content) {
+		var framing = A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$d('M0 0h24v24H0z'),
+					$author$project$View$Icon$noFill
+				]),
+			_List_Nil);
+		return A3(
+			$author$project$View$Icon$wrapper,
+			_List_fromArray(
+				[0, 0, 24, 24]),
+			size,
+			A2($elm$core$List$cons, framing, content));
+	});
+var $author$project$View$Icon$materialIconSimple = F2(
+	function (size, drawing) {
+		return A2(
+			$author$project$View$Icon$materialIcon,
+			size,
+			_List_fromArray(
+				[
+					A2(
+					$elm$svg$Svg$path,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$d(drawing),
+							$author$project$View$Icon$fillCurrent
+						]),
+					_List_Nil)
+				]));
+	});
 var $author$project$View$Icon$checkBox = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z');
 var $author$project$View$Icon$checkBoxOutlineBlank = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z');
+var $elm$html$Html$Attributes$classList = function (classes) {
+	return $elm$html$Html$Attributes$class(
+		A2(
+			$elm$core$String$join,
+			' ',
+			A2(
+				$elm$core$List$map,
+				$elm$core$Tuple$first,
+				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
+};
 var $author$project$Translations$Processing$Preset$custom = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'processing.preset.custom');
 };
@@ -20866,6 +18597,162 @@ var $author$project$Util$percentageToString = function (percentage) {
 var $author$project$Translations$ProcessingStatus$completed = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'processing_status.completed');
 };
+var $author$project$Translations$Request$Error$badBody = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.error.bad_body');
+};
+var $author$project$Translations$Request$Error$badUrl = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.error.bad_url');
+};
+var $author$project$Translations$Request$Error$networkError = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.error.network_error');
+};
+var $ChristophP$elm_i18next$I18Next$Curly = {$: 'Curly'};
+var $ChristophP$elm_i18next$I18Next$delimsToTuple = function (delims) {
+	switch (delims.$) {
+		case 'Curly':
+			return _Utils_Tuple2('{{', '}}');
+		case 'Underscore':
+			return _Utils_Tuple2('__', '__');
+		default:
+			var tuple = delims.a;
+			return tuple;
+	}
+};
+var $elm$core$String$replace = F3(
+	function (before, after, string) {
+		return A2(
+			$elm$core$String$join,
+			after,
+			A2($elm$core$String$split, before, string));
+	});
+var $ChristophP$elm_i18next$I18Next$replacePlaceholders = F3(
+	function (replacements, delims, str) {
+		var _v0 = $ChristophP$elm_i18next$I18Next$delimsToTuple(delims);
+		var start = _v0.a;
+		var end = _v0.b;
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v1, acc) {
+					var key = _v1.a;
+					var value = _v1.b;
+					return A3(
+						$elm$core$String$replace,
+						_Utils_ap(
+							start,
+							_Utils_ap(key, end)),
+						value,
+						acc);
+				}),
+			str,
+			replacements);
+	});
+var $ChristophP$elm_i18next$I18Next$tr = F4(
+	function (_v0, delims, key, replacements) {
+		var translations = _v0.a;
+		var _v1 = A2($elm$core$Dict$get, key, translations);
+		if (_v1.$ === 'Just') {
+			var str = _v1.a;
+			return A3($ChristophP$elm_i18next$I18Next$replacePlaceholders, replacements, delims, str);
+		} else {
+			return key;
+		}
+	});
+var $author$project$Translations$Request$StatusCode$otherStatusCodes = F2(
+	function (translations, statusCode) {
+		return A4(
+			$ChristophP$elm_i18next$I18Next$tr,
+			translations,
+			$ChristophP$elm_i18next$I18Next$Curly,
+			'request.status_code.other_status_codes',
+			_List_fromArray(
+				[
+					_Utils_Tuple2('status_code', statusCode)
+				]));
+	});
+var $author$project$Translations$Request$StatusCode$t400 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.400');
+};
+var $author$project$Translations$Request$StatusCode$t401 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.401');
+};
+var $author$project$Translations$Request$StatusCode$t403 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.403');
+};
+var $author$project$Translations$Request$StatusCode$t404 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.404');
+};
+var $author$project$Translations$Request$StatusCode$t413 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.413');
+};
+var $author$project$Translations$Request$StatusCode$t422 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.422');
+};
+var $author$project$Translations$Request$StatusCode$t500 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.500');
+};
+var $author$project$Translations$Request$StatusCode$t502 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.502');
+};
+var $author$project$Translations$Request$StatusCode$t503 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.503');
+};
+var $author$project$Translations$Request$StatusCode$t504 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.status_code.504');
+};
+var $author$project$API$Request$statusCodeToString = F2(
+	function (trn, statusCode) {
+		switch (statusCode) {
+			case 400:
+				return $author$project$Translations$Request$StatusCode$t400(trn);
+			case 401:
+				return $author$project$Translations$Request$StatusCode$t401(trn);
+			case 403:
+				return $author$project$Translations$Request$StatusCode$t403(trn);
+			case 404:
+				return $author$project$Translations$Request$StatusCode$t404(trn);
+			case 413:
+				return $author$project$Translations$Request$StatusCode$t413(trn);
+			case 422:
+				return $author$project$Translations$Request$StatusCode$t422(trn);
+			case 500:
+				return $author$project$Translations$Request$StatusCode$t500(trn);
+			case 502:
+				return $author$project$Translations$Request$StatusCode$t502(trn);
+			case 503:
+				return $author$project$Translations$Request$StatusCode$t503(trn);
+			case 504:
+				return $author$project$Translations$Request$StatusCode$t504(trn);
+			default:
+				return A2(
+					$author$project$Translations$Request$StatusCode$otherStatusCodes,
+					trn,
+					$elm$core$String$fromInt(statusCode));
+		}
+	});
+var $author$project$Translations$Request$Error$timeout = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.error.timeout');
+};
+var $author$project$API$Request$errorToString = F3(
+	function (trn, subErrorToString, error) {
+		switch (error.$) {
+			case 'BadUrl':
+				var url = error.a;
+				return $author$project$Translations$Request$Error$badUrl(trn) + ('：' + url);
+			case 'Timeout':
+				return $author$project$Translations$Request$Error$timeout(trn);
+			case 'NetworkError':
+				return $author$project$Translations$Request$Error$networkError(trn);
+			case 'BadStatus':
+				var statusCode = error.a;
+				var subError = error.b;
+				return A2(subErrorToString, trn, subError);
+			default:
+				var statusCode = error.a;
+				var decodeError = error.b;
+				return (((statusCode / 100) | 0) === 2) ? $author$project$Translations$Request$Error$badBody(trn) : A2($author$project$API$Request$statusCodeToString, trn, statusCode);
+		}
+	});
 var $author$project$Translations$ProcessingStatus$failed = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'processing_status.failed');
 };
@@ -20923,22 +18810,30 @@ var $author$project$Data$Project$Concise$statusToDisplayString = F2(
 							])));
 		}
 	});
-var $author$project$Page$Project$Portal$PickSubtitleFor = function (a) {
+var $author$project$Util$viewIf = F2(
+	function (condition, content) {
+		return condition ? content : $elm$html$Html$text('');
+	});
+var $author$project$Component$Portal$Msg$PickSubtitleFor = function (a) {
 	return {$: 'PickSubtitleFor', a: a};
 };
-var $author$project$Page$Project$Portal$ReviewSubtitle = function (a) {
+var $author$project$Component$Portal$Msg$ReviewSubtitle = function (a) {
 	return {$: 'ReviewSubtitle', a: a};
 };
-var $author$project$Translations$Page$ProjectPortal$btnAddSubtitle = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.btn_add_subtitle');
+var $author$project$Translations$Page$Portal$btnAddSubtitle = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.btn_add_subtitle');
 };
-var $author$project$Translations$Page$ProjectPortal$btnReviewSubtitle = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.btn_review_subtitle');
+var $author$project$Translations$Page$Portal$btnReviewSubtitle = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.btn_review_subtitle');
 };
 var $author$project$View$Icon$subtitles = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z');
-var $author$project$Page$Project$Portal$viewSubtitleBadge = F3(
+var $author$project$Component$Portal$View$Collection$viewSubtitleBadge = F3(
 	function (trn, uuid, hasSubtitle) {
-		var _v0 = hasSubtitle ? _Utils_Tuple2($author$project$Page$Project$Portal$ReviewSubtitle, $author$project$Translations$Page$ProjectPortal$btnReviewSubtitle) : _Utils_Tuple2($author$project$Page$Project$Portal$PickSubtitleFor, $author$project$Translations$Page$ProjectPortal$btnAddSubtitle);
+		var _v0 = hasSubtitle ? _Utils_Tuple2(
+			A2($elm$core$Basics$composeR, $author$project$Component$Portal$Msg$ReviewSubtitle, $author$project$Component$Portal$Msg$MsgForUploader),
+			$author$project$Translations$Page$Portal$btnReviewSubtitle) : _Utils_Tuple2(
+			A2($elm$core$Basics$composeR, $author$project$Component$Portal$Msg$PickSubtitleFor, $author$project$Component$Portal$Msg$MsgForUploader),
+			$author$project$Translations$Page$Portal$btnAddSubtitle);
 		var action = _v0.a;
 		var titleStr = _v0.b;
 		return A2(
@@ -20961,12 +18856,12 @@ var $author$project$Page$Project$Portal$viewSubtitleBadge = F3(
 					$author$project$View$Icon$subtitles(24)
 				]));
 	});
-var $author$project$Page$Project$Portal$viewProject = F4(
+var $author$project$Component$Portal$View$Collection$viewProject = F4(
 	function (trn, availablePresets, isSelected, project) {
 		var makeSelection = $author$project$Util$onClickWithCtrlKey(
-			$author$project$Page$Project$Portal$SelectProject(project.uuid));
+			$author$project$Component$Portal$Msg$SelectProject(project.uuid));
 		var makeMultipleSelection = $author$project$Util$onClickStopPropagation(
-			A2($author$project$Page$Project$Portal$SelectProject, project.uuid, true));
+			A2($author$project$Component$Portal$Msg$SelectProject, project.uuid, true));
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -21027,7 +18922,7 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 													$elm$html$Html$text(project.name)
 												]))
 										])),
-									A3($author$project$Page$Project$Portal$viewSubtitleBadge, trn, project.uuid, project.hasSubtitle)
+									A3($author$project$Component$Portal$View$Collection$viewSubtitleBadge, trn, project.uuid, project.hasSubtitle)
 								])),
 							A2(
 							$elm$html$Html$div,
@@ -21071,11 +18966,11 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 									_List_fromArray(
 										[
 											$elm$html$Html$Events$onClick(
-											$author$project$Page$Project$Portal$ConfirmDeletion(
+											$author$project$Component$Portal$Msg$ConfirmDeletion(
 												$toastal$either$Either$Left(project.uuid))),
 											$elm$html$Html$Attributes$class('project-concise__delete'),
 											$elm$html$Html$Attributes$title(
-											$author$project$Translations$Page$ProjectPortal$btnDeleteProject(trn))
+											$author$project$Translations$Page$Portal$btnDeleteProject(trn))
 										]),
 									_List_fromArray(
 										[
@@ -21092,7 +18987,7 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 												$author$project$Route$linkTo(
 												$author$project$Route$Project(project.uuid)),
 												$elm$html$Html$Attributes$title(
-												$author$project$Translations$Page$ProjectPortal$btnEditProject(trn))
+												$author$project$Translations$Page$Portal$btnEditProject(trn))
 											]),
 										_List_fromArray(
 											[
@@ -21157,36 +19052,36 @@ var $author$project$Page$Project$Portal$viewProject = F4(
 				}()
 				]));
 	});
-var $author$project$Page$Project$Portal$viewProjectCollection = F4(
+var $author$project$Component$Portal$View$Collection$viewProjectCollection = F4(
 	function (trn, availablePresets, selectedPickedVideos, projects) {
 		var isSelected = A2(
 			$elm$core$List$map,
-			$author$project$Page$Project$Portal$isProjectSelected(selectedPickedVideos),
+			$author$project$Component$Portal$ParamsKeeper$isProjectSelected(selectedPickedVideos),
 			projects);
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('flex flex-col items-stretch justify-start max-h-full bg-white shadow'),
-					$elm$html$Html$Attributes$id($author$project$Page$Project$Portal$projectCollectionID)
+					$elm$html$Html$Attributes$class('project-collection flex flex-col items-stretch justify-start max-h-full bg-white shadow'),
+					$elm$html$Html$Attributes$id($author$project$Component$Portal$View$Collection$projectCollectionID)
 				]),
 			A3(
 				$elm$core$List$map2,
-				A2($author$project$Page$Project$Portal$viewProject, trn, availablePresets),
+				A2($author$project$Component$Portal$View$Collection$viewProject, trn, availablePresets),
 				isSelected,
 				projects));
 	});
 var $author$project$View$Icon$add = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z');
-var $author$project$Translations$Page$ProjectPortal$addFilesEmptyState = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.add_files_empty_state');
+var $author$project$Translations$Page$Portal$addFilesEmptyState = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.add_files_empty_state');
 };
-var $author$project$Page$Project$Portal$viewProjectCollectionEmptyState = function (trn) {
+var $author$project$Component$Portal$View$Collection$viewProjectCollectionEmptyState = function (trn) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
 				$elm$html$Html$Attributes$class('w-full h-64 max-h-full flex flex-col items-center justify-center text-grey-600 cursor-pointer'),
-				$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$PickFiles)
+				$elm$html$Html$Events$onClick($author$project$Component$Portal$Msg$PickFiles)
 			]),
 		_List_fromArray(
 			[
@@ -21209,16 +19104,16 @@ var $author$project$Page$Project$Portal$viewProjectCollectionEmptyState = functi
 				_List_fromArray(
 					[
 						$elm$html$Html$text(
-						$author$project$Translations$Page$ProjectPortal$addFilesEmptyState(trn))
+						$author$project$Translations$Page$Portal$addFilesEmptyState(trn))
 					]))
 			]));
 };
-var $author$project$Page$Project$Portal$viewCollectionPanel = F5(
+var $author$project$Component$Portal$View$Collection$viewCollectionPanel = F5(
 	function (trn, availablePresets, selectedProjects, searchStr, projects) {
 		var wrapper = $elm$html$Html$section(
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('flex-1 px-4 pb-12 max-h-full overflow-y-auto overflow-x-hidden')
+					$elm$html$Html$Attributes$class('collection-panel flex-1 px-4 pb-12 max-h-full overflow-y-auto overflow-x-hidden')
 				]));
 		var itemsToDisplay = $author$project$Util$isInFactBlankString(searchStr) ? projects : A3(
 			$author$project$Data$FilterSearch$filter,
@@ -21230,7 +19125,7 @@ var $author$project$Page$Project$Portal$viewCollectionPanel = F5(
 		return $elm$core$List$isEmpty(projects) ? wrapper(
 			_List_fromArray(
 				[
-					$author$project$Page$Project$Portal$viewProjectCollectionEmptyState(trn)
+					$author$project$Component$Portal$View$Collection$viewProjectCollectionEmptyState(trn)
 				])) : wrapper(
 			_List_fromArray(
 				[
@@ -21247,10 +19142,10 @@ var $author$project$Page$Project$Portal$viewCollectionPanel = F5(
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$type_('text'),
-									$elm$html$Html$Events$onInput($author$project$Page$Project$Portal$SetSearchStr),
+									$elm$html$Html$Events$onInput($author$project$Component$Portal$Msg$SetSearchStr),
 									$elm$html$Html$Attributes$value(searchStr),
 									$elm$html$Html$Attributes$placeholder(
-									$author$project$Translations$Page$ProjectPortal$searchBoxPlaceholder(trn)),
+									$author$project$Translations$Page$Portal$searchBoxPlaceholder(trn)),
 									$elm$html$Html$Attributes$class('px-2 h-8 mr-2 w-full text-grey-800')
 								]),
 							_List_Nil),
@@ -21258,41 +19153,42 @@ var $author$project$Page$Project$Portal$viewCollectionPanel = F5(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
-									$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$PickFiles),
+									$elm$html$Html$Events$onClick($author$project$Component$Portal$Msg$PickFiles),
 									$elm$html$Html$Attributes$class('btn btn--light-grey w-20 h-8')
 								]),
 							_List_fromArray(
 								[
 									$elm$html$Html$text(
-									$author$project$Translations$Page$ProjectPortal$addFiles(trn))
+									$author$project$Translations$Page$Portal$addFiles(trn))
 								]))
 						])),
-					A4($author$project$Page$Project$Portal$viewProjectCollection, trn, availablePresets, selectedProjects, itemsToDisplay)
+					A4($author$project$Component$Portal$View$Collection$viewProjectCollection, trn, availablePresets, selectedProjects, itemsToDisplay)
 				]));
 	});
-var $author$project$Page$Project$Portal$BatchDeleteProjects = {$: 'BatchDeleteProjects'};
-var $author$project$Page$Project$Portal$DeleteProject = function (a) {
+var $author$project$Component$Portal$Msg$BatchDeleteProjects = {$: 'BatchDeleteProjects'};
+var $author$project$Component$Portal$Msg$DeleteProject = function (a) {
 	return {$: 'DeleteProject', a: a};
 };
-var $author$project$Page$Project$Portal$StopConfirmation = {$: 'StopConfirmation'};
-var $author$project$Translations$Page$ProjectPortal$abortRemovalOfPickedVideos = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.abort_removal_of_picked_videos');
+var $author$project$Component$Portal$Msg$StopConfirmation = {$: 'StopConfirmation'};
+var $author$project$Translations$Page$Portal$abortRemovalOfPickedVideos = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.abort_removal_of_picked_videos');
 };
-var $author$project$Translations$Page$ProjectPortal$batchRemovePickedVideos = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.batch_remove_picked_videos');
+var $author$project$Translations$Page$Portal$batchRemovePickedVideos = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.batch_remove_picked_videos');
 };
-var $author$project$Translations$Page$ProjectPortal$deletionConfirmation = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.deletion_confirmation');
+var $author$project$Translations$Page$Portal$deletionConfirmation = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.deletion_confirmation');
 };
-var $author$project$Translations$Page$ProjectPortal$removePickedVideo = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.remove_picked_video');
+var $elm$html$Html$h3 = _VirtualDom_node('h3');
+var $author$project$Translations$Page$Portal$removePickedVideo = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.remove_picked_video');
 };
-var $author$project$Page$Project$Portal$viewDeletionConfirmation = F2(
+var $author$project$Component$Portal$View$Config$viewDeletionConfirmation = F2(
 	function (trn, deletion) {
 		return A4(
 			$author$project$View$Layout$viewOverlay,
-			$author$project$Page$Project$Portal$NoOp,
-			$author$project$Page$Project$Portal$StopConfirmation,
+			$author$project$Component$Portal$Msg$NoOp,
+			$author$project$Component$Portal$Msg$StopConfirmation,
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$class('bg-white shadow h-48 w-full max-w-md flex flex-col items-center justify-around')
@@ -21305,7 +19201,7 @@ var $author$project$Page$Project$Portal$viewDeletionConfirmation = F2(
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Translations$Page$ProjectPortal$deletionConfirmation(trn))
+							$author$project$Translations$Page$Portal$deletionConfirmation(trn))
 						])),
 					A2(
 					$elm$html$Html$div,
@@ -21323,26 +19219,26 @@ var $author$project$Page$Project$Portal$viewDeletionConfirmation = F2(
 									_List_fromArray(
 										[
 											$elm$html$Html$Events$onClick(
-											$author$project$Page$Project$Portal$DeleteProject(uuid)),
+											$author$project$Component$Portal$Msg$DeleteProject(uuid)),
 											$elm$html$Html$Attributes$class('btn btn--warning w-20 h-8')
 										]),
 									_List_fromArray(
 										[
 											$elm$html$Html$text(
-											$author$project$Translations$Page$ProjectPortal$removePickedVideo(trn))
+											$author$project$Translations$Page$Portal$removePickedVideo(trn))
 										]));
 							} else {
 								return A2(
 									$elm$html$Html$button,
 									_List_fromArray(
 										[
-											$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$BatchDeleteProjects),
+											$elm$html$Html$Events$onClick($author$project$Component$Portal$Msg$BatchDeleteProjects),
 											$elm$html$Html$Attributes$class('btn btn--warning w-20 h-8')
 										]),
 									_List_fromArray(
 										[
 											$elm$html$Html$text(
-											$author$project$Translations$Page$ProjectPortal$batchRemovePickedVideos(trn))
+											$author$project$Translations$Page$Portal$batchRemovePickedVideos(trn))
 										]));
 							}
 						}(),
@@ -21350,19 +19246,19 @@ var $author$project$Page$Project$Portal$viewDeletionConfirmation = F2(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
-									$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$StopConfirmation),
+									$elm$html$Html$Events$onClick($author$project$Component$Portal$Msg$StopConfirmation),
 									$elm$html$Html$Attributes$class('btn btn--light-grey w-20 h-8')
 								]),
 							_List_fromArray(
 								[
 									$elm$html$Html$text(
-									$author$project$Translations$Page$ProjectPortal$abortRemovalOfPickedVideos(trn))
+									$author$project$Translations$Page$Portal$abortRemovalOfPickedVideos(trn))
 								]))
 						]))
 				]));
 	});
-var $author$project$Page$Project$Portal$CancelExportingParams = {$: 'CancelExportingParams'};
-var $author$project$Page$Project$Portal$ExportParams = function (a) {
+var $author$project$Component$Portal$Msg$CancelExportingParams = {$: 'CancelExportingParams'};
+var $author$project$Component$Portal$Msg$ExportParams = function (a) {
 	return {$: 'ExportParams', a: a};
 };
 var $author$project$Util$onEnterWith = function (tagger) {
@@ -21388,12 +19284,13 @@ var $author$project$Util$onEnterWith = function (tagger) {
 						['key']),
 					$elm$json$Json$Decode$string))));
 };
-var $author$project$Page$Project$Portal$viewExportParams = A2(
+var $author$project$Component$Portal$View$Config$viewExportParams = A2(
 	$elm$html$Html$div,
 	_List_fromArray(
 		[
-			$elm$html$Html$Attributes$class('absolute inset-0 z-10 bg-overlay flex items-center justify-center'),
-			$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$CancelExportingParams)
+			$elm$html$Html$Attributes$class('export-params absolute inset-0 z-10 bg-overlay flex items-center justify-center'),
+			$elm$html$Html$Events$onClick(
+			$author$project$Component$Portal$Msg$MsgForParamsKeeper($author$project$Component$Portal$Msg$CancelExportingParams))
 		]),
 	_List_fromArray(
 		[
@@ -21402,7 +19299,7 @@ var $author$project$Page$Project$Portal$viewExportParams = A2(
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$class('w-64 h-32 py-6 px-4 bg-white shadow flex flex-col items-center justify-around'),
-					$author$project$Util$onClickStopPropagation($author$project$Page$Project$Portal$NoOp)
+					$author$project$Util$onClickStopPropagation($author$project$Component$Portal$Msg$NoOp)
 				]),
 			_List_fromArray(
 				[
@@ -21427,7 +19324,8 @@ var $author$project$Page$Project$Portal$viewExportParams = A2(
 								[
 									$elm$html$Html$Attributes$type_('text'),
 									$elm$html$Html$Attributes$class('text-right underlined--teal w-full text-grey-800'),
-									$author$project$Util$onEnterWith($author$project$Page$Project$Portal$ExportParams)
+									$author$project$Util$onEnterWith(
+									A2($elm$core$Basics$composeL, $author$project$Component$Portal$Msg$MsgForParamsKeeper, $author$project$Component$Portal$Msg$ExportParams))
 								]),
 							_List_Nil),
 							A2(
@@ -21443,46 +19341,70 @@ var $author$project$Page$Project$Portal$viewExportParams = A2(
 						]))
 				]))
 		]));
-var $author$project$Page$Project$Portal$DismissImportingError = {$: 'DismissImportingError'};
-var $author$project$Page$Project$Portal$ParamsMsg = F3(
-	function (a, b, c) {
-		return {$: 'ParamsMsg', a: a, b: b, c: c};
+var $author$project$Util$viewIfPresent = F2(
+	function (maybeValue, viewer) {
+		if (maybeValue.$ === 'Just') {
+			var a = maybeValue.a;
+			return viewer(a);
+		} else {
+			return $elm$html$Html$text('');
+		}
 	});
-var $author$project$Page$Project$Portal$ParamsRequested = {$: 'ParamsRequested'};
+var $author$project$Component$Portal$Msg$DismissImportingError = {$: 'DismissImportingError'};
+var $author$project$Component$Portal$Msg$MsgForParams = F3(
+	function (a, b, c) {
+		return {$: 'MsgForParams', a: a, b: b, c: c};
+	});
+var $author$project$Component$Portal$Msg$ParamsRequested = {$: 'ParamsRequested'};
 var $toastal$either$Either$Right = function (a) {
 	return {$: 'Right', a: a};
 };
-var $author$project$Page$Project$Portal$StartExportingParams = function (a) {
+var $author$project$Component$Portal$Msg$StartExportingParams = function (a) {
 	return {$: 'StartExportingParams', a: a};
 };
-var $author$project$Page$Project$Portal$StartOver = function (a) {
+var $author$project$Component$Portal$Msg$StartOver = function (a) {
 	return {$: 'StartOver', a: a};
 };
-var $author$project$Page$Project$Portal$StartProcessingVideos = {$: 'StartProcessingVideos'};
-var $author$project$Translations$Page$ProjectPortal$choosePresets = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.choose_presets');
+var $author$project$Component$Portal$Msg$StartProcessingVideos = {$: 'StartProcessingVideos'};
+var $author$project$Translations$Page$Portal$choosePresets = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.choose_presets');
 };
 var $elm$html$Html$header = _VirtualDom_node('header');
 var $author$project$View$Icon$loop = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z');
-var $author$project$Translations$Page$ProjectPortal$startProcessing = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.start_processing');
+var $author$project$Translations$Page$Portal$startProcessing = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.start_processing');
 };
-var $author$project$View$Video$Processing$Params$SetDifferentTypeMinDifference = function (a) {
+var $author$project$View$Alert$viewError = F2(
+	function (attrs, textContent) {
+		return A2(
+			$elm$html$Html$div,
+			_Utils_ap(
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('bg-warning-100 text-warning-700 px-6 py-3 cursor-pointer shadow')
+					]),
+				attrs),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(textContent)
+				]));
+	});
+var $author$project$Component$Portal$Params$SetDifferentTypeMinDifference = function (a) {
 	return {$: 'SetDifferentTypeMinDifference', a: a};
 };
-var $author$project$View$Video$Processing$Params$SetIsSameCombined = function (a) {
+var $author$project$Component$Portal$Params$SetIsSameCombined = function (a) {
 	return {$: 'SetIsSameCombined', a: a};
 };
-var $author$project$View$Video$Processing$Params$SetSameTypeMaxDifference = function (a) {
+var $author$project$Component$Portal$Params$SetSameTypeMaxDifference = function (a) {
 	return {$: 'SetSameTypeMaxDifference', a: a};
 };
-var $author$project$View$Video$Processing$Params$SetShortNoneCombiningMaxDurationInMs = function (a) {
+var $author$project$Component$Portal$Params$SetShortNoneCombiningMaxDurationInMs = function (a) {
 	return {$: 'SetShortNoneCombiningMaxDurationInMs', a: a};
 };
-var $author$project$View$Video$Processing$Params$SetSimilarTypeMaxDifference = function (a) {
+var $author$project$Component$Portal$Params$SetSimilarTypeMaxDifference = function (a) {
 	return {$: 'SetSimilarTypeMaxDifference', a: a};
 };
-var $author$project$View$Video$Processing$Params$SetSmoothTypeMinValue = function (a) {
+var $author$project$Component$Portal$Params$SetSmoothTypeMinValue = function (a) {
 	return {$: 'SetSmoothTypeMinValue', a: a};
 };
 var $author$project$Data$Video$Processing$Params$allGranularities = _List_fromArray(
@@ -21508,7 +19430,7 @@ var $author$project$Util$onInputNumber = function (tagger) {
 						['target', 'valueAsNumber']),
 					$elm$json$Json$Decode$float))));
 };
-var $author$project$View$Video$Processing$Params$viewField = F4(
+var $author$project$Component$Portal$Params$viewField = F4(
 	function (fieldName, labelStr, handler, numberValue) {
 		return A2(
 			$elm$html$Html$div,
@@ -21544,7 +19466,7 @@ var $author$project$View$Video$Processing$Params$viewField = F4(
 					_List_Nil)
 				]));
 	});
-var $author$project$View$Video$Processing$Params$SetGranularity = function (a) {
+var $author$project$Component$Portal$Params$SetGranularity = function (a) {
 	return {$: 'SetGranularity', a: a};
 };
 var $author$project$Data$Video$Processing$Params$granularityToString = function (granularity) {
@@ -21557,7 +19479,7 @@ var $author$project$Data$Video$Processing$Params$granularityToString = function 
 			return 'detailed';
 	}
 };
-var $author$project$View$Video$Processing$Params$viewMultipleChoice = F4(
+var $author$project$Component$Portal$Params$viewMultipleChoice = F4(
 	function (setState, printState, currentState, targetState) {
 		return A2(
 			$elm$html$Html$button,
@@ -21574,14 +19496,14 @@ var $author$project$View$Video$Processing$Params$viewMultipleChoice = F4(
 					printState(targetState))
 				]));
 	});
-var $author$project$View$Video$Processing$Params$viewGranularity = A2($author$project$View$Video$Processing$Params$viewMultipleChoice, $author$project$View$Video$Processing$Params$SetGranularity, $author$project$Data$Video$Processing$Params$granularityToString);
-var $author$project$View$Video$Processing$Params$boolToDisplayString = function (_boolean) {
+var $author$project$Component$Portal$Params$viewGranularity = A2($author$project$Component$Portal$Params$viewMultipleChoice, $author$project$Component$Portal$Params$SetGranularity, $author$project$Data$Video$Processing$Params$granularityToString);
+var $author$project$Component$Portal$Params$boolToDisplayString = function (_boolean) {
 	return _boolean ? '是' : '否';
 };
-var $author$project$View$Video$Processing$Params$viewTrueOrFalse = function (setState) {
-	return A2($author$project$View$Video$Processing$Params$viewMultipleChoice, setState, $author$project$View$Video$Processing$Params$boolToDisplayString);
+var $author$project$Component$Portal$Params$viewTrueOrFalse = function (setState) {
+	return A2($author$project$Component$Portal$Params$viewMultipleChoice, setState, $author$project$Component$Portal$Params$boolToDisplayString);
 };
-var $author$project$View$Video$Processing$Params$viewPanel = function (params) {
+var $author$project$Component$Portal$Params$viewPanel = function (params) {
 	return A2(
 		$elm$html$Html$div,
 		_List_Nil,
@@ -21613,13 +19535,13 @@ var $author$project$View$Video$Processing$Params$viewPanel = function (params) {
 							]),
 						A2(
 							$elm$core$List$map,
-							$author$project$View$Video$Processing$Params$viewGranularity(params.granularity),
+							$author$project$Component$Portal$Params$viewGranularity(params.granularity),
 							$author$project$Data$Video$Processing$Params$allGranularities))
 					])),
-				A4($author$project$View$Video$Processing$Params$viewField, 'differentTypeMinDifference', 'differentTypeMinDifference', $author$project$View$Video$Processing$Params$SetDifferentTypeMinDifference, params.differentTypeMinDifference),
-				A4($author$project$View$Video$Processing$Params$viewField, 'sameTypeMaxDifference', 'sameTypeMaxDifference', $author$project$View$Video$Processing$Params$SetSameTypeMaxDifference, params.sameTypeMaxDifference),
-				A4($author$project$View$Video$Processing$Params$viewField, 'similarTypeMaxDifference', 'similarTypeMaxDifference', $author$project$View$Video$Processing$Params$SetSimilarTypeMaxDifference, params.similarTypeMaxDifference),
-				A4($author$project$View$Video$Processing$Params$viewField, 'smoothTypeMinValue', 'smoothTypeMinValue', $author$project$View$Video$Processing$Params$SetSmoothTypeMinValue, params.smoothTypeMinValue),
+				A4($author$project$Component$Portal$Params$viewField, 'differentTypeMinDifference', 'differentTypeMinDifference', $author$project$Component$Portal$Params$SetDifferentTypeMinDifference, params.differentTypeMinDifference),
+				A4($author$project$Component$Portal$Params$viewField, 'sameTypeMaxDifference', 'sameTypeMaxDifference', $author$project$Component$Portal$Params$SetSameTypeMaxDifference, params.sameTypeMaxDifference),
+				A4($author$project$Component$Portal$Params$viewField, 'similarTypeMaxDifference', 'similarTypeMaxDifference', $author$project$Component$Portal$Params$SetSimilarTypeMaxDifference, params.similarTypeMaxDifference),
+				A4($author$project$Component$Portal$Params$viewField, 'smoothTypeMinValue', 'smoothTypeMinValue', $author$project$Component$Portal$Params$SetSmoothTypeMinValue, params.smoothTypeMinValue),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
@@ -21646,24 +19568,24 @@ var $author$project$View$Video$Processing$Params$viewPanel = function (params) {
 							]),
 						A2(
 							$elm$core$List$map,
-							A2($author$project$View$Video$Processing$Params$viewTrueOrFalse, $author$project$View$Video$Processing$Params$SetIsSameCombined, params.isSameCombined),
+							A2($author$project$Component$Portal$Params$viewTrueOrFalse, $author$project$Component$Portal$Params$SetIsSameCombined, params.isSameCombined),
 							_List_fromArray(
 								[true, false])))
 					])),
-				A4($author$project$View$Video$Processing$Params$viewField, 'shortNoneCombiningMaxDurationInMs', 'shortNoneCombiningMaxDurationInMs', $author$project$View$Video$Processing$Params$SetShortNoneCombiningMaxDurationInMs, params.shortNoneCombiningMaxDurationInMs)
+				A4($author$project$Component$Portal$Params$viewField, 'shortNoneCombiningMaxDurationInMs', 'shortNoneCombiningMaxDurationInMs', $author$project$Component$Portal$Params$SetShortNoneCombiningMaxDurationInMs, params.shortNoneCombiningMaxDurationInMs)
 			]));
 };
-var $author$project$Page$Project$Portal$SetProcessingPreset = F2(
+var $author$project$Component$Portal$Msg$SetProcessingPreset = F2(
 	function (a, b) {
 		return {$: 'SetProcessingPreset', a: a, b: b};
 	});
-var $author$project$Page$Project$Portal$viewPreset = F4(
+var $author$project$Component$Portal$View$Config$viewPreset = F4(
 	function (trn, uuid, currentPreset, targetPreset) {
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('py-1 px-2')
+					$elm$html$Html$Attributes$class('preset py-1 px-2')
 				]),
 			_List_fromArray(
 				[
@@ -21676,7 +19598,7 @@ var $author$project$Page$Project$Portal$viewPreset = F4(
 							currentPreset,
 							$elm$core$Maybe$Just(targetPreset)) ? $elm$html$Html$Attributes$class('btn--secondary') : $elm$html$Html$Attributes$class('btn--white'),
 							$elm$html$Html$Events$onClick(
-							A2($author$project$Page$Project$Portal$SetProcessingPreset, uuid, targetPreset))
+							A2($author$project$Component$Portal$Msg$SetProcessingPreset, uuid, targetPreset))
 						]),
 					_List_fromArray(
 						[
@@ -21688,7 +19610,10 @@ var $author$project$Page$Project$Portal$viewPreset = F4(
 						]))
 				]));
 	});
-var $author$project$Page$Project$Portal$viewProjectConfig = F5(
+var $author$project$Util$viewUnless = function (condition) {
+	return $author$project$Util$viewIf(!condition);
+};
+var $author$project$Component$Portal$View$Config$viewProjectConfig = F5(
 	function (trn, availablePresets, expertMode, importingError, selected) {
 		var wrapDisabled = $elm$html$Html$div(
 			_List_fromArray(
@@ -21705,7 +19630,7 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('w-full p-4 flex flex-col items-stretch bg-white shadow')
+								$elm$html$Html$Attributes$class('project-config w-full p-4 flex flex-col items-stretch bg-white shadow')
 							]),
 						_List_fromArray(
 							[
@@ -21726,7 +19651,7 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 										_List_fromArray(
 											[
 												$elm$html$Html$text(
-												$author$project$Translations$Page$ProjectPortal$choosePresets(trn))
+												$author$project$Translations$Page$Portal$choosePresets(trn))
 											])),
 										A2(
 										$elm$html$Html$div,
@@ -21747,7 +19672,7 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 									]),
 								A2(
 									$elm$core$List$map,
-									A3($author$project$Page$Project$Portal$viewPreset, trn, project.uuid, currentPreset),
+									A3($author$project$Component$Portal$View$Config$viewPreset, trn, project.uuid, currentPreset),
 									availablePresets)),
 								A2(
 								$author$project$Util$viewIfPresent,
@@ -21774,8 +19699,8 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 								expertMode,
 								A2(
 									$elm$html$Html$map,
-									A2($author$project$Page$Project$Portal$ParamsMsg, project.uuid, project.params),
-									$author$project$View$Video$Processing$Params$viewPanel(project.params))),
+									A2($author$project$Component$Portal$Msg$MsgForParams, project.uuid, project.params),
+									$author$project$Component$Portal$Params$viewPanel(project.params))),
 								A2(
 								$author$project$Util$viewIfPresent,
 								importingError,
@@ -21784,7 +19709,8 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 										$author$project$View$Alert$viewError,
 										_List_fromArray(
 											[
-												$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$DismissImportingError)
+												$elm$html$Html$Events$onClick(
+												$author$project$Component$Portal$Msg$MsgForParamsKeeper($author$project$Component$Portal$Msg$DismissImportingError))
 											]),
 										'读取文件数据失败');
 								}),
@@ -21801,12 +19727,12 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$class('btn btn--theme w-16 h-8 shadow'),
-												$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$StartProcessingVideos)
+												$elm$html$Html$Events$onClick($author$project$Component$Portal$Msg$StartProcessingVideos)
 											]),
 										_List_fromArray(
 											[
 												$elm$html$Html$text(
-												$author$project$Translations$Page$ProjectPortal$startProcessing(trn))
+												$author$project$Translations$Page$Portal$startProcessing(trn))
 											])),
 									expertMode ? _List_fromArray(
 										[
@@ -21814,7 +19740,8 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 											$elm$html$Html$button,
 											_List_fromArray(
 												[
-													$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$ParamsRequested),
+													$elm$html$Html$Events$onClick(
+													$author$project$Component$Portal$Msg$MsgForParamsKeeper($author$project$Component$Portal$Msg$ParamsRequested)),
 													$elm$html$Html$Attributes$class('btn btn--secondary w-16 h-8 shadow')
 												]),
 											_List_fromArray(
@@ -21826,7 +19753,8 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 											_List_fromArray(
 												[
 													$elm$html$Html$Events$onClick(
-													$author$project$Page$Project$Portal$StartExportingParams(project.params)),
+													$author$project$Component$Portal$Msg$MsgForParamsKeeper(
+														$author$project$Component$Portal$Msg$StartExportingParams(project.params))),
 													$elm$html$Html$Attributes$class('btn btn--teal w-16 h-8 shadow')
 												]),
 											_List_fromArray(
@@ -21860,7 +19788,7 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 										[
 											$elm$html$Html$Attributes$class('btn btn--light-grey px-2 h-10 text-grey-700'),
 											$elm$html$Html$Events$onClick(
-											$author$project$Page$Project$Portal$StartOver(project.uuid))
+											$author$project$Component$Portal$Msg$StartOver(project.uuid))
 										]),
 									_List_fromArray(
 										[
@@ -21883,7 +19811,7 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('flex flex-row justify-around items-center')
+							$elm$html$Html$Attributes$class('multiple-project-configs flex flex-row justify-around items-center')
 						]),
 					_List_fromArray(
 						[
@@ -21892,26 +19820,26 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 							_List_fromArray(
 								[
 									$elm$html$Html$Events$onClick(
-									$author$project$Page$Project$Portal$ConfirmDeletion(
+									$author$project$Component$Portal$Msg$ConfirmDeletion(
 										$toastal$either$Either$Right(_Utils_Tuple0))),
 									$elm$html$Html$Attributes$class('btn btn--warning w-20 h-8')
 								]),
 							_List_fromArray(
 								[
 									$elm$html$Html$text(
-									$author$project$Translations$Page$ProjectPortal$batchRemovePickedVideos(trn))
+									$author$project$Translations$Page$Portal$batchRemovePickedVideos(trn))
 								])),
 							A2(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
-									$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$StartProcessingVideos),
+									$elm$html$Html$Events$onClick($author$project$Component$Portal$Msg$StartProcessingVideos),
 									$elm$html$Html$Attributes$class('btn btn--theme w-20 h-8')
 								]),
 							_List_fromArray(
 								[
 									$elm$html$Html$text(
-									$author$project$Translations$Page$ProjectPortal$startProcessing(trn))
+									$author$project$Translations$Page$Portal$startProcessing(trn))
 								]))
 						]));
 			}
@@ -21919,31 +19847,31 @@ var $author$project$Page$Project$Portal$viewProjectConfig = F5(
 			return wrapDisabled(_List_Nil);
 		}
 	});
-var $author$project$Page$Project$Portal$RemoveSubtitleFor = function (a) {
+var $author$project$Component$Portal$Msg$RemoveSubtitleFor = function (a) {
 	return {$: 'RemoveSubtitleFor', a: a};
 };
-var $author$project$Page$Project$Portal$StopReviewingSubtitle = {$: 'StopReviewingSubtitle'};
-var $author$project$Translations$Page$ProjectPortal$keepCurrentSubtitle = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.keep_current_subtitle');
+var $author$project$Component$Portal$Msg$StopReviewingSubtitle = {$: 'StopReviewingSubtitle'};
+var $author$project$Translations$Page$Portal$keepCurrentSubtitle = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.keep_current_subtitle');
 };
-var $author$project$Translations$Page$ProjectPortal$promptAlreadyUploadedSubtitle = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.prompt_already_uploaded_subtitle');
+var $author$project$Translations$Page$Portal$promptAlreadyUploadedSubtitle = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.prompt_already_uploaded_subtitle');
 };
-var $author$project$Translations$Page$ProjectPortal$removeSubtitle = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.remove_subtitle');
+var $author$project$Translations$Page$Portal$removeSubtitle = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.remove_subtitle');
 };
-var $author$project$Translations$Page$ProjectPortal$replaceSubtitle = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.replace_subtitle');
+var $author$project$Translations$Page$Portal$replaceSubtitle = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.replace_subtitle');
 };
-var $author$project$Page$Project$Portal$viewReviewSubtitle = F2(
+var $author$project$Component$Portal$View$Collection$viewReviewSubtitle = F2(
 	function (trn, uuid) {
 		return A4(
 			$author$project$View$Layout$viewOverlay,
-			$author$project$Page$Project$Portal$NoOp,
-			$author$project$Page$Project$Portal$StopReviewingSubtitle,
+			$author$project$Component$Portal$Msg$NoOp,
+			$author$project$Component$Portal$Msg$MsgForUploader($author$project$Component$Portal$Msg$StopReviewingSubtitle),
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('max-w-lg w-full h-48 flex flex-col justify-around px-4 bg-white shadow')
+					$elm$html$Html$Attributes$class('review-subtitle max-w-lg w-full h-48 flex flex-col justify-around px-4 bg-white shadow')
 				]),
 			_List_fromArray(
 				[
@@ -21956,7 +19884,7 @@ var $author$project$Page$Project$Portal$viewReviewSubtitle = F2(
 					_List_fromArray(
 						[
 							$elm$html$Html$text(
-							$author$project$Translations$Page$ProjectPortal$promptAlreadyUploadedSubtitle(trn))
+							$author$project$Translations$Page$Portal$promptAlreadyUploadedSubtitle(trn))
 						])),
 					A2(
 					$elm$html$Html$div,
@@ -21971,43 +19899,46 @@ var $author$project$Page$Project$Portal$viewReviewSubtitle = F2(
 							_List_fromArray(
 								[
 									$elm$html$Html$Events$onClick(
-									$author$project$Page$Project$Portal$PickSubtitleFor(uuid)),
+									$author$project$Component$Portal$Msg$MsgForUploader(
+										$author$project$Component$Portal$Msg$PickSubtitleFor(uuid))),
 									$elm$html$Html$Attributes$class('btn btn--theme w-20 h-8 mx-4')
 								]),
 							_List_fromArray(
 								[
 									$elm$html$Html$text(
-									$author$project$Translations$Page$ProjectPortal$replaceSubtitle(trn))
+									$author$project$Translations$Page$Portal$replaceSubtitle(trn))
 								])),
 							A2(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
 									$elm$html$Html$Events$onClick(
-									$author$project$Page$Project$Portal$RemoveSubtitleFor(uuid)),
+									$author$project$Component$Portal$Msg$MsgForUploader(
+										$author$project$Component$Portal$Msg$RemoveSubtitleFor(uuid))),
 									$elm$html$Html$Attributes$class('btn btn--warning btn--outlined w-20 h-8 mx-4')
 								]),
 							_List_fromArray(
 								[
 									$elm$html$Html$text(
-									$author$project$Translations$Page$ProjectPortal$removeSubtitle(trn))
+									$author$project$Translations$Page$Portal$removeSubtitle(trn))
 								])),
 							A2(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
-									$elm$html$Html$Events$onClick($author$project$Page$Project$Portal$StopReviewingSubtitle),
+									$elm$html$Html$Events$onClick(
+									$author$project$Component$Portal$Msg$MsgForUploader($author$project$Component$Portal$Msg$StopReviewingSubtitle)),
 									$elm$html$Html$Attributes$class('btn btn--light-grey w-20 h-8 mx-4')
 								]),
 							_List_fromArray(
 								[
 									$elm$html$Html$text(
-									$author$project$Translations$Page$ProjectPortal$keepCurrentSubtitle(trn))
+									$author$project$Translations$Page$Portal$keepCurrentSubtitle(trn))
 								]))
 						]))
 				]));
 	});
-var $author$project$Page$Project$Portal$view = F2(
+var $author$project$Component$Portal$Main$view = F2(
 	function (trn, model) {
 		var _v0 = _Utils_Tuple2(model.projects, model.availablePresets);
 		if ((_v0.a.$ === 'Success') && (_v0.b.$ === 'Success')) {
@@ -22021,11 +19952,11 @@ var $author$project$Page$Project$Portal$view = F2(
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$class('flex flex-row justify-around items-start px-16 bg-grey-50'),
-							$author$project$Data$Uploader$Media$onDrop($author$project$Page$Project$Portal$FilesSelected)
+							$author$project$Data$Uploader$Media$onDrop($author$project$Component$Portal$Msg$FilesSelected)
 						]),
 					_List_fromArray(
 						[
-							A5($author$project$Page$Project$Portal$viewCollectionPanel, trn, availablePresets, model.selectedProjects, model.searchStr, projects),
+							A5($author$project$Component$Portal$View$Collection$viewCollectionPanel, trn, availablePresets, model.selectedProjects, model.searchStr, projects),
 							A2(
 							$elm$html$Html$section,
 							_List_fromArray(
@@ -22035,39 +19966,2280 @@ var $author$project$Page$Project$Portal$view = F2(
 							_List_fromArray(
 								[
 									A5(
-									$author$project$Page$Project$Portal$viewProjectConfig,
+									$author$project$Component$Portal$View$Config$viewProjectConfig,
 									trn,
 									availablePresets,
 									model.expertMode,
 									model.importingError,
-									A2($author$project$Page$Project$Portal$filterSelectedProjects, model.selectedProjects, projects))
+									A2($author$project$Component$Portal$ParamsKeeper$filterSelectedProjects, model.selectedProjects, projects))
 								]))
 						])),
 					A2(
 					$author$project$Util$viewUnless,
 					_Utils_eq(model.paramsToExport, $elm$core$Maybe$Nothing),
-					$author$project$Page$Project$Portal$viewExportParams),
+					$author$project$Component$Portal$View$Config$viewExportParams),
 					A2(
 					$author$project$Util$viewIf,
 					model.isDisplayingUploader,
-					A4($author$project$View$Uploader$view, trn, $author$project$Page$Project$Portal$NoOp, $author$project$Page$Project$Portal$CloseUploader, model.items)),
+					A4(
+						$author$project$Component$Portal$Uploader$view,
+						trn,
+						$author$project$Component$Portal$Msg$NoOp,
+						$author$project$Component$Portal$Msg$MsgForUploader($author$project$Component$Portal$Msg$CloseUploader),
+						model.items)),
 					A2(
 					$author$project$Util$viewIfPresent,
 					model.reviewingSubtitle,
-					$author$project$Page$Project$Portal$viewReviewSubtitle(trn)),
+					$author$project$Component$Portal$View$Collection$viewReviewSubtitle(trn)),
 					A2(
 					$author$project$Util$viewIfPresent,
 					model.pendingDeletion,
-					$author$project$Page$Project$Portal$viewDeletionConfirmation(trn))
+					$author$project$Component$Portal$View$Config$viewDeletionConfirmation(trn))
 				]);
 		} else {
 			return _List_Nil;
 		}
 	});
+var $author$project$Component$Project$Msg$NavigateToPortal = {$: 'NavigateToPortal'};
+var $elm$core$List$repeatHelp = F3(
+	function (result, n, value) {
+		repeatHelp:
+		while (true) {
+			if (n <= 0) {
+				return result;
+			} else {
+				var $temp$result = A2($elm$core$List$cons, value, result),
+					$temp$n = n - 1,
+					$temp$value = value;
+				result = $temp$result;
+				n = $temp$n;
+				value = $temp$value;
+				continue repeatHelp;
+			}
+		}
+	});
+var $elm$core$List$repeat = F2(
+	function (n, value) {
+		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+	});
+var $author$project$View$Spinner$pageLoader = A2(
+	$elm$html$Html$div,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('lds-ring')
+		]),
+	A2(
+		$elm$core$List$repeat,
+		4,
+		A2($elm$html$Html$div, _List_Nil, _List_Nil)));
+var $author$project$View$Icon$error = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z');
+var $author$project$Translations$Project$projectNotFound = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project.project_not_found');
+};
+var $author$project$Data$Project$errorToString = F2(
+	function (trn, error) {
+		return $author$project$Translations$Project$projectNotFound(trn);
+	});
+var $author$project$Component$Project$Main$viewError = F2(
+	function (trn, error) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('w-full h-full flex flex-col justify-center items-center')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('text-warning-700 mb-8')
+						]),
+					_List_fromArray(
+						[
+							$author$project$View$Icon$error(96)
+						])),
+					A2(
+					$elm$html$Html$p,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('p-2 text-lg')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$errorToString, error))
+						]))
+				]));
+	});
+var $author$project$Component$Project$Msg$ChangeViewType = function (a) {
+	return {$: 'ChangeViewType', a: a};
+};
+var $author$project$Component$Project$Msg$DismissExportingErrorPrompt = {$: 'DismissExportingErrorPrompt'};
+var $author$project$Component$Project$Msg$JumpTo = function (a) {
+	return {$: 'JumpTo', a: a};
+};
+var $author$project$Component$Project$Msg$NoOp = {$: 'NoOp'};
+var $author$project$Component$Project$Msg$StayOnPage = {$: 'StayOnPage'};
+var $author$project$Component$Project$Msg$StopPreviewing = {$: 'StopPreviewing'};
+var $author$project$Data$Project$Content$allKeyFramesHelp = F2(
+	function (contents, keyFrames) {
+		allKeyFramesHelp:
+		while (true) {
+			if (!contents.b) {
+				return $elm$core$List$reverse(keyFrames);
+			} else {
+				if ((contents.a.b.$ === 'FromSegment') && (!contents.a.b.a)) {
+					var _v1 = contents.a;
+					var index = _v1.a;
+					var _v2 = _v1.b;
+					var segmentContent = _v2.b;
+					var xs = contents.b;
+					return A2(
+						$author$project$Data$Project$Content$allKeyFramesHelp,
+						xs,
+						A2(
+							$elm$core$List$cons,
+							_Utils_Tuple2(
+								index,
+								$author$project$Data$Video$Segment$getKeyFrame(
+									$author$project$Data$Project$SegmentContent$getSegment(segmentContent))),
+							keyFrames));
+				} else {
+					var xs = contents.b;
+					var $temp$contents = xs,
+						$temp$keyFrames = keyFrames;
+					contents = $temp$contents;
+					keyFrames = $temp$keyFrames;
+					continue allKeyFramesHelp;
+				}
+			}
+		}
+	});
+var $elm$core$Array$toIndexedList = function (array) {
+	var len = array.a;
+	var helper = F2(
+		function (entry, _v0) {
+			var index = _v0.a;
+			var list = _v0.b;
+			return _Utils_Tuple2(
+				index - 1,
+				A2(
+					$elm$core$List$cons,
+					_Utils_Tuple2(index, entry),
+					list));
+		});
+	return A3(
+		$elm$core$Array$foldr,
+		helper,
+		_Utils_Tuple2(len - 1, _List_Nil),
+		array).b;
+};
+var $author$project$Data$Project$Content$allKeyFrames = function (contents) {
+	return A3(
+		$author$project$Util$flip,
+		$author$project$Data$Project$Content$allKeyFramesHelp,
+		_List_Nil,
+		$elm$core$Array$toIndexedList(contents));
+};
+var $author$project$Translations$ProjectExport$mediaFilesMissing = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project_export.media_files_missing');
+};
+var $author$project$Translations$ProjectExport$sourceFileNotFound = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project_export.source_file_not_found');
+};
+var $author$project$Data$Project$HtmlExport$errorToString = F2(
+	function (trn, error) {
+		if (error.$ === 'MediaFilesMissing') {
+			return $author$project$Translations$ProjectExport$mediaFilesMissing(trn);
+		} else {
+			return $author$project$Translations$ProjectExport$sourceFileNotFound(trn);
+		}
+	});
+var $author$project$Component$Project$View$Alert$viewExportingError = F3(
+	function (trn, dismissExportingErrorPrompt, error) {
+		return A2(
+			$author$project$View$Alert$viewError,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(dismissExportingErrorPrompt)
+				]),
+			A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$HtmlExport$errorToString, error));
+	});
+var $author$project$Translations$Page$Project$Prompt$exporting = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.exporting');
+};
+var $author$project$View$Alert$viewSuccess = F2(
+	function (attrs, textContent) {
+		return A2(
+			$elm$html$Html$div,
+			_Utils_ap(
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('bg-grey-700 text-grey-50 px-6 py-3 cursor-pointer shadow')
+					]),
+				attrs),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(textContent)
+				]));
+	});
+var $author$project$Component$Project$View$Alert$viewExportingInProgress = function (trn) {
+	return A2(
+		$author$project$View$Alert$viewSuccess,
+		_List_Nil,
+		$author$project$Translations$Page$Project$Prompt$exporting(trn));
+};
+var $author$project$Translations$Page$Project$Prompt$failedToSave = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.failed_to_save');
+};
+var $author$project$Translations$Page$Project$Prompt$successfullySaved = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.prompt.successfully_saved');
+};
+var $author$project$Component$Project$View$Alert$viewSavingResult = F3(
+	function (trn, dismissSavingResultPrompt, result) {
+		if (result.$ === 'Ok') {
+			return A2(
+				$author$project$View$Alert$viewSuccess,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(dismissSavingResultPrompt)
+					]),
+				$author$project$Translations$Page$Project$Prompt$successfullySaved(trn));
+		} else {
+			var error = result.a;
+			return A2(
+				$author$project$View$Alert$viewError,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(dismissSavingResultPrompt)
+					]),
+				$author$project$Translations$Page$Project$Prompt$failedToSave(trn));
+		}
+	});
+var $author$project$Component$Project$View$Alert$view = F6(
+	function (trn, dismissSavingResultPrompt, dismissExportingErrorPrompt, exportingError, savingResult, isExportingInProgress) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('absolute inset-0 invisible flex flex-col justify-start items-center')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$classList(
+							_List_fromArray(
+								[
+									_Utils_Tuple2('w-64 flex flex-col justify-start items-stretch py-8 ', true),
+									_Utils_Tuple2(
+									'visible',
+									!(_Utils_eq(exportingError, $elm$core$Maybe$Nothing) && (_Utils_eq(savingResult, $elm$core$Maybe$Nothing) && (!isExportingInProgress))))
+								]))
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$author$project$Util$viewIfPresent,
+							savingResult,
+							A2($author$project$Component$Project$View$Alert$viewSavingResult, trn, dismissSavingResultPrompt)),
+							A2(
+							$author$project$Util$viewIfPresent,
+							exportingError,
+							A2($author$project$Component$Project$View$Alert$viewExportingError, trn, dismissExportingErrorPrompt)),
+							A2(
+							$author$project$Util$viewUnless,
+							!isExportingInProgress,
+							$author$project$Component$Project$View$Alert$viewExportingInProgress(trn))
+						]))
+				]));
+	});
+var $author$project$Data$File$Object$Local = {$: 'Local'};
+var $author$project$Translations$Page$Project$RightPanel$projectSizeLabel = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.project_size_label');
+};
+var $author$project$Translations$Page$Project$LeftPanel$stopPreviewing = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.stop_previewing');
+};
+var $elm$core$String$dropRight = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3($elm$core$String$slice, 0, -n, string);
+	});
+var $author$project$Data$FileSize$cropDecimal = function (x) {
+	if (x < 0.1) {
+		return '0.0' + A2($elm$core$Basics$composeL, $elm$core$String$fromInt, $elm$core$Basics$floor)(x * 100);
+	} else {
+		var _v0 = function (str) {
+			return _Utils_Tuple2(
+				A2($elm$core$String$dropRight, 2, str),
+				A2($elm$core$String$right, 2, str));
+		}(
+			$elm$core$String$fromInt(
+				$elm$core$Basics$floor(x * 100)));
+		if (_v0.a === '') {
+			var decimalPartStr = _v0.b;
+			return '0.' + decimalPartStr;
+		} else {
+			var integerPartStr = _v0.a;
+			var decimalPartStr = _v0.b;
+			return (decimalPartStr === '00') ? integerPartStr : (integerPartStr + ('.' + decimalPartStr));
+		}
+	}
+};
+var $author$project$Data$FileSize$toString = function (fileSize) {
+	var bytes = $author$project$Data$FileSize$toByte(fileSize);
+	if (bytes < 1) {
+		var _v0 = $elm$core$Basics$floor(bytes * 8);
+		if (_v0 === 1) {
+			return '1 bit';
+		} else {
+			var n = _v0;
+			return $elm$core$String$fromInt(n) + ' bits';
+		}
+	} else {
+		if (_Utils_cmp(bytes, $author$project$Data$FileSize$factor) < 0) {
+			return $author$project$Data$FileSize$cropDecimal(bytes) + ' Bytes';
+		} else {
+			if (_Utils_cmp(bytes, $author$project$Data$FileSize$factor * $author$project$Data$FileSize$factor) < 0) {
+				return $author$project$Data$FileSize$cropDecimal(bytes / $author$project$Data$FileSize$factor) + ' KB';
+			} else {
+				return $author$project$Data$FileSize$cropDecimal((bytes / $author$project$Data$FileSize$factor) / $author$project$Data$FileSize$factor) + ' MB';
+			}
+		}
+	}
+};
+var $author$project$Data$File$Object$unpadGif = function (key) {
+	if (key.a.b && (key.a.a === 'gif')) {
+		var _v1 = key.a;
+		var fixedKey = _v1.b;
+		return $author$project$Data$File$Object$Key(fixedKey);
+	} else {
+		return key;
+	}
+};
+var $author$project$Data$Project$SegmentContent$getMediaForRemote = function (content) {
+	if (content.$ === 'FrameSequence') {
+		var segment = content.a;
+		return $author$project$Data$Video$Segment$getKeyFrame(segment).localObjectKey;
+	} else {
+		var gif = content.a;
+		return $author$project$Data$File$Object$unpadGif(gif.localObjectKey);
+	}
+};
+var $author$project$Data$File$Object$relativeTo = F2(
+	function (padPath, _v0) {
+		var path = _v0.a;
+		return $author$project$Data$File$Object$Key(
+			_Utils_ap(padPath, path));
+	});
+var $author$project$Data$File$Object$baseToString = function (base) {
+	if (base.$ === 'Local') {
+		return 'http://localhost:16661';
+	} else {
+		var url = base.a;
+		return $elm$url$Url$toString(url);
+	}
+};
+var $author$project$Data$File$Object$pathToUrl = F2(
+	function (base, path) {
+		return A3(
+			$elm$url$Url$Builder$crossOrigin,
+			$author$project$Data$File$Object$baseToString(base),
+			path,
+			_List_Nil);
+	});
+var $author$project$Data$File$Object$toUrl = F2(
+	function (base, _v0) {
+		var path = _v0.a;
+		return A2($author$project$Data$File$Object$pathToUrl, base, path);
+	});
+var $author$project$Component$Project$View$Preview$viewSegmentContent = F3(
+	function (uuid, base, content) {
+		return A2(
+			$elm$html$Html$img,
+			_List_fromArray(
+				[
+					function () {
+					if (base.$ === 'Local') {
+						return $elm$html$Html$Attributes$src(
+							A2(
+								$author$project$Data$File$Object$toUrl,
+								base,
+								A2(
+									$author$project$Data$File$Object$relativeTo,
+									_List_fromArray(
+										['file', uuid]),
+									$author$project$Data$Project$SegmentContent$getMedia(content))));
+					} else {
+						return $elm$html$Html$Attributes$src(
+							A2(
+								$author$project$Data$File$Object$toUrl,
+								base,
+								$author$project$Data$Project$SegmentContent$getMediaForRemote(content)));
+					}
+				}(),
+					$elm$html$Html$Attributes$class('my-1 w-full h-auto')
+				]),
+			_List_Nil);
+	});
+var $author$project$Data$Project$UserContent$pictureBase = $author$project$Data$File$Object$Remote(
+	{fragment: $elm$core$Maybe$Nothing, host: 'whatever.com', path: '/path/to/', port_: $elm$core$Maybe$Nothing, protocol: $elm$url$Url$Https, query: $elm$core$Maybe$Nothing});
+var $author$project$Data$Project$UserContent$pictureUrl = $author$project$Data$File$Object$toUrl($author$project$Data$Project$UserContent$pictureBase);
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
+var $author$project$View$Trix$preview = F2(
+	function (attrs, content) {
+		return A3(
+			$elm$html$Html$node,
+			'rich-text-preview',
+			_Utils_ap(
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$attribute, 'content-value', content)
+					]),
+				attrs),
+			_List_Nil);
+	});
+var $author$project$Component$Project$View$Preview$viewUserContent = function (content) {
+	if (content.$ === 'PlainText') {
+		var plainText = content.a;
+		return A2(
+			$author$project$View$Trix$preview,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('p-2')
+				]),
+			plainText);
+	} else {
+		var objectKey = content.a;
+		return A2(
+			$elm$html$Html$img,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$src(
+					$author$project$Data$Project$UserContent$pictureUrl(objectKey)),
+					$elm$html$Html$Attributes$class('w-full h-auto')
+				]),
+			_List_Nil);
+	}
+};
+var $author$project$Component$Project$View$Preview$viewContent = F3(
+	function (uuid, base, content) {
+		_v0$2:
+		while (true) {
+			if (content.$ === 'FromSegment') {
+				if (!content.a) {
+					var segmentContent = content.b;
+					return A3($author$project$Component$Project$View$Preview$viewSegmentContent, uuid, base, segmentContent);
+				} else {
+					break _v0$2;
+				}
+			} else {
+				if (!content.b) {
+					var userContent = content.c;
+					return $author$project$Component$Project$View$Preview$viewUserContent(userContent);
+				} else {
+					break _v0$2;
+				}
+			}
+		}
+		return $elm$html$Html$text('');
+	});
+var $author$project$Component$Project$View$Preview$viewPreviewer = F2(
+	function (_v0, base) {
+		var uuid = _v0.uuid;
+		var workingData = _v0.workingData;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('flex flex-col items-stretch justify-start')
+				]),
+			A2(
+				$elm$core$List$map,
+				A2($author$project$Component$Project$View$Preview$viewContent, uuid, base),
+				$elm$core$Array$toList(workingData)));
+	});
+var $elm_explorations$markdown$Markdown$defaultOptions = {
+	defaultHighlighting: $elm$core$Maybe$Nothing,
+	githubFlavored: $elm$core$Maybe$Just(
+		{breaks: false, tables: false}),
+	sanitize: true,
+	smartypants: false
+};
+var $elm_explorations$markdown$Markdown$toHtmlWith = _Markdown_toHtml;
+var $author$project$View$Markdown$viewUnsanitized = function () {
+	var defaultOpts = $elm_explorations$markdown$Markdown$defaultOptions;
+	var opts = _Utils_update(
+		defaultOpts,
+		{sanitize: false});
+	return $elm_explorations$markdown$Markdown$toHtmlWith(opts);
+}();
+var $author$project$Component$Project$View$Preview$view = F7(
+	function (trn, noOp, stopPreviewing, projectSize, projectExported, isPreviewing, project) {
+		var viewFrom = F2(
+			function (base, info) {
+				return A4(
+					$author$project$View$Layout$viewOverlay,
+					noOp,
+					noOp,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('h-full px-12 py-4 flex flex-col items-center')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('h-10 flex-shrink-0 flex px-4 justify-between items-center shadow bg-grey-700 text-white text-sm')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$span,
+									_List_Nil,
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$Page$Project$RightPanel$projectSizeLabel(trn))
+										])),
+									A2(
+									$author$project$Util$viewIfPresent,
+									projectSize,
+									function (size) {
+										return A2(
+											$elm$html$Html$span,
+											_List_Nil,
+											_List_fromArray(
+												[
+													$elm$html$Html$text(
+													$author$project$Data$FileSize$toString(size))
+												]));
+									}),
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('h-10 flex-shrink-0 flex px-4 justify-between items-right text-white text-sm')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$button,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('btn btn--theme w-24 h-10'),
+													$elm$html$Html$Events$onClick(stopPreviewing)
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text(
+													$author$project$Translations$Page$Project$LeftPanel$stopPreviewing(trn))
+												]))
+										]))
+								])),
+							A2(
+							$author$project$Util$viewIfPresent,
+							info,
+							$author$project$View$Markdown$viewUnsanitized(
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('md-content bg-white w-mobile mt-2 mb-0 p-3 bg-grey-300')
+									]))),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('flex-1 mt-4 overflow-y-hidden')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('h-full w-mobile bg-white shadow overflow-y-scroll p-3')
+										]),
+									_List_fromArray(
+										[
+											A2($author$project$Component$Project$View$Preview$viewPreviewer, project, base)
+										]))
+								]))
+						]));
+			});
+		var _v0 = _Utils_Tuple2(projectExported, isPreviewing);
+		if (_v0.a.$ === 'Just') {
+			var _v1 = _v0.a.a;
+			var base = _v1.a;
+			var info = _v1.b;
+			return A2(
+				viewFrom,
+				base,
+				$elm$core$Maybe$Just(info));
+		} else {
+			if (_v0.b) {
+				var _v2 = _v0.a;
+				return A2(viewFrom, $author$project$Data$File$Object$Local, $elm$core$Maybe$Nothing);
+			} else {
+				return $elm$html$Html$text('');
+			}
+		}
+	});
+var $author$project$Component$Project$Msg$Hidden = {$: 'Hidden'};
+var $author$project$Component$Project$Msg$Large = {$: 'Large'};
+var $author$project$Component$Project$Msg$Normal = {$: 'Normal'};
+var $author$project$Translations$Page$Project$ViewType$hidden = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.view_type.hidden');
+};
+var $author$project$Translations$Page$Project$ViewType$large = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.view_type.large');
+};
+var $author$project$Translations$Page$Project$ViewType$leadingText = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.view_type.leading_text');
+};
+var $author$project$Translations$Page$Project$ViewType$normal = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.view_type.normal');
+};
+var $author$project$View$Icon$photo_size_select_actual = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M21 3H3C2 3 1 4 1 5v14c0 1.1.9 2 2 2h18c1 0 2-1 2-2V5c0-1-1-2-2-2zM5 17l3.5-4.5 2.5 3.01L14.5 11l4.5 6H5z');
+var $author$project$View$Icon$photo_size_select_large = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M21 15h2v2h-2v-2zm0-4h2v2h-2v-2zm2 8h-2v2c1 0 2-1 2-2zM13 3h2v2h-2V3zm8 4h2v2h-2V7zm0-4v2h2c0-1-1-2-2-2zM1 7h2v2H1V7zm16-4h2v2h-2V3zm0 16h2v2h-2v-2zM3 3C2 3 1 4 1 5h2V3zm6 0h2v2H9V3zM5 3h2v2H5V3zm-4 8v8c0 1.1.9 2 2 2h12V11H1zm2 8l2.5-3.21 1.79 2.15 2.5-3.22L13 19H3z');
+var $author$project$View$Icon$photo_size_select_small = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M23 15h-2v2h2v-2zm0-4h-2v2h2v-2zm0 8h-2v2c1 0 2-1 2-2zM15 3h-2v2h2V3zm8 4h-2v2h2V7zm-2-4v2h2c0-1-1-2-2-2zM3 21h8v-6H1v4c0 1.1.9 2 2 2zM3 7H1v2h2V7zm12 12h-2v2h2v-2zm4-16h-2v2h2V3zm0 16h-2v2h2v-2zM3 3C2 3 1 4 1 5h2V3zm0 8H1v2h2v-2zm8-8H9v2h2V3zM7 3H5v2h2V3z');
+var $author$project$Translations$Page$Project$LeftPanel$projectSize = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.project_size');
+};
+var $author$project$Translations$Page$Project$ViewType$small = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.view_type.small');
+};
+var $author$project$View$Icon$texture = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19.51 3.08L3.08 19.51c.09.34.27.65.51.9.25.24.56.42.9.51L20.93 4.49c-.19-.69-.73-1.23-1.42-1.41zM11.88 3L3 11.88v2.83L14.71 3h-2.83zM5 3c-1.1 0-2 .9-2 2v2l4-4H5zm14 18c.55 0 1.05-.22 1.41-.59.37-.36.59-.86.59-1.41v-2l-4 4h2zm-9.71 0h2.83L21 12.12V9.29L9.29 21z');
+var $author$project$Component$Project$View$LeftPanel$viewFileName = F2(
+	function (isProjectModified, projectName) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('px-4 py-2 truncate'),
+					$elm$html$Html$Attributes$title(projectName)
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$author$project$Util$viewIf,
+					isProjectModified,
+					$elm$html$Html$text(' * ')),
+					$elm$html$Html$text(projectName)
+				]));
+	});
+var $author$project$Component$Project$View$LeftPanel$viewPoster = $author$project$View$Markdown$viewUnsanitized(
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('md-content my-4 px-4 py-2 bg-white shadow')
+		]));
+var $author$project$Translations$Page$Project$LeftPanel$frontendVersion = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.frontend_version');
+};
+var $elm$html$Html$h4 = _VirtualDom_node('h4');
+var $author$project$Translations$Page$Project$LeftPanel$nativeClientVersion = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.native_client_version');
+};
+var $author$project$Component$Project$View$LeftPanel$viewVersions = F2(
+	function (trn, _v0) {
+		var nativeClient = _v0.a;
+		var frontend = _v0.b;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('w-full bg-white shadow text-grey-700 text-center my-4 p-2')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('my-2')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$h4,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									$author$project$Translations$Page$Project$LeftPanel$frontendVersion(trn))
+								])),
+							A2(
+							$elm$html$Html$p,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									$author$project$Data$Version$toString(frontend))
+								]))
+						])),
+					function () {
+					if (nativeClient.$ === 'Just') {
+						var version = nativeClient.a;
+						return A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('my-2')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$h4,
+									_List_Nil,
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$Page$Project$LeftPanel$nativeClientVersion(trn))
+										])),
+									A2(
+									$elm$html$Html$p,
+									_List_Nil,
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Data$Version$toString(version))
+										]))
+								]));
+					} else {
+						return $elm$html$Html$text('');
+					}
+				}()
+				]));
+	});
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $elm$html$Html$Attributes$autoplay = $elm$html$Html$Attributes$boolProperty('autoplay');
+var $elm$html$Html$Attributes$controls = $elm$html$Html$Attributes$boolProperty('controls');
+var $elm$html$Html$Attributes$preload = $elm$html$Html$Attributes$stringProperty('preload');
+var $elm$html$Html$source = _VirtualDom_node('source');
+var $elm$html$Html$video = _VirtualDom_node('video');
+var $author$project$Component$Project$View$LeftPanel$viewVideo = function (uuid) {
+	var sourceUrl = A2(
+		$author$project$Data$File$Object$pathToUrl,
+		$author$project$Data$File$Object$Local,
+		_List_fromArray(
+			['file', uuid, 'video.mp4']));
+	return A2(
+		$elm$html$Html$video,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$id('source-file'),
+				$elm$html$Html$Attributes$controls(true),
+				$elm$html$Html$Attributes$preload('metadata'),
+				$elm$html$Html$Attributes$autoplay(false)
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$source,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$src(sourceUrl)
+					]),
+				_List_Nil)
+			]));
+};
+var $author$project$Component$Project$View$LeftPanel$viewAuxiliary = F8(
+	function (trn, uuid, projectName, isModified, versions, projectSize, poster, resizeView) {
+		var resizeButton = F3(
+			function (viewType, label, icon) {
+				return A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick(
+							resizeView(viewType)),
+							$elm$html$Html$Attributes$title(label),
+							$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain')
+						]),
+					_List_fromArray(
+						[
+							icon(32)
+						]));
+			});
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('px-4 py-6 w-1/3 lg:w-1/4 flex-shrink-0 overflow-y-auto')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('w-full bg-white shadow')
+						]),
+					_List_fromArray(
+						[
+							A2($author$project$Component$Project$View$LeftPanel$viewFileName, isModified, projectName),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('px-4 py-2')
+								]),
+							_List_fromArray(
+								[
+									$author$project$Component$Project$View$LeftPanel$viewVideo(uuid)
+								])),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('px-4 py-1 flex flex-row justify-end')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$span,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('flex items-center text-grey-600')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$Page$Project$ViewType$leadingText(trn))
+										])),
+									A3(
+									resizeButton,
+									$author$project$Component$Project$Msg$Hidden,
+									$author$project$Translations$Page$Project$ViewType$hidden(trn),
+									$author$project$View$Icon$texture),
+									A3(
+									resizeButton,
+									$author$project$Component$Project$Msg$Small,
+									$author$project$Translations$Page$Project$ViewType$small(trn),
+									$author$project$View$Icon$photo_size_select_small),
+									A3(
+									resizeButton,
+									$author$project$Component$Project$Msg$Normal,
+									$author$project$Translations$Page$Project$ViewType$normal(trn),
+									$author$project$View$Icon$photo_size_select_large),
+									A3(
+									resizeButton,
+									$author$project$Component$Project$Msg$Large,
+									$author$project$Translations$Page$Project$ViewType$large(trn),
+									$author$project$View$Icon$photo_size_select_actual)
+								]))
+						])),
+					A2($author$project$Component$Project$View$LeftPanel$viewVersions, trn, versions),
+					A2(
+					$author$project$Util$viewIfPresent,
+					projectSize,
+					function (size) {
+						return A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('flex flex-col justify-around items-center text-grey-700 bg-white shadow my-4 p-2')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$Page$Project$LeftPanel$projectSize(trn))
+										])),
+									A2(
+									$elm$html$Html$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Data$FileSize$toString(size))
+										]))
+								]));
+					}),
+					A2($author$project$Util$viewIfPresent, poster, $author$project$Component$Project$View$LeftPanel$viewPoster)
+				]));
+	});
+var $author$project$Data$Project$SegmentContent$toUniqueIdentifier = function (content) {
+	var _v0 = $author$project$Data$Video$Segment$getTimeInterval(
+		$author$project$Data$Project$SegmentContent$getSegment(content));
+	var start = _v0.a;
+	var end = _v0.b;
+	return $elm$core$String$fromInt(start) + ('-' + $elm$core$String$fromInt(end));
+};
+var $author$project$Data$Project$Content$toUniqueIdentifier = function (content) {
+	if (content.$ === 'FromSegment') {
+		var segmentContent = content.b;
+		return 'segment-' + $author$project$Data$Project$SegmentContent$toUniqueIdentifier(segmentContent);
+	} else {
+		var index = content.a;
+		return 'user-' + $elm$core$String$fromInt(index);
+	}
+};
+var $author$project$Data$Project$DisplaySection$Control = function (a) {
+	return {$: 'Control', a: a};
+};
+var $author$project$Data$Project$DisplaySection$ControlSection = F2(
+	function (index, merge) {
+		return {index: index, merge: merge};
+	});
+var $author$project$Data$Project$DisplaySection$Empty = function (a) {
+	return {$: 'Empty', a: a};
+};
+var $author$project$Data$Video$Segment$getIndexInterval = $author$project$Data$Video$Segment$getInterval($author$project$Data$Video$Frame$getIndex);
+var $author$project$Data$Video$Segment$isNeighbouring = F2(
+	function (segment1, segment2) {
+		var _v0 = $author$project$Data$Video$Segment$getIndexInterval(segment2);
+		var min2 = _v0.a;
+		var max2 = _v0.b;
+		var _v1 = $author$project$Data$Video$Segment$getIndexInterval(segment1);
+		var min1 = _v1.a;
+		var max1 = _v1.b;
+		return _Utils_eq(max1 + 1, min2) || _Utils_eq(max2 + 1, min1);
+	});
+var $author$project$Data$Project$SegmentContent$isNeighbouring = F2(
+	function (content1, content2) {
+		return A2(
+			$author$project$Data$Video$Segment$isNeighbouring,
+			$author$project$Data$Project$SegmentContent$getSegment(content1),
+			$author$project$Data$Project$SegmentContent$getSegment(content2));
+	});
+var $author$project$Data$Project$Content$findMergeableContent = F2(
+	function (content, candidates) {
+		findMergeableContent:
+		while (true) {
+			if ((content.$ === 'FromSegment') && (!content.a)) {
+				var x = content.b;
+				if (!candidates.b) {
+					return $elm$core$Maybe$Nothing;
+				} else {
+					if ((candidates.a.b.$ === 'FromSegment') && (!candidates.a.b.a)) {
+						var _v2 = candidates.a;
+						var i = _v2.a;
+						var _v3 = _v2.b;
+						var y = _v3.b;
+						return A2($author$project$Data$Project$SegmentContent$isNeighbouring, x, y) ? $elm$core$Maybe$Just(
+							_Utils_Tuple2(
+								i,
+								A2($author$project$Data$Project$SegmentContent$merge, x, y))) : $elm$core$Maybe$Nothing;
+					} else {
+						var ys = candidates.b;
+						var $temp$content = content,
+							$temp$candidates = ys;
+						content = $temp$content;
+						candidates = $temp$candidates;
+						continue findMergeableContent;
+					}
+				}
+			} else {
+				return $elm$core$Maybe$Nothing;
+			}
+		}
+	});
+var $author$project$Data$Project$Content$isHidden = function (content) {
+	if (content.$ === 'FromSegment') {
+		var isContentHidden = content.a;
+		return isContentHidden;
+	} else {
+		var isContentHidden = content.b;
+		return isContentHidden;
+	}
+};
+var $author$project$Data$Project$DisplaySection$toFillerSections = function (indexedContents) {
+	var go = F2(
+		function (indexedContents_, displaySections) {
+			go:
+			while (true) {
+				if (indexedContents_.b) {
+					var _v1 = indexedContents_.a;
+					var index = _v1.a;
+					var content = _v1.b;
+					var remaining = indexedContents_.b;
+					var control = A2(
+						$author$project$Data$Project$DisplaySection$ControlSection,
+						index,
+						A2($author$project$Data$Project$Content$findMergeableContent, content, remaining));
+					if ($author$project$Data$Project$Content$isHidden(content)) {
+						var $temp$indexedContents_ = remaining,
+							$temp$displaySections = A2(
+							$elm$core$List$cons,
+							$author$project$Data$Project$DisplaySection$Empty(index),
+							displaySections);
+						indexedContents_ = $temp$indexedContents_;
+						displaySections = $temp$displaySections;
+						continue go;
+					} else {
+						var $temp$indexedContents_ = remaining,
+							$temp$displaySections = A2(
+							$elm$core$List$cons,
+							$author$project$Data$Project$DisplaySection$Control(control),
+							displaySections);
+						indexedContents_ = $temp$indexedContents_;
+						displaySections = $temp$displaySections;
+						continue go;
+					}
+				} else {
+					return $elm$core$List$reverse(displaySections);
+				}
+			}
+		});
+	return A2(go, indexedContents, _List_Nil);
+};
+var $author$project$Data$Project$DisplaySection$tupledListFromContents = function (contents) {
+	return A3(
+		$elm$core$List$map2,
+		$elm$core$Tuple$pair,
+		$elm$core$Array$toList(contents),
+		$elm$core$List$reverse(
+			$author$project$Data$Project$DisplaySection$toFillerSections(
+				$elm$core$List$reverse(
+					$elm$core$Array$toIndexedList(contents)))));
+};
+var $author$project$Component$Project$Msg$MoveSection = F2(
+	function (a, b) {
+		return {$: 'MoveSection', a: a, b: b};
+	});
+var $author$project$Component$Project$Msg$MovingOver = function (a) {
+	return {$: 'MovingOver', a: a};
+};
+var $author$project$Component$Project$Msg$StopMovingSection = {$: 'StopMovingSection'};
+var $elm$html$Html$Attributes$draggable = _VirtualDom_attribute('draggable');
+var $author$project$Util$onDragEnd = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'dragend',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $author$project$Util$onDragEnter = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'dragenter',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $author$project$Util$onDrop = function (msg) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'drop',
+		$elm$json$Json$Decode$succeed(
+			_Utils_Tuple2(msg, true)));
+};
+var $author$project$Component$Project$Msg$ToggleContentVisibility = function (a) {
+	return {$: 'ToggleContentVisibility', a: a};
+};
+var $author$project$Translations$Page$Project$RightPanel$hiddenContent = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.hidden_content');
+};
+var $author$project$Translations$Page$Project$RightPanel$restoreHiddenContent = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.restore_hidden_content');
+};
+var $author$project$Component$Project$View$Content$viewHiddenContent = F2(
+	function (trn, index) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('h-8 my-1 text-sm flex flex-row justify-center items-center')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('w-16 text-grey-600')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$Translations$Page$Project$RightPanel$hiddenContent(trn))
+						])),
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick(
+							$author$project$Component$Project$Msg$ToggleContentVisibility(index)),
+							$elm$html$Html$Attributes$class('w-16 h-7 btn btn--light-grey')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$Translations$Page$Project$RightPanel$restoreHiddenContent(trn))
+						]))
+				]));
+	});
+var $author$project$Component$Project$Msg$EditPlainText = F2(
+	function (a, b) {
+		return {$: 'EditPlainText', a: a, b: b};
+	});
+var $author$project$Component$Project$Msg$FinishEditing = function (a) {
+	return {$: 'FinishEditing', a: a};
+};
+var $author$project$Component$Project$Msg$PreEdit = function (a) {
+	return {$: 'PreEdit', a: a};
+};
+var $author$project$Component$Project$Msg$RemoveContent = function (a) {
+	return {$: 'RemoveContent', a: a};
+};
+var $author$project$View$Icon$deleteForever = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z');
+var $author$project$View$Trix$onBlur = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'trix-blur',
+		A2(
+			$elm$json$Json$Decode$map,
+			function (x) {
+				return _Utils_Tuple2(x, true);
+			},
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
+var $author$project$View$Trix$onChange = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'trix-change',
+		A2(
+			$elm$json$Json$Decode$map,
+			function (x) {
+				return _Utils_Tuple2(x, true);
+			},
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
+var $author$project$View$Trix$onFocus = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'trix-focus',
+		A2(
+			$elm$json$Json$Decode$map,
+			function (x) {
+				return _Utils_Tuple2(x, true);
+			},
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
+var $author$project$View$Trix$editor = function (_v0) {
+	var phantomID = _v0.phantomID;
+	var toolbarID = _v0.toolbarID;
+	var startEditing = _v0.startEditing;
+	var editingContent = _v0.editingContent;
+	var finishEditing = _v0.finishEditing;
+	return A3(
+		$elm$html$Html$node,
+		'trix-editor',
+		_List_fromArray(
+			[
+				A2($elm$html$Html$Attributes$attribute, 'input', phantomID),
+				A2($elm$html$Html$Attributes$attribute, 'toolbar', toolbarID),
+				$author$project$View$Trix$onFocus(
+				function (_v1) {
+					return startEditing;
+				}),
+				$author$project$View$Trix$onChange(editingContent),
+				$author$project$View$Trix$onBlur(
+				function (_v2) {
+					return finishEditing;
+				})
+			]),
+		_List_Nil);
+};
+var $author$project$View$Trix$hiddenToolbar = function (toolbarID) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$id(toolbarID)
+			]),
+		_List_Nil);
+};
+var $author$project$View$Trix$phantom = F2(
+	function (phantomID, content) {
+		return A2(
+			$elm$html$Html$input,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$id(phantomID),
+					$elm$html$Html$Attributes$value(content),
+					$elm$html$Html$Attributes$type_('hidden')
+				]),
+			_List_Nil);
+	});
+var $author$project$Component$Project$Msg$AddPlainTextAfter = function (a) {
+	return {$: 'AddPlainTextAfter', a: a};
+};
+var $author$project$Translations$Page$Project$RightPanel$btnAddText = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_add_text');
+};
+var $author$project$View$Icon$postAdd = function (size) {
+	return A2(
+		$author$project$View$Icon$materialIcon,
+		size,
+		_List_fromArray(
+			[
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M17 19.22H5V7h7V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h-2v7.22z'),
+						$author$project$View$Icon$fillCurrent
+					]),
+				_List_Nil),
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M19 2h-2v3h-3c.01.01 0 2 0 2h3v2.99c.01.01 2 0 2 0V7h3V5h-3V2zM7 9h8v2H7zM7 12v2h8v-2h-3zM7 15h8v2H7z'),
+						$author$project$View$Icon$fillCurrent
+					]),
+				_List_Nil)
+			]));
+};
+var $author$project$Component$Project$View$Operation$viewAddPlainText = F2(
+	function (trn, index) {
+		return A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(
+					$author$project$Component$Project$Msg$AddPlainTextAfter(index)),
+					$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
+					$elm$html$Html$Attributes$title(
+					$author$project$Translations$Page$Project$RightPanel$btnAddText(trn))
+				]),
+			_List_fromArray(
+				[
+					$author$project$View$Icon$postAdd(24)
+				]));
+	});
+var $author$project$Component$Project$Msg$StartMovingSection = function (a) {
+	return {$: 'StartMovingSection', a: a};
+};
+var $author$project$Translations$Page$Project$RightPanel$btnDragHandle = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_drag_handle');
+};
+var $author$project$View$Icon$dragHandle = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M20 9H4v2h16V9zM4 15h16v-2H4v2z');
+var $author$project$Component$Project$View$Operation$viewDragHandle = F2(
+	function (trn, index) {
+		return A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain w-full cursor-move'),
+					$elm$html$Html$Attributes$title(
+					$author$project$Translations$Page$Project$RightPanel$btnDragHandle(trn)),
+					$elm$html$Html$Events$onMouseDown(
+					$author$project$Component$Project$Msg$StartMovingSection(index)),
+					$elm$html$Html$Events$onMouseUp($author$project$Component$Project$Msg$StopMovingSection)
+				]),
+			_List_fromArray(
+				[
+					$author$project$View$Icon$dragHandle(32)
+				]));
+	});
+var $author$project$Translations$Page$Project$RightPanel$btnDelete = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_delete');
+};
+var $author$project$View$Icon$delete = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z');
+var $author$project$Component$Project$View$Operation$viewToggleContentVisibility = F2(
+	function (trn, index) {
+		return A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(
+					$author$project$Component$Project$Msg$ToggleContentVisibility(index)),
+					$elm$html$Html$Attributes$class('btn btn--white text-warning-400 p-2'),
+					$elm$html$Html$Attributes$title(
+					$author$project$Translations$Page$Project$RightPanel$btnDelete(trn))
+				]),
+			_List_fromArray(
+				[
+					$author$project$View$Icon$delete(24)
+				]));
+	});
+var $author$project$Component$Project$View$Content$viewPlainText = F3(
+	function (trn, index, content) {
+		var _v0 = _Utils_Tuple2(
+			'phantom-' + $elm$core$String$fromInt(index),
+			'toolbar-' + $elm$core$String$fromInt(index));
+		var phantomID = _v0.a;
+		var toolbarID = _v0.b;
+		return _List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('w-12')
+					]),
+				_List_fromArray(
+					[
+						A2($author$project$Component$Project$View$Operation$viewDragHandle, trn, index)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('plain-text w-1/2 lg:w-1/3')
+					]),
+				_List_fromArray(
+					[
+						A2($author$project$View$Trix$phantom, phantomID, content),
+						$author$project$View$Trix$editor(
+						{
+							editingContent: $author$project$Component$Project$Msg$EditPlainText(index),
+							finishEditing: $author$project$Component$Project$Msg$FinishEditing(index),
+							phantomID: phantomID,
+							startEditing: $author$project$Component$Project$Msg$PreEdit(index),
+							toolbarID: toolbarID
+						}),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('hidden')
+							]),
+						_List_fromArray(
+							[
+								$author$project$View$Trix$hiddenToolbar(toolbarID)
+							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('w-10 flex flex-col h-full justify-start items-center')
+					]),
+				_List_fromArray(
+					[
+						A2($author$project$Component$Project$View$Operation$viewAddPlainText, trn, index),
+						$author$project$Util$isInFactBlankString(content) ? A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(
+								$author$project$Component$Project$Msg$RemoveContent(index)),
+								$elm$html$Html$Attributes$class('btn btn--white p-2 text-warning-500')
+							]),
+						_List_fromArray(
+							[
+								$author$project$View$Icon$deleteForever(24)
+							])) : A2($author$project$Component$Project$View$Operation$viewToggleContentVisibility, trn, index)
+					]))
+			]);
+	});
+var $author$project$Component$Project$Msg$ConvertToGif = function (a) {
+	return {$: 'ConvertToGif', a: a};
+};
+var $author$project$Component$Project$Msg$PreviewAsCover = function (a) {
+	return {$: 'PreviewAsCover', a: a};
+};
+var $author$project$Component$Project$Msg$RevertGif = function (a) {
+	return {$: 'RevertGif', a: a};
+};
+var $author$project$Component$Project$Msg$SeekTime = function (a) {
+	return {$: 'SeekTime', a: a};
+};
+var $author$project$Component$Project$Msg$SetKeyFrame = F2(
+	function (a, b) {
+		return {$: 'SetKeyFrame', a: a, b: b};
+	});
+var $author$project$Component$Project$Msg$SplitSection = F2(
+	function (a, b) {
+		return {$: 'SplitSection', a: a, b: b};
+	});
+var $author$project$Component$Project$Msg$StopPreviewingAsCover = function (a) {
+	return {$: 'StopPreviewingAsCover', a: a};
+};
+var $author$project$Translations$Page$Project$RightPanel$btnConvertToGif = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_convert_to_gif');
+};
+var $author$project$Translations$Page$Project$RightPanel$btnRevertBackToFrames = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_revert_back_to_frames');
+};
+var $author$project$Util$formatTimeInSeconds = function (time) {
+	var toPaddedString = A2(
+		$elm$core$Basics$composeR,
+		$elm$core$String$fromInt,
+		A2(
+			$elm$core$String$padLeft,
+			2,
+			_Utils_chr('0')));
+	var go = F2(
+		function (n, ns) {
+			go:
+			while (true) {
+				var _v0 = _Utils_Tuple2(
+					$elm$core$List$length(ns) >= 2,
+					n);
+				if (_v0.a) {
+					if (!_v0.b) {
+						return ns;
+					} else {
+						var hour = _v0.b;
+						return A2($elm$core$List$cons, hour, ns);
+					}
+				} else {
+					var $temp$n = (n / 60) | 0,
+						$temp$ns = A2($elm$core$List$cons, n % 60, ns);
+					n = $temp$n;
+					ns = $temp$ns;
+					continue go;
+				}
+			}
+		});
+	return A2(
+		$elm$core$String$join,
+		':',
+		A2(
+			$elm$core$List$map,
+			toPaddedString,
+			A2(go, (time / 1000) | 0, _List_Nil)));
+};
+var $author$project$Data$File$Object$fromPartialKey = F2(
+	function (friendlyUnionID, _v0) {
+		var localObjectKey = _v0.localObjectKey;
+		return A2(
+			$author$project$Data$File$Object$relativeTo,
+			_List_fromArray(
+				['file', friendlyUnionID]),
+			localObjectKey);
+	});
+var $author$project$Data$Video$Frame$getUrl = F3(
+	function (base, friendlyUnionID, frame) {
+		return A2(
+			$author$project$Data$File$Object$toUrl,
+			base,
+			A2($author$project$Data$File$Object$fromPartialKey, friendlyUnionID, frame));
+	});
+var $author$project$View$Spinner$skChase = A2(
+	$elm$html$Html$div,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('sk-chase w-6 h-6')
+		]),
+	A2(
+		$elm$core$List$repeat,
+		6,
+		A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('sk-chase-dot')
+				]),
+			_List_Nil)));
+var $author$project$Data$Video$Gif$toFileSizeStr = function (_v0) {
+	var fileSize = _v0.fileSize;
+	return $author$project$Data$FileSize$toString(fileSize);
+};
+var $author$project$Data$Video$Gif$toUrl = F3(
+	function (base, friendlyUnionID, gif) {
+		return A2(
+			$author$project$Data$File$Object$toUrl,
+			base,
+			A2($author$project$Data$File$Object$fromPartialKey, friendlyUnionID, gif));
+	});
+var $author$project$View$Icon$videocam = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z');
+var $author$project$View$Icon$videocamOff = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z');
+var $author$project$View$Icon$link = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z');
+var $author$project$View$Icon$linkOff = function (size) {
+	return A2(
+		$author$project$View$Icon$materialIcon,
+		size,
+		_List_fromArray(
+			[
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M17 7h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.43-.98 2.63-2.31 2.98l1.46 1.46C20.88 15.61 22 13.95 22 12c0-2.76-2.24-5-5-5zm-1 4h-2.19l2 2H16zM2 4.27l3.11 3.11C3.29 8.12 2 9.91 2 12c0 2.76 2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1 0-1.59 1.21-2.9 2.76-3.07L8.73 11H8v2h2.73L13 15.27V17h1.73l4.01 4L20 19.74 3.27 3 2 4.27'),
+						$author$project$View$Icon$fillCurrent
+					]),
+				_List_Nil),
+				A2(
+				$elm$svg$Svg$path,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$Attributes$d('M0 24V0'),
+						$author$project$View$Icon$fillCurrent
+					]),
+				_List_Nil)
+			]));
+};
+var $author$project$Util$onMouseEnter = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'mouseenter',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $author$project$Util$onMouseLeave = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'mouseleave',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $author$project$Component$Project$View$LeftPanel$viewFrame = F3(
+	function (_v0, keyFrameID, frame) {
+		var uuid = _v0.uuid;
+		var splitSection = _v0.splitSection;
+		var setKeyFrame = _v0.setKeyFrame;
+		var hoverOn = _v0.hoverOn;
+		var hoverOff = _v0.hoverOff;
+		var viewType = _v0.viewType;
+		var size = 16;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('flex flex-row-reverse items-stretch justify-start element')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('relative btn group ml-1 last-element:hidden text-grey-600')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('group-hover:opacity-0')
+								]),
+							_List_fromArray(
+								[
+									$author$project$View$Icon$link(size)
+								])),
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick(
+									splitSection(frame.index + 1)),
+									$elm$html$Html$Attributes$class('absolute inset-0 btn text-secondary-600 hidden group-hover:flex')
+								]),
+							_List_fromArray(
+								[
+									$author$project$View$Icon$linkOff(size)
+								]))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$classList(
+							_List_fromArray(
+								[
+									_Utils_Tuple2('frame-collection__item', true),
+									_Utils_Tuple2(
+									'lg:w-48 w-24',
+									_Utils_eq(viewType, $author$project$Component$Project$Msg$Large)),
+									_Utils_Tuple2(
+									'lg:w-24 w-12',
+									_Utils_eq(viewType, $author$project$Component$Project$Msg$Normal)),
+									_Utils_Tuple2(
+									'lg:w-12 w-6',
+									_Utils_eq(viewType, $author$project$Component$Project$Msg$Small)),
+									_Utils_Tuple2(
+									'w-0',
+									_Utils_eq(viewType, $author$project$Component$Project$Msg$Hidden)),
+									_Utils_Tuple2(
+									'frame-collection__item--active',
+									_Utils_eq(
+										keyFrameID,
+										$author$project$Data$Video$Frame$getIndex(frame)))
+								])),
+							$elm$html$Html$Events$onClick(
+							setKeyFrame(frame.index))
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$img,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$src(
+									A3($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid, frame)),
+									$author$project$Util$onMouseEnter(
+									hoverOn(frame)),
+									$author$project$Util$onMouseLeave(
+									hoverOff(frame))
+								]),
+							_List_Nil)
+						]))
+				]));
+	});
+var $author$project$Component$Project$View$LeftPanel$viewAllFrames = F2(
+	function (segment, config) {
+		var keyFrameID = $author$project$Data$Video$Frame$getIndex(
+			$author$project$Data$Video$Segment$getKeyFrame(segment));
+		var _v0 = config.viewType;
+		if (_v0.$ === 'Hidden') {
+			return A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('frame-collection')
+					]),
+				_List_Nil);
+		} else {
+			return A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('frame-collection')
+					]),
+				A2(
+					$elm$core$List$map,
+					A2($author$project$Component$Project$View$LeftPanel$viewFrame, config, keyFrameID),
+					$author$project$Data$Video$Segment$getAllFrames(segment)));
+		}
+	});
+var $author$project$Component$Project$Msg$MergeSections = F3(
+	function (a, b, c) {
+		return {$: 'MergeSections', a: a, b: b, c: c};
+	});
+var $author$project$View$Icon$arrowUpward = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z');
+var $author$project$Translations$Page$Project$RightPanel$btnMerge = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_merge');
+};
+var $author$project$Component$Project$View$Operation$viewMergeButton = F2(
+	function (trn, between) {
+		if (between.$ === 'Control') {
+			var index = between.a.index;
+			var merge = between.a.merge;
+			return A2(
+				$author$project$Util$viewIfPresent,
+				merge,
+				function (_v1) {
+					var indexFrom = _v1.a;
+					var segmentContent = _v1.b;
+					return A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(
+								A3($author$project$Component$Project$Msg$MergeSections, index, indexFrom, segmentContent)),
+								$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
+								$elm$html$Html$Attributes$title(
+								$author$project$Translations$Page$Project$RightPanel$btnMerge(trn))
+							]),
+						_List_fromArray(
+							[
+								$author$project$View$Icon$arrowUpward(24)
+							]));
+				});
+		} else {
+			return $elm$html$Html$text('');
+		}
+	});
+var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
+	function (trn, uuid, _v0, index, content, between) {
+		var pendingGifJobs = _v0.pendingGifJobs;
+		var frameToPreview = _v0.frameToPreview;
+		var viewType = _v0.viewType;
+		var segment = $author$project$Data$Project$SegmentContent$getSegment(content);
+		var viewGifBtn = function () {
+			var _v7 = _Utils_Tuple2(
+				content,
+				A2(
+					$elm$core$Set$member,
+					$author$project$Data$Video$Segment$getTimeInterval(segment),
+					pendingGifJobs));
+			if (_v7.a.$ === 'FrameSequence') {
+				if (_v7.b) {
+					var _v8 = _v7.a;
+					return A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('btn p-2')
+							]),
+						_List_fromArray(
+							[$author$project$View$Spinner$skChase]));
+				} else {
+					var _v9 = _v7.a;
+					return A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(
+								$author$project$Component$Project$Msg$ConvertToGif(index)),
+								$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
+								$elm$html$Html$Attributes$title(
+								$author$project$Translations$Page$Project$RightPanel$btnConvertToGif(trn))
+							]),
+						_List_fromArray(
+							[
+								$author$project$View$Icon$videocam(24)
+							]));
+				}
+			} else {
+				var _v10 = _v7.a;
+				return A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick(
+							$author$project$Component$Project$Msg$RevertGif(index)),
+							$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
+							$elm$html$Html$Attributes$title(
+							$author$project$Translations$Page$Project$RightPanel$btnRevertBackToFrames(trn))
+						]),
+					_List_fromArray(
+						[
+							$author$project$View$Icon$videocamOff(24)
+						]));
+			}
+		}();
+		var keyFrameUrl = A2(
+			$elm$core$Basics$composeR,
+			$author$project$Data$Video$Segment$getKeyFrame,
+			A2($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid));
+		var coverUrl = function () {
+			var _v2 = _Utils_Tuple2(content, frameToPreview);
+			if (_v2.a.$ === 'FrameSequence') {
+				if (_v2.b.$ === 'Nothing') {
+					var _v3 = _v2.a;
+					var _v4 = _v2.b;
+					return keyFrameUrl(segment);
+				} else {
+					var _v5 = _v2.a;
+					var frame = _v2.b.a;
+					return A2(
+						$elm$core$List$member,
+						frame,
+						$author$project$Data$Video$Segment$getAllFrames(segment)) ? A3($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid, frame) : A3(
+						$author$project$Data$Video$Frame$getUrl,
+						$author$project$Data$File$Object$Local,
+						uuid,
+						$author$project$Data$Video$Segment$getKeyFrame(segment));
+				}
+			} else {
+				var _v6 = _v2.a;
+				var gif = _v6.a;
+				return A3($author$project$Data$Video$Gif$toUrl, $author$project$Data$File$Object$Local, uuid, gif);
+			}
+		}();
+		return _List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('flex flex-col justify-start items-center w-12')
+					]),
+				_List_fromArray(
+					[
+						A2($author$project$Component$Project$View$Operation$viewDragHandle, trn, index),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(
+								$author$project$Component$Project$Msg$HostMessage(
+									$author$project$Component$Project$Msg$SeekTime(
+										$author$project$Data$Video$Segment$getStartingTime(segment)))),
+								$elm$html$Html$Attributes$class('cursor-pointer text-grey-600 text-xs')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text(
+								$author$project$Util$formatTimeInSeconds(
+									$author$project$Data$Video$Segment$getStartingTime(segment)))
+							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('w-1/2 lg:w-1/3 p-1 relative')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$img,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$src(coverUrl),
+								$elm$html$Html$Attributes$class('w-full object-contain select-none my-2')
+							]),
+						_List_Nil),
+						function () {
+						if (content.$ === 'FrameSequence') {
+							return $elm$html$Html$text('');
+						} else {
+							var gif = content.a;
+							return A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('absolute bg-grey-800 text-grey-50 opacity-50 hover:opacity-100 py-1 px-2 text-sm'),
+										A2($elm$html$Html$Attributes$style, 'right', '.5rem'),
+										A2($elm$html$Html$Attributes$style, 'top', '1rem')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										$author$project$Data$Video$Gif$toFileSizeStr(gif))
+									]));
+						}
+					}()
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('w-10 flex flex-col h-full justify-start items-center')
+					]),
+				_List_fromArray(
+					[
+						A2($author$project$Component$Project$View$Operation$viewMergeButton, trn, between),
+						viewGifBtn,
+						A2($author$project$Component$Project$View$Operation$viewAddPlainText, trn, index),
+						A2($author$project$Component$Project$View$Operation$viewToggleContentVisibility, trn, index)
+					])),
+				A2(
+				$author$project$Component$Project$View$LeftPanel$viewAllFrames,
+				segment,
+				{
+					hoverOff: $author$project$Component$Project$Msg$StopPreviewingAsCover,
+					hoverOn: $author$project$Component$Project$Msg$PreviewAsCover,
+					setKeyFrame: $author$project$Component$Project$Msg$SetKeyFrame(index),
+					splitSection: $author$project$Component$Project$Msg$SplitSection(index),
+					uuid: uuid,
+					viewType: viewType
+				})
+			]);
+	});
+var $author$project$Component$Project$View$Content$viewBlock = F5(
+	function (trn, uuid, substate, index, _v0) {
+		var content = _v0.a;
+		var between = _v0.b;
+		var attrs = function () {
+			var _v2 = substate.movingSection;
+			if (_v2.$ === 'Just') {
+				var indexFrom = _v2.a;
+				return _List_fromArray(
+					[
+						$author$project$Util$onDrop(
+						A2($author$project$Component$Project$Msg$MoveSection, indexFrom, index)),
+						$author$project$Util$onDragEnter(
+						$author$project$Component$Project$Msg$MovingOver(index)),
+						_Utils_eq(indexFrom, index) ? $elm$html$Html$Attributes$draggable('true') : $elm$html$Html$Attributes$class(''),
+						$author$project$Util$onDragEnd($author$project$Component$Project$Msg$StopMovingSection),
+						$elm$html$Html$Attributes$classList(
+						_List_fromArray(
+							[
+								_Utils_Tuple2(
+								'is-dragging-over',
+								_Utils_eq(
+									substate.movingOver,
+									$elm$core$Maybe$Just(index)))
+							]))
+					]);
+			} else {
+				return _List_Nil;
+			}
+		}();
+		return $author$project$Data$Project$Content$isHidden(content) ? A2($author$project$Component$Project$View$Content$viewHiddenContent, trn, index) : A2(
+			$elm$html$Html$div,
+			A2(
+				$elm$core$List$cons,
+				$elm$html$Html$Attributes$class('content-block p-0'),
+				A2(
+					$elm$core$List$cons,
+					$elm$html$Html$Attributes$id(
+						'block-' + $elm$core$String$fromInt(index)),
+					attrs)),
+			_List_fromArray(
+				[
+					function () {
+					if (content.$ === 'FromSegment') {
+						var segmentContent = content.b;
+						return A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('w-full flex flex-row justify-between items-start')
+								]),
+							A6($author$project$Component$Project$View$Content$viewSegmentContent, trn, uuid, substate, index, segmentContent, between));
+					} else {
+						if (content.c.$ === 'PlainText') {
+							var plainText = content.c.a;
+							return A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('w-full flex flex-row justify-start items-start')
+									]),
+								A3($author$project$Component$Project$View$Content$viewPlainText, trn, index, plainText));
+						} else {
+							return $elm$html$Html$text('');
+						}
+					}
+				}()
+				]));
+	});
+var $author$project$Component$Project$Editing$viewBlocks = F4(
+	function (trn, uuid, substate, contents) {
+		var identifiers = A2(
+			$elm$core$List$map,
+			$author$project$Data$Project$Content$toUniqueIdentifier,
+			$elm$core$Array$toList(contents));
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('ml-4 lg:ml-16 px-4 py-6 overflow-y-scroll')
+				]),
+			$elm$core$List$singleton(
+				A3(
+					$elm$html$Html$Keyed$node,
+					'div',
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('bg-white shadow flex flex-col items-stretch justify-start')
+						]),
+					A3(
+						$elm$core$List$map2,
+						$elm$core$Tuple$pair,
+						identifiers,
+						A2(
+							$elm$core$List$map,
+							$elm$html$Html$map(
+								function (emsg) {
+									return $author$project$Component$Project$Msg$MsgForEditing(emsg);
+								}),
+							A2(
+								$elm$core$List$indexedMap,
+								A3($author$project$Component$Project$View$Content$viewBlock, trn, uuid, substate),
+								$author$project$Data$Project$DisplaySection$tupledListFromContents(contents)))))));
+	});
+var $author$project$Translations$Page$Project$LeftPanel$discardChangesAndLeave = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.discard_changes_and_leave');
+};
+var $author$project$Translations$Page$Project$LeftPanel$promptUnsavedChanges = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.prompt_unsaved_changes');
+};
+var $author$project$Translations$Page$Project$LeftPanel$saveProjectAndLeave = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.save_project_and_leave');
+};
+var $author$project$Translations$Page$Project$LeftPanel$stayOnPage = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.stay_on_page');
+};
+var $author$project$Translations$ProjectSaving$sourceFileNotFound = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'project_saving.source_file_not_found');
+};
+var $author$project$Data$Project$Saving$errorToString = F2(
+	function (trn, error) {
+		return $author$project$Translations$ProjectSaving$sourceFileNotFound(trn);
+	});
+var $author$project$Component$Project$View$LeftPanel$viewAlert = F3(
+	function (viewer, dismissMsg, textContent) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('px-4 py-2')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					viewer,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('text-sm'),
+							$elm$html$Html$Events$onClick(dismissMsg)
+						]),
+					textContent)
+				]));
+	});
+var $author$project$Component$Project$View$LeftPanel$viewSavingError = F3(
+	function (trn, dismissMsg, error) {
+		return A3(
+			$author$project$Component$Project$View$LeftPanel$viewAlert,
+			$author$project$View$Alert$viewError,
+			dismissMsg,
+			$author$project$Translations$Page$Project$Prompt$failedToSave(trn) + ('：' + A3($author$project$API$Request$errorToString, trn, $author$project$Data$Project$Saving$errorToString, error)));
+	});
+var $author$project$Component$Project$View$LeftPanel$viewConfirmNavigatingAway = F6(
+	function (trn, noOp, stayOnPage, saveAndLeave, savingResult, confirmNavigatingAway) {
+		return A2(
+			$author$project$Util$viewIfPresent,
+			confirmNavigatingAway,
+			function (targetRoute) {
+				return A4(
+					$author$project$View$Layout$viewOverlay,
+					noOp,
+					stayOnPage,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('h-48 w-full max-w-xl flex flex-col justify-around items-center bg-white shadow')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$h3,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									$author$project$Translations$Page$Project$LeftPanel$promptUnsavedChanges(trn))
+								])),
+							function () {
+							if ((savingResult.$ === 'Just') && (savingResult.a.$ === 'Err')) {
+								var error = savingResult.a.a;
+								return A3($author$project$Component$Project$View$LeftPanel$viewSavingError, trn, noOp, error);
+							} else {
+								return $elm$html$Html$text('');
+							}
+						}(),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('w-full flex flex-row justify-around text-sm')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('btn btn--theme w-24 h-10'),
+											$elm$html$Html$Events$onClick(
+											saveAndLeave(targetRoute))
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$Page$Project$LeftPanel$saveProjectAndLeave(trn))
+										])),
+									A2(
+									$elm$html$Html$a,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('btn btn--warning btn--outlined w-24 h-10'),
+											$author$project$Route$linkTo($author$project$Route$Portal)
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$Page$Project$LeftPanel$discardChangesAndLeave(trn))
+										])),
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('btn btn--outlined w-24 h-10'),
+											$elm$html$Html$Events$onClick(stayOnPage)
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$Page$Project$LeftPanel$stayOnPage(trn))
+										]))
+								]))
+						]));
+			});
+	});
+var $author$project$Component$Project$View$LeftPanel$viewSectionNavItem = F3(
+	function (jumpTo, uuid, _v0) {
+		var sectionID = _v0.a;
+		var frame = _v0.b;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('cursor-pointer')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$img,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$src(
+							A3($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid, frame)),
+							$elm$html$Html$Attributes$class('w-full object-contain select-none'),
+							$elm$html$Html$Events$onClick(
+							jumpTo(sectionID))
+						]),
+					_List_Nil)
+				]));
+	});
+var $author$project$Component$Project$View$LeftPanel$viewSectionNav = F3(
+	function (jumpTo, uuid, frames) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('flex-none w-0 md:w-12 overflow-y-auto opacity-25 hover:opacity-75 transition-opacity ease-in duration-150')
+				]),
+			A2(
+				$elm$core$List$map,
+				A2($author$project$Component$Project$View$LeftPanel$viewSectionNavItem, jumpTo, uuid),
+				frames));
+	});
+var $author$project$Component$Project$Msg$ExportProject = {$: 'ExportProject'};
+var $author$project$Component$Project$Msg$StartPreviewing = {$: 'StartPreviewing'};
+var $author$project$Translations$Page$Project$Nav$backToPortal = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.back_to_portal');
+};
+var $author$project$View$Icon$cloudUpload = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3zM8 13h2.55v3h2.9v-3H16l-4-4z');
+var $author$project$Translations$Page$Project$Nav$exportProject = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.export_project');
+};
+var $author$project$View$Icon$lowPriority = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M14 5h8v2h-8zm0 5.5h8v2h-8zm0 5.5h8v2h-8zM2 11.5C2 15.08 4.92 18 8.5 18H9v2l3-3-3-3v2h-.5C6.02 16 4 13.98 4 11.5S6.02 7 8.5 7H12V5H8.5C4.92 5 2 7.92 2 11.5z');
+var $author$project$Translations$Page$Project$Nav$previewProject = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.preview_project');
+};
+var $author$project$View$Icon$save = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z');
+var $author$project$Translations$Page$Project$Nav$saveProject = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.nav.save_project');
+};
+var $author$project$View$Icon$visibility = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M12 6c3.79 0 7.17 2.13 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5C4.83 8.13 8.21 6 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5c1.38 0 2.5 1.12 2.5 2.5S13.38 14 12 14s-2.5-1.12-2.5-2.5S10.62 9 12 9m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z');
+var $author$project$Component$Project$Main$viewSidenav = function (trn) {
+	var viewNavItem = function (_v0) {
+		var label = _v0.a;
+		var icon = _v0.b;
+		var action = _v0.c;
+		return A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(action),
+					$elm$html$Html$Attributes$title(label),
+					$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain flex flex-col items-center my-2')
+				]),
+			_List_fromArray(
+				[
+					icon(32),
+					$elm$html$Html$text(label)
+				]));
+	};
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('nav flex-none py-8 bg-grey-200')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('flex flex-col w-12 lg:w-20 items-center')
+					]),
+				A2(
+					$elm$core$List$map,
+					viewNavItem,
+					_List_fromArray(
+						[
+							_Utils_Tuple3(
+							$author$project$Translations$Page$Project$Nav$saveProject(trn),
+							$author$project$View$Icon$save,
+							$author$project$Component$Project$Msg$SaveProject($elm$core$Maybe$Nothing)),
+							_Utils_Tuple3(
+							$author$project$Translations$Page$Project$Nav$previewProject(trn),
+							$author$project$View$Icon$visibility,
+							$author$project$Component$Project$Msg$StartPreviewing),
+							_Utils_Tuple3(
+							$author$project$Translations$Page$Project$Nav$exportProject(trn),
+							$author$project$View$Icon$cloudUpload,
+							$author$project$Component$Project$Msg$ExportProject),
+							_Utils_Tuple3(
+							$author$project$Translations$Page$Project$Nav$backToPortal(trn),
+							$author$project$View$Icon$lowPriority,
+							$author$project$Component$Project$Msg$NavigateToPortal)
+						])))
+			]));
+};
+var $author$project$Component$Project$Main$viewLoaded = F4(
+	function (trn, versions, project, substate) {
+		var isModified = !_Utils_eq(substate.lastSaved, project);
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('h-full flex flex-row justify-between items-stretch bg-grey-100')
+				]),
+			_List_fromArray(
+				[
+					$author$project$Component$Project$Main$viewSidenav(trn),
+					A8($author$project$Component$Project$View$LeftPanel$viewAuxiliary, trn, project.uuid, project.name, isModified, versions, substate.projectSize, substate.poster, $author$project$Component$Project$Msg$ChangeViewType),
+					A4($author$project$Component$Project$Editing$viewBlocks, trn, project.uuid, substate, project.workingData),
+					A3(
+					$author$project$Component$Project$View$LeftPanel$viewSectionNav,
+					$author$project$Component$Project$Msg$JumpTo,
+					project.uuid,
+					$author$project$Data$Project$Content$allKeyFrames(project.workingData)),
+					A7($author$project$Component$Project$View$Preview$view, trn, $author$project$Component$Project$Msg$NoOp, $author$project$Component$Project$Msg$StopPreviewing, substate.projectSize, substate.projectExported, substate.isPreviewing, project),
+					A6(
+					$author$project$Component$Project$View$LeftPanel$viewConfirmNavigatingAway,
+					trn,
+					$author$project$Component$Project$Msg$NoOp,
+					$author$project$Component$Project$Msg$StayOnPage,
+					A2($elm$core$Basics$composeL, $author$project$Component$Project$Msg$SaveProject, $elm$core$Maybe$Just),
+					substate.savingResult,
+					substate.confirmNavigatingAway),
+					A6($author$project$Component$Project$View$Alert$view, trn, $author$project$Component$Project$Msg$DismissSavingResultPrompt, $author$project$Component$Project$Msg$DismissExportingErrorPrompt, substate.exportingError, substate.savingResult, substate.isExportingInProgress)
+				]));
+	});
+var $author$project$Component$Project$Main$view = F3(
+	function (trn, versions, model) {
+		return _List_fromArray(
+			[
+				$author$project$View$Layout$viewAppbar(
+				$elm$core$Maybe$Just($author$project$Component$Project$Msg$NavigateToPortal)),
+				A2(
+				$author$project$View$Layout$viewBody,
+				_List_Nil,
+				_List_fromArray(
+					[
+						function () {
+						switch (model.$) {
+							case 'Loading':
+								return A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('absolute inset-0 flex justify-center items-center')
+										]),
+									_List_fromArray(
+										[$author$project$View$Spinner$pageLoader]));
+							case 'Loaded':
+								var project = model.a;
+								var substate = model.b;
+								return A4($author$project$Component$Project$Main$viewLoaded, trn, versions, project.present, substate);
+							default:
+								var error = model.a;
+								return A2($author$project$Component$Project$Main$viewError, trn, error);
+						}
+					}()
+					]))
+			]);
+	});
 var $author$project$Translations$NativeClient$attemptingToConnect = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'native_client.attempting_to_connect');
 };
-var $author$project$View$NativeClient$viewConnecting = F2(
+var $author$project$Component$NativeClient$Main$viewConnecting = F2(
 	function (trn, env) {
 		return A2(
 			$elm$html$Html$div,
@@ -22173,7 +22345,7 @@ var $author$project$Data$Env$toUriScheme = function (env) {
 			return 'editool://profile/production';
 	}
 };
-var $author$project$View$NativeClient$viewGeneralErrorMessages = F2(
+var $author$project$Component$NativeClient$Main$viewGeneralErrorMessages = F2(
 	function (trn, env) {
 		return A2(
 			$elm$html$Html$div,
@@ -22237,7 +22409,7 @@ var $author$project$View$NativeClient$viewGeneralErrorMessages = F2(
 						]))
 				]));
 	});
-var $author$project$View$NativeClient$viewError = F4(
+var $author$project$Component$NativeClient$Main$viewError = F4(
 	function (trn, env, status, attempt) {
 		return A2(
 			$elm$html$Html$div,
@@ -22289,11 +22461,11 @@ var $author$project$View$NativeClient$viewError = F4(
 						]),
 					_List_fromArray(
 						[
-							A2($author$project$View$NativeClient$viewGeneralErrorMessages, trn, env)
+							A2($author$project$Component$NativeClient$Main$viewGeneralErrorMessages, trn, env)
 						]))
 				]));
 	});
-var $author$project$View$NativeClient$wrapPopup = function (content) {
+var $author$project$Component$NativeClient$Main$wrapPopup = function (content) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -22311,38 +22483,38 @@ var $author$project$View$NativeClient$wrapPopup = function (content) {
 				content)
 			]));
 };
-var $author$project$View$NativeClient$viewPopup = F4(
+var $author$project$Component$NativeClient$Main$viewPopup = F4(
 	function (trn, env, status, attempt) {
 		switch (status.$) {
 			case 'Connected':
 				return $elm$html$Html$text('');
 			case 'Unknown':
-				return $author$project$View$NativeClient$wrapPopup(
+				return $author$project$Component$NativeClient$Main$wrapPopup(
 					_List_fromArray(
 						[
-							A2($author$project$View$NativeClient$viewConnecting, trn, env)
+							A2($author$project$Component$NativeClient$Main$viewConnecting, trn, env)
 						]));
 			default:
-				return $author$project$View$NativeClient$wrapPopup(
+				return $author$project$Component$NativeClient$Main$wrapPopup(
 					_List_fromArray(
 						[
-							A4($author$project$View$NativeClient$viewError, trn, env, status, attempt)
+							A4($author$project$Component$NativeClient$Main$viewError, trn, env, status, attempt)
 						]));
 		}
+	});
+var $author$project$Translations$Page$Portal$pageTitle = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.page_title');
+};
+var $author$project$Component$Portal$Main$viewTitle = F2(
+	function (trn, model) {
+		return $author$project$Translations$Page$Portal$pageTitle(trn);
 	});
 var $author$project$Translations$Page$Project$pageTitle = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.page_title');
 };
-var $author$project$Page$Project$viewTitle = F2(
+var $author$project$Component$Project$Main$viewTitle = F2(
 	function (trn, model) {
 		return $author$project$Translations$Page$Project$pageTitle(trn);
-	});
-var $author$project$Translations$Page$ProjectPortal$pageTitle = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project_portal.page_title');
-};
-var $author$project$Page$Project$Portal$viewTitle = F2(
-	function (trn, model) {
-		return $author$project$Translations$Page$ProjectPortal$pageTitle(trn);
 	});
 var $author$project$Main$view = function (model) {
 	var translations = model.translations;
@@ -22360,28 +22532,25 @@ var $author$project$Main$view = function (model) {
 						]),
 					title: defaultTitle
 				};
-			case 'ProjectPortal':
+			case 'Portal':
 				return {
 					content: A2(
 						$elm$core$List$map,
-						$elm$html$Html$map($author$project$Main$ProjectPortalMsg),
-						A2($author$project$Page$Project$Portal$view, translations, model.projectPortal)),
-					title: A2($author$project$Page$Project$Portal$viewTitle, translations, model.projectPortal)
+						$elm$html$Html$map($author$project$Main$PortalMsg),
+						A2($author$project$Component$Portal$Main$view, translations, model.portal)),
+					title: A2($author$project$Component$Portal$Main$viewTitle, translations, model.portal)
 				};
 			case 'Project':
 				var subModel = _v1.a;
+				var versions = _Utils_Tuple2(
+					$author$project$Data$NativeClient$getVersion(model.nativeClient.nativeClientStatus),
+					$author$project$Data$Version$Platform$currentVersions.frontend);
 				return {
 					content: A2(
 						$elm$core$List$map,
 						$elm$html$Html$map($author$project$Main$ProjectMsg),
-						A3(
-							$author$project$Page$Project$view,
-							translations,
-							_Utils_Tuple2(
-								$author$project$Data$NativeClient$getVersion(model.nativeClientStatus),
-								$author$project$Data$Version$Platform$currentVersions.frontend),
-							subModel)),
-					title: A2($author$project$Page$Project$viewTitle, translations, subModel)
+						A3($author$project$Component$Project$Main$view, translations, versions, subModel)),
+					title: A2($author$project$Component$Project$Main$viewTitle, translations, subModel)
 				};
 			default:
 				return {
@@ -22405,14 +22574,14 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$Attributes$class('absolute inset-0 z-0')
 					]),
 				content),
-				A4($author$project$View$NativeClient$viewPopup, translations, model.env, model.nativeClientStatus, false)
+				A4($author$project$Component$NativeClient$Main$viewPopup, translations, model.env, model.nativeClient.nativeClientStatus, false)
 			]),
 		title: title
 	};
 };
 var $author$project$Main$main = $elm$browser$Browser$application(
 	{init: $author$project$Main$init, onUrlChange: $author$project$Main$onUrlChange, onUrlRequest: $author$project$Main$onUrlRequest, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
-_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Data.NativeClient.Meta":{"args":[],"type":"{ version : Data.Version.Version, isCompatible : Basics.Bool }"},"Data.Version.Version":{"args":[],"type":"{ major : Basics.Int, minor : Basics.Int, patch : Basics.Int, buildNo : Basics.Int }"},"Data.Project.Concise.Concise":{"args":[],"type":"{ uuid : String.String, name : String.String, hasSubtitle : Basics.Bool, params : Data.Video.Processing.Params.Params, status : Data.Project.Concise.Status }"},"Data.Video.Frame.Frame":{"args":[],"type":"{ index : Basics.Int, localObjectKey : Data.File.Object.Key, time : Basics.Int }"},"Data.Video.Gif.Gif":{"args":[],"type":"{ localObjectKey : Data.File.Object.Key, fileSize : Data.FileSize.FileSize }"},"Data.Video.Processing.Params.Params":{"args":[],"type":"{ granularity : Data.Video.Processing.Params.Granularity, differentTypeMinDifference : Basics.Int, sameTypeMaxDifference : Basics.Int, similarTypeMaxDifference : Basics.Int, smoothTypeMinValue : Basics.Int, isSameCombined : Basics.Bool, shortNoneCombiningMaxDurationInMs : Basics.Int }"},"Data.Video.Processing.Preset.Preset":{"args":[],"type":"{ name : String.String, description : Maybe.Maybe String.String, params : Data.Video.Processing.Params.Params }"},"Data.Project.Project":{"args":[],"type":"{ uuid : String.String, name : String.String, workingData : Array.Array Data.Project.Content.Content }"},"Data.Project.Concise.StatusUpdate":{"args":[],"type":"{ uuid : String.String, status : Data.Project.Concise.Status }"},"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"},"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"SetRoute":["Maybe.Maybe Route.Route"],"ClickedLink":["Browser.UrlRequest"],"RequestMetaOfNativeClient":[],"NativeClientVersionInfoRequested":["Result.Result (API.Request.Error Data.NativeClient.MetaError) Data.NativeClient.Meta"],"ProjectPortalMsg":["Page.Project.Portal.Msg"],"ProjectMsg":["Page.Project.Msg"],"WebsocketClosed":["Basics.Int"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"API.Request.Error":{"args":["e"],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int","e"],"BadBody":["Basics.Int","Json.Decode.Error"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Data.NativeClient.MetaError":{"args":[],"tags":{"MalformedVersionNumber":[]}},"Page.Project.Msg":{"args":[],"tags":{"LoadProject":["String.String"],"ProjectLoaded":["Result.Result (API.Request.Error Data.Project.Error) Data.Project.Project"],"PosterLoaded":["Result.Result Http.Error String.String"],"ConvertToGif":["Basics.Int"],"GifProcessed":["( Basics.Int, Basics.Int )","Result.Result (API.Request.Error Data.Video.Gif.Error) Data.Video.Gif.Gif"],"RevertGif":["Basics.Int"],"AddPlainTextAfter":["Basics.Int"],"ToggleContentVisibility":["Basics.Int"],"RemoveContent":["Basics.Int"],"PreEdit":["Basics.Int"],"EditPlainText":["Basics.Int","String.String"],"FinishEditing":["Basics.Int"],"PreviewAsCover":["Data.Video.Frame.Frame"],"StopPreviewingAsCover":["Data.Video.Frame.Frame"],"MergeSections":["Basics.Int","Basics.Int","Data.Project.SegmentContent.SegmentContent"],"SplitSection":["Basics.Int","Basics.Int"],"StartMovingSection":["Basics.Int"],"StopMovingSection":[],"MoveSection":["Basics.Int","Basics.Int"],"MovingOver":["Basics.Int"],"SetKeyFrame":["Basics.Int","Basics.Int"],"StartPreviewing":[],"StopPreviewing":[],"SaveProject":["Maybe.Maybe Route.Route"],"ProjectSaved":["Maybe.Maybe Route.Route","Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"DismissSavingResultPrompt":[],"ExportProject":[],"ProjectExported":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) ( Data.File.Object.Base, String.String )"],"DismissExportingErrorPrompt":[],"SeekTime":["Basics.Int"],"RequestProjectSize":[],"ProjectSizeRequested":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.FileSize.FileSize"],"UndoProject":[],"RedoProject":[],"JumpTo":["Basics.Int"],"NavigateToPortal":[],"StayOnPage":[],"ChangeBeforeUnloadPrompt":[],"ChangeViewType":["View.Project.ViewType"],"NoOp":[]}},"Page.Project.Portal.Msg":{"args":[],"tags":{"ToggleExpertMode":[],"PresetsLoaded":["RemoteData.WebData (List.List Data.Video.Processing.Preset.Preset)"],"ProjectsLoaded":["RemoteData.WebData (List.List Data.Project.Concise.Concise)"],"PickFiles":[],"FilesSelected":["File.File","List.List File.File"],"UploadVideo":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","String.String"],"VideoUploading":["String.String","Http.Progress"],"VideoUploaded":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","Result.Result Http.Error Data.Project.Concise.Concise"],"PickSubtitleFor":["String.String"],"SubtitleSelected":["String.String","File.File"],"SubtitleLoaded":["String.String","String.String","String.String"],"SubtitleUploaded":["String.String","Result.Result (API.Request.Error Data.Project.Concise.SubtitleError) Data.Project.Concise.Concise"],"OpenUploader":[],"CloseUploader":[],"CloseUploaderWhenCompleted":[],"ReviewSubtitle":["String.String"],"StopReviewingSubtitle":[],"RemoveSubtitleFor":["String.String"],"SelectProject":["String.String","Basics.Bool"],"ConfirmDeletion":["Either.Either String.String ()"],"StopConfirmation":[],"DeleteProject":["String.String"],"BatchDeleteProjects":[],"ProjectsDeleted":["Set.Set String.String","Result.Result Http.Error ()"],"StartProcessingVideos":[],"VideoProcessingStarted":["Set.Set String.String","Result.Result (API.Request.Error Data.Project.Concise.ProcessingError) ()"],"ProcessingStatusUpdate":["Result.Result Json.Decode.Error Data.Project.Concise.StatusUpdate"],"StartOver":["String.String"],"SetProcessingPreset":["String.String","Data.Video.Processing.Preset.Preset"],"ProjectUpdated":["Result.Result (API.Request.Error Data.Project.Concise.UpdateError) Data.Project.Concise.Concise"],"ParamsMsg":["String.String","Data.Video.Processing.Params.Params","View.Video.Processing.Params.Msg"],"StartExportingParams":["Data.Video.Processing.Params.Params"],"CancelExportingParams":[],"ExportParams":["String.String"],"ParamsRequested":[],"ParamsSelected":["File.File"],"ParamsLoaded":["String.String"],"DismissImportingError":[],"SetSearchStr":["String.String"],"NoOp":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Route.Route":{"args":[],"tags":{"Home":[],"ProjectPortal":[],"Project":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Data.File.Object.Base":{"args":[],"tags":{"Local":[],"Remote":["Url.Url"]}},"Data.Project.Content.Content":{"args":[],"tags":{"FromSegment":["Basics.Bool","Data.Project.SegmentContent.SegmentContent"],"FromUser":["Basics.Int","Basics.Bool","Data.Project.UserContent.UserContent"]}},"Either.Either":{"args":["a","b"],"tags":{"Left":["a"],"Right":["b"]}},"Data.Project.Error":{"args":[],"tags":{"ProjectNotFound":[]}},"Data.Project.HtmlExport.Error":{"args":[],"tags":{"MediaFilesMissing":["List.List Data.File.Object.Key"],"SourceFileNotFound":[]}},"Data.Project.Saving.Error":{"args":[],"tags":{"SourceFileNotFound":[]}},"Data.Video.Gif.Error":{"args":[],"tags":{"IntervalTooSmall":[],"SourceFileNotFound":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Json.Decode.Error":{"args":[],"tags":{"Field":["String.String","Json.Decode.Error"],"Index":["Basics.Int","Json.Decode.Error"],"OneOf":["List.List Json.Decode.Error"],"Failure":["String.String","Json.Decode.Value"]}},"File.File":{"args":[],"tags":{"File":[]}},"Data.FileSize.FileSize":{"args":[],"tags":{"Bit":["Basics.Int"],"Byte":["Basics.Float"],"Kibibyte":["Basics.Float"],"Mebibyte":["Basics.Float"]}},"Data.Video.Processing.Params.Granularity":{"args":[],"tags":{"Rough":[],"Medium":[],"Detailed":[]}},"Data.File.Object.Key":{"args":[],"tags":{"Key":["List.List String.String"]}},"List.List":{"args":["a"],"tags":{}},"View.Video.Processing.Params.Msg":{"args":[],"tags":{"SetGranularity":["Data.Video.Processing.Params.Granularity"],"SetDifferentTypeMinDifference":["Basics.Int"],"SetSameTypeMaxDifference":["Basics.Int"],"SetSimilarTypeMaxDifference":["Basics.Int"],"SetSmoothTypeMinValue":["Basics.Int"],"SetIsSameCombined":["Basics.Bool"],"SetShortNoneCombiningMaxDurationInMs":["Basics.Int"],"NoOp":[]}},"Data.Project.Concise.ProcessingError":{"args":[],"tags":{"FileNotFound":[],"CannotDecodeVideo":[],"BadParameters":[],"OtherProcessingError":["String.String"]}},"Http.Progress":{"args":[],"tags":{"Sending":["{ sent : Basics.Int, size : Basics.Int }"],"Receiving":["{ received : Basics.Int, size : Maybe.Maybe Basics.Int }"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Loading":[],"Failure":["e"],"Success":["a"]}},"Data.Project.SegmentContent.SegmentContent":{"args":[],"tags":{"FrameSequence":["Data.Video.Segment.Segment","Maybe.Maybe Data.Video.Gif.Gif"],"GifFromVideo":["Data.Video.Gif.Gif","Data.Video.Segment.Segment"]}},"Set.Set":{"args":["t"],"tags":{"Set_elm_builtin":["Dict.Dict t ()"]}},"Data.Project.Concise.Status":{"args":[],"tags":{"Uploaded":[],"Processing":["Basics.Float"],"Processed":[],"FailedToProcess":["API.Request.Error Data.Project.Concise.ProcessingError"]}},"String.String":{"args":[],"tags":{"String":[]}},"Data.Uploader.Media.Subtitle":{"args":[],"tags":{"Subtitle":["Basics.Int","File.File"]}},"Data.Project.Concise.SubtitleError":{"args":[],"tags":{"InvalidSubtitle":[]}},"Data.Project.Concise.UpdateError":{"args":[],"tags":{"InvalidParams":[]}},"Data.Uploader.Media.Video":{"args":[],"tags":{"Video":["File.File"]}},"View.Project.ViewType":{"args":[],"tags":{"Hidden":[],"Small":[],"Normal":[],"Large":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}},"Data.Video.Segment.Segment":{"args":[],"tags":{"Segment":["Data.Video.Frame.Frame","List.List Data.Video.Frame.Frame"]}},"Data.Project.UserContent.UserContent":{"args":[],"tags":{"PlainText":["String.String"],"Picture":["Data.File.Object.Key"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}}}}})}});}(this));
+_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Data.Project.Concise.Concise":{"args":[],"type":"{ uuid : String.String, name : String.String, hasSubtitle : Basics.Bool, params : Data.Video.Processing.Params.Params, status : Data.Project.Concise.Status }"},"Data.NativeClient.Meta":{"args":[],"type":"{ version : Data.Version.Version, isCompatible : Basics.Bool }"},"Data.Video.Processing.Params.Params":{"args":[],"type":"{ granularity : Data.Video.Processing.Params.Granularity, differentTypeMinDifference : Basics.Int, sameTypeMaxDifference : Basics.Int, similarTypeMaxDifference : Basics.Int, smoothTypeMinValue : Basics.Int, isSameCombined : Basics.Bool, shortNoneCombiningMaxDurationInMs : Basics.Int }"},"Data.Video.Processing.Preset.Preset":{"args":[],"type":"{ name : String.String, description : Maybe.Maybe String.String, params : Data.Video.Processing.Params.Params }"},"Data.Project.Project":{"args":[],"type":"{ uuid : String.String, name : String.String, workingData : Array.Array Data.Project.Content.Content }"},"Data.Project.Concise.StatusUpdate":{"args":[],"type":"{ uuid : String.String, status : Data.Project.Concise.Status }"},"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Data.Version.Version":{"args":[],"type":"{ major : Basics.Int, minor : Basics.Int, patch : Basics.Int, buildNo : Basics.Int }"},"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Data.Video.Frame.Frame":{"args":[],"type":"{ index : Basics.Int, localObjectKey : Data.File.Object.Key, time : Basics.Int }"},"Data.Video.Gif.Gif":{"args":[],"type":"{ localObjectKey : Data.File.Object.Key, fileSize : Data.FileSize.FileSize }"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"},"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"SetRoute":["Maybe.Maybe Route.Route"],"ClickedLink":["Browser.UrlRequest"],"TryReload":[],"PortalMsg":["Component.Portal.Msg.Msg"],"ProjectMsg":["Component.Project.Msg.Msg"],"NativeClientMsg":["Component.NativeClient.Msg.Msg"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Component.NativeClient.Msg.Msg":{"args":[],"tags":{"RequestMetaOfNativeClient":[],"NativeClientVersionInfoRequested":["Result.Result (API.Request.Error Data.NativeClient.MetaError) Data.NativeClient.Meta"],"WebsocketClosed":["Basics.Int"]}},"Component.Portal.Msg.Msg":{"args":[],"tags":{"ToggleExpertMode":[],"MsgForUploader":["Component.Portal.Msg.UploaderMsg"],"MsgForParams":["String.String","Data.Video.Processing.Params.Params","Component.Portal.Params.Msg"],"MsgForParamsKeeper":["Component.Portal.Msg.ParamsKeeperMsg"],"PresetsLoaded":["RemoteData.WebData (List.List Data.Video.Processing.Preset.Preset)"],"ProjectsLoaded":["RemoteData.WebData (List.List Data.Project.Concise.Concise)"],"PickFiles":[],"FilesSelected":["File.File","List.List File.File"],"SelectProject":["String.String","Basics.Bool"],"ConfirmDeletion":["Either.Either String.String ()"],"StopConfirmation":[],"DeleteProject":["String.String"],"BatchDeleteProjects":[],"ProjectsDeleted":["Set.Set String.String","Result.Result Http.Error ()"],"StartProcessingVideos":[],"VideoProcessingStarted":["Set.Set String.String","Result.Result (API.Request.Error Data.Project.Concise.ProcessingError) ()"],"ProcessingStatusUpdate":["Result.Result Json.Decode.Error Data.Project.Concise.StatusUpdate"],"StartOver":["String.String"],"SetProcessingPreset":["String.String","Data.Video.Processing.Preset.Preset"],"ProjectUpdated":["Result.Result (API.Request.Error Data.Project.Concise.UpdateError) Data.Project.Concise.Concise"],"SetSearchStr":["String.String"],"NoOp":[]}},"Component.Project.Msg.Msg":{"args":[],"tags":{"LoadProject":["String.String"],"MsgForEditing":["Component.Project.Msg.EditingMsg"],"ProjectLoaded":["Result.Result (API.Request.Error Data.Project.Error) Data.Project.Project"],"PosterLoaded":["Result.Result Http.Error String.String"],"StartPreviewing":[],"StopPreviewing":[],"ExportProject":[],"ProjectExported":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) ( Data.File.Object.Base, String.String )"],"DismissExportingErrorPrompt":[],"SeekTime":["Basics.Int"],"RequestProjectSize":[],"ProjectSizeRequested":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.FileSize.FileSize"],"JumpTo":["Basics.Int"],"NavigateToPortal":[],"StayOnPage":[],"ChangeBeforeUnloadPrompt":[],"ChangeViewType":["Component.Project.Msg.ViewType"],"SaveProject":["Maybe.Maybe Route.Route"],"ProjectSaved":["Maybe.Maybe Route.Route","Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"DismissSavingResultPrompt":[],"NoOp":[]}},"Route.Route":{"args":[],"tags":{"Home":[],"Portal":[],"Project":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Data.File.Object.Base":{"args":[],"tags":{"Local":[],"Remote":["Url.Url"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Data.Project.Content.Content":{"args":[],"tags":{"FromSegment":["Basics.Bool","Data.Project.SegmentContent.SegmentContent"],"FromUser":["Basics.Int","Basics.Bool","Data.Project.UserContent.UserContent"]}},"Component.Project.Msg.EditingMsg":{"args":[],"tags":{"ConvertToGif":["Basics.Int"],"GifProcessed":["( Basics.Int, Basics.Int )","Result.Result (API.Request.Error Data.Video.Gif.Error) Data.Video.Gif.Gif"],"RevertGif":["Basics.Int"],"AddPlainTextAfter":["Basics.Int"],"ToggleContentVisibility":["Basics.Int"],"RemoveContent":["Basics.Int"],"PreEdit":["Basics.Int"],"EditPlainText":["Basics.Int","String.String"],"FinishEditing":["Basics.Int"],"PreviewAsCover":["Data.Video.Frame.Frame"],"StopPreviewingAsCover":["Data.Video.Frame.Frame"],"MergeSections":["Basics.Int","Basics.Int","Data.Project.SegmentContent.SegmentContent"],"SplitSection":["Basics.Int","Basics.Int"],"StartMovingSection":["Basics.Int"],"StopMovingSection":[],"MoveSection":["Basics.Int","Basics.Int"],"MovingOver":["Basics.Int"],"SetKeyFrame":["Basics.Int","Basics.Int"],"UndoProject":[],"RedoProject":[],"HostMessage":["Component.Project.Msg.Msg"]}},"Either.Either":{"args":["a","b"],"tags":{"Left":["a"],"Right":["b"]}},"API.Request.Error":{"args":["e"],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int","e"],"BadBody":["Basics.Int","Json.Decode.Error"]}},"Data.Project.Error":{"args":[],"tags":{"ProjectNotFound":[]}},"Data.Project.HtmlExport.Error":{"args":[],"tags":{"MediaFilesMissing":["List.List Data.File.Object.Key"],"SourceFileNotFound":[]}},"Data.Project.Saving.Error":{"args":[],"tags":{"SourceFileNotFound":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Json.Decode.Error":{"args":[],"tags":{"Field":["String.String","Json.Decode.Error"],"Index":["Basics.Int","Json.Decode.Error"],"OneOf":["List.List Json.Decode.Error"],"Failure":["String.String","Json.Decode.Value"]}},"File.File":{"args":[],"tags":{"File":[]}},"Data.FileSize.FileSize":{"args":[],"tags":{"Bit":["Basics.Int"],"Byte":["Basics.Float"],"Kibibyte":["Basics.Float"],"Mebibyte":["Basics.Float"]}},"Data.Video.Processing.Params.Granularity":{"args":[],"tags":{"Rough":[],"Medium":[],"Detailed":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Data.NativeClient.MetaError":{"args":[],"tags":{"MalformedVersionNumber":[]}},"Component.Portal.Params.Msg":{"args":[],"tags":{"SetGranularity":["Data.Video.Processing.Params.Granularity"],"SetDifferentTypeMinDifference":["Basics.Int"],"SetSameTypeMaxDifference":["Basics.Int"],"SetSimilarTypeMaxDifference":["Basics.Int"],"SetSmoothTypeMinValue":["Basics.Int"],"SetIsSameCombined":["Basics.Bool"],"SetShortNoneCombiningMaxDurationInMs":["Basics.Int"],"NoOp":[]}},"Component.Portal.Msg.ParamsKeeperMsg":{"args":[],"tags":{"StartExportingParams":["Data.Video.Processing.Params.Params"],"CancelExportingParams":[],"ExportParams":["String.String"],"ParamsRequested":[],"ParamsSelected":["File.File"],"ParamsLoaded":["String.String"],"DismissImportingError":[]}},"Data.Project.Concise.ProcessingError":{"args":[],"tags":{"FileNotFound":[],"CannotDecodeVideo":[],"BadParameters":[],"OtherProcessingError":["String.String"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Loading":[],"Failure":["e"],"Success":["a"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Set.Set":{"args":["t"],"tags":{"Set_elm_builtin":["Dict.Dict t ()"]}},"Data.Project.Concise.Status":{"args":[],"tags":{"Uploaded":[],"Processing":["Basics.Float"],"Processed":[],"FailedToProcess":["API.Request.Error Data.Project.Concise.ProcessingError"]}},"String.String":{"args":[],"tags":{"String":[]}},"Data.Project.Concise.UpdateError":{"args":[],"tags":{"InvalidParams":[]}},"Component.Portal.Msg.UploaderMsg":{"args":[],"tags":{"UploadVideo":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","String.String"],"VideoUploading":["String.String","Http.Progress"],"VideoUploaded":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","Result.Result Http.Error Data.Project.Concise.Concise"],"PickSubtitleFor":["String.String"],"SubtitleSelected":["String.String","File.File"],"SubtitleLoaded":["String.String","String.String","String.String"],"SubtitleUploaded":["String.String","Result.Result (API.Request.Error Data.Project.Concise.SubtitleError) Data.Project.Concise.Concise"],"OpenUploader":[],"CloseUploader":[],"CloseUploaderWhenCompleted":[],"ReviewSubtitle":["String.String"],"StopReviewingSubtitle":[],"RemoveSubtitleFor":["String.String"]}},"Component.Project.Msg.ViewType":{"args":[],"tags":{"Hidden":[],"Small":[],"Normal":[],"Large":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Data.Video.Gif.Error":{"args":[],"tags":{"IntervalTooSmall":[],"SourceFileNotFound":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Data.File.Object.Key":{"args":[],"tags":{"Key":["List.List String.String"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}},"Http.Progress":{"args":[],"tags":{"Sending":["{ sent : Basics.Int, size : Basics.Int }"],"Receiving":["{ received : Basics.Int, size : Maybe.Maybe Basics.Int }"]}},"Data.Project.SegmentContent.SegmentContent":{"args":[],"tags":{"FrameSequence":["Data.Video.Segment.Segment","Maybe.Maybe Data.Video.Gif.Gif"],"GifFromVideo":["Data.Video.Gif.Gif","Data.Video.Segment.Segment"]}},"Data.Uploader.Media.Subtitle":{"args":[],"tags":{"Subtitle":["Basics.Int","File.File"]}},"Data.Project.Concise.SubtitleError":{"args":[],"tags":{"InvalidSubtitle":[]}},"Data.Project.UserContent.UserContent":{"args":[],"tags":{"PlainText":["String.String"],"Picture":["Data.File.Object.Key"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Data.Uploader.Media.Video":{"args":[],"tags":{"Video":["File.File"]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Data.Video.Segment.Segment":{"args":[],"tags":{"Segment":["Data.Video.Frame.Frame","List.List Data.Video.Frame.Frame"]}}}}})}});}(this));
 },{}],"js/app.js":[function(require,module,exports) {
 "use strict";
 
