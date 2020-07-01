@@ -14074,49 +14074,38 @@ var $author$project$Data$Project$Concise$batchUpdateBy = F2(
 var $author$project$Data$Project$Concise$updateStatus = F2(
 	function (status, newStatus) {
 		var _v0 = _Utils_Tuple2(status, newStatus);
-		_v0$1:
+		_v0$2:
 		while (true) {
-			_v0$2:
+			_v0$3:
 			while (true) {
-				_v0$3:
-				while (true) {
-					switch (_v0.a.$) {
-						case 'Uploaded':
-							var _v1 = _v0.a;
-							return newStatus;
-						case 'Processing':
-							switch (_v0.b.$) {
-								case 'Uploaded':
-									break _v0$1;
-								case 'Processing':
-									break _v0$2;
-								default:
-									break _v0$2;
-							}
-						case 'Processed':
-							switch (_v0.b.$) {
-								case 'Uploaded':
-									break _v0$1;
-								case 'Processing':
-									break _v0$3;
-								default:
-									var _v3 = _v0.a;
-									return status;
-							}
-						default:
-							switch (_v0.b.$) {
-								case 'Uploaded':
-									break _v0$1;
-								case 'Processing':
-									break _v0$3;
-								default:
-									return status;
-							}
-					}
+				switch (_v0.a.$) {
+					case 'Uploaded':
+						var _v1 = _v0.a;
+						return newStatus;
+					case 'Processing':
+						return newStatus;
+					case 'Processed':
+						switch (_v0.b.$) {
+							case 'Uploaded':
+								break _v0$2;
+							case 'Processing':
+								break _v0$3;
+							default:
+								var _v3 = _v0.a;
+								return status;
+						}
+					default:
+						switch (_v0.b.$) {
+							case 'Uploaded':
+								break _v0$2;
+							case 'Processing':
+								break _v0$3;
+							default:
+								return status;
+						}
 				}
-				return status;
 			}
-			return newStatus;
+			return status;
 		}
 		var _v2 = _v0.b;
 		return status;
@@ -22706,8 +22695,11 @@ var handleProcessProgressEvent = function handleProcessProgressEvent(data) {
   switch (data.Parameter.Status) {
     case 1:
       // When the video processing job is ready to start:
-      // Note: Currently, this state is not used and not to be handled.
-      console.log('ready');
+      app.ports.processingStatusUpdate.send({
+        Id: uuid,
+        Status: 1 // 'ready' 
+
+      });
       break;
 
     case 2:
