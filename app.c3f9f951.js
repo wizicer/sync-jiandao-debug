@@ -187,7 +187,8 @@ module.exports = {
       "btn_add_subtitle": "添加字幕",
       "btn_delete_project": "删除项目",
       "btn_edit_project": "进入项目",
-      "deletion_confirmation": "你确定要删除吗？"
+      "deletion_confirmation": "你确定要删除吗？",
+      "have_upload": "已上传{{uploaded_num}}，剩余{{remain_num}}/{{max_num}}"
     },
     "project": {
       "page_title": "图文编辑-剪刀兔",
@@ -13953,6 +13954,20 @@ var $author$project$Component$Portal$Msg$VideoProcessingStarted = F2(
 	function (a, b) {
 		return {$: 'VideoProcessingStarted', a: a, b: b};
 	});
+var $elm$core$Set$insert = F2(
+	function (key, _v0) {
+		var dict = _v0.a;
+		return $elm$core$Set$Set_elm_builtin(
+			A3($elm$core$Dict$insert, key, _Utils_Tuple0, dict));
+	});
+var $elm$core$Set$fromList = function (list) {
+	return A3($elm$core$List$foldl, $elm$core$Set$insert, $elm$core$Set$empty, list);
+};
+var $author$project$Util$checkAllSelection = F4(
+	function (totalProjectsNum, checkedProjectsNum, uuidList, currentlySelectedEntries) {
+		var isSelectedAll = _Utils_eq(totalProjectsNum, checkedProjectsNum);
+		return isSelectedAll ? $elm$core$Set$empty : $elm$core$Set$fromList(uuidList);
+	});
 var $author$project$Request$Helper$expectDeletion = function (toMsg) {
 	return A2(
 		$elm$http$Http$expectStringResponse,
@@ -14466,15 +14481,6 @@ var $author$project$Util$getFileExtension = function (fileName) {
 	}
 };
 var $elm$file$File$mime = _File_mime;
-var $elm$core$Set$insert = F2(
-	function (key, _v0) {
-		var dict = _v0.a;
-		return $elm$core$Set$Set_elm_builtin(
-			A3($elm$core$Dict$insert, key, _Utils_Tuple0, dict));
-	});
-var $elm$core$Set$fromList = function (list) {
-	return A3($elm$core$List$foldl, $elm$core$Set$insert, $elm$core$Set$empty, list);
-};
 var $author$project$Data$File$Type$toExtensions = A2(
 	$elm$core$Basics$composeL,
 	$elm$core$Set$fromList,
@@ -15280,7 +15286,7 @@ var $author$project$Request$Project$new = F3(
 					A2($elm$json$Json$Decode$field, 'Video', $author$project$Data$Project$Concise$decoder)),
 				headers: _List_Nil,
 				method: 'POST',
-				timeout: $elm$core$Maybe$Just(60000),
+				timeout: $elm$core$Maybe$Just(300000),
 				tracker: $elm$core$Maybe$Just(trackerID),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
@@ -15592,12 +15598,6 @@ var $author$project$Component$Portal$Uploader$update = F2(
 						model,
 						{isDisplayingUploader: true}),
 					$elm$core$Platform$Cmd$none);
-			case 'CloseUploader':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{isDisplayingUploader: false}),
-					$elm$core$Platform$Cmd$none);
 			case 'CloseUploaderWhenCompleted':
 				return $elm$core$List$isEmpty(model.items) ? _Utils_Tuple2(
 					_Utils_update(
@@ -15746,6 +15746,17 @@ var $author$project$Component$Portal$Main$update = F2(
 							selectedProjects: A3($author$project$Util$updateSelection, uuid, isSelectingMultiple, model.selectedProjects)
 						}),
 					$elm$core$Platform$Cmd$none);
+			case 'CheckAll':
+				var totalNum = msg.a;
+				var selectNum = msg.b;
+				var totalList = msg.c;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							selectedProjects: A4($author$project$Util$checkAllSelection, totalNum, selectNum, totalList, model.selectedProjects)
+						}),
+					$elm$core$Platform$Cmd$none);
 			case 'ConfirmDeletion':
 				var deletion = msg.a;
 				return _Utils_Tuple2(
@@ -15788,7 +15799,8 @@ var $author$project$Component$Portal$Main$update = F2(
 											var uuid = _v3.uuid;
 											return A2($elm$core$Set$member, uuid, uuids);
 										}),
-									model.projects)
+									model.projects),
+								selectedProjects: $elm$core$Set$empty
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -16120,7 +16132,7 @@ var $author$project$Request$Project$export = F2(
 				errorDecoder: $author$project$Data$Project$HtmlExport$errorDecoder,
 				handler: handler,
 				payload: $author$project$Data$Project$HtmlExport$encoder(project),
-				timeout: $elm$core$Maybe$Just(30000),
+				timeout: $elm$core$Maybe$Just(180000),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
 					_List_fromArray(
@@ -18053,7 +18065,6 @@ var $author$project$Data$NativeClient$getVersion = function (status) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$Component$Portal$Msg$CloseUploader = {$: 'CloseUploader'};
 var $author$project$Component$Portal$Msg$NoOp = {$: 'NoOp'};
 var $elm$file$File$decoder = _File_decoder;
 var $elm$json$Json$Decode$oneOrMoreHelp = F2(
@@ -18401,53 +18412,16 @@ var $author$project$View$Layout$viewBody = function (attrs) {
 				]),
 			attrs));
 };
+var $author$project$Component$Portal$Msg$CheckAll = F3(
+	function (a, b, c) {
+		return {$: 'CheckAll', a: a, b: b, c: c};
+	});
 var $author$project$Component$Portal$Msg$PickFiles = {$: 'PickFiles'};
 var $author$project$Component$Portal$Msg$SetSearchStr = function (a) {
 	return {$: 'SetSearchStr', a: a};
 };
 var $author$project$Translations$Page$Portal$addFiles = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.add_files');
-};
-var $elm$core$String$trim = _String_trim;
-var $author$project$Data$FilterSearch$filter = F2(
-	function (getter, str) {
-		var sanitisedSearchStr = $elm$core$String$toLower(
-			$elm$core$String$trim(str));
-		var contains = A2(
-			$elm$core$Basics$composeR,
-			getter,
-			A2(
-				$elm$core$Basics$composeR,
-				$elm$core$String$toLower,
-				$elm$core$String$contains(sanitisedSearchStr)));
-		return A2(
-			$elm$core$List$foldr,
-			F2(
-				function (item, collection) {
-					return contains(item) ? A2($elm$core$List$cons, item, collection) : collection;
-				}),
-			_List_Nil);
-	});
-var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $author$project$Translations$Page$Portal$searchBoxPlaceholder = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.search_box_placeholder');
-};
-var $author$project$Component$Portal$View$Collection$projectCollectionID = 'picked-videos';
-var $author$project$Component$Portal$Msg$ConfirmDeletion = function (a) {
-	return {$: 'ConfirmDeletion', a: a};
-};
-var $toastal$either$Either$Left = function (a) {
-	return {$: 'Left', a: a};
-};
-var $author$project$Component$Portal$Msg$SelectProject = F2(
-	function (a, b) {
-		return {$: 'SelectProject', a: a, b: b};
-	});
-var $author$project$Translations$Page$Portal$btnDeleteProject = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.btn_delete_project');
-};
-var $author$project$Translations$Page$Portal$btnEditProject = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.btn_edit_project');
 };
 var $elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
 var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
@@ -18510,6 +18484,114 @@ var $author$project$View$Icon$materialIconSimple = F2(
 	});
 var $author$project$View$Icon$checkBox = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z');
 var $author$project$View$Icon$checkBoxOutlineBlank = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z');
+var $elm$core$String$trim = _String_trim;
+var $author$project$Data$FilterSearch$filter = F2(
+	function (getter, str) {
+		var sanitisedSearchStr = $elm$core$String$toLower(
+			$elm$core$String$trim(str));
+		var contains = A2(
+			$elm$core$Basics$composeR,
+			getter,
+			A2(
+				$elm$core$Basics$composeR,
+				$elm$core$String$toLower,
+				$elm$core$String$contains(sanitisedSearchStr)));
+		return A2(
+			$elm$core$List$foldr,
+			F2(
+				function (item, collection) {
+					return contains(item) ? A2($elm$core$List$cons, item, collection) : collection;
+				}),
+			_List_Nil);
+	});
+var $ChristophP$elm_i18next$I18Next$Curly = {$: 'Curly'};
+var $ChristophP$elm_i18next$I18Next$delimsToTuple = function (delims) {
+	switch (delims.$) {
+		case 'Curly':
+			return _Utils_Tuple2('{{', '}}');
+		case 'Underscore':
+			return _Utils_Tuple2('__', '__');
+		default:
+			var tuple = delims.a;
+			return tuple;
+	}
+};
+var $elm$core$String$replace = F3(
+	function (before, after, string) {
+		return A2(
+			$elm$core$String$join,
+			after,
+			A2($elm$core$String$split, before, string));
+	});
+var $ChristophP$elm_i18next$I18Next$replacePlaceholders = F3(
+	function (replacements, delims, str) {
+		var _v0 = $ChristophP$elm_i18next$I18Next$delimsToTuple(delims);
+		var start = _v0.a;
+		var end = _v0.b;
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v1, acc) {
+					var key = _v1.a;
+					var value = _v1.b;
+					return A3(
+						$elm$core$String$replace,
+						_Utils_ap(
+							start,
+							_Utils_ap(key, end)),
+						value,
+						acc);
+				}),
+			str,
+			replacements);
+	});
+var $ChristophP$elm_i18next$I18Next$tr = F4(
+	function (_v0, delims, key, replacements) {
+		var translations = _v0.a;
+		var _v1 = A2($elm$core$Dict$get, key, translations);
+		if (_v1.$ === 'Just') {
+			var str = _v1.a;
+			return A3($ChristophP$elm_i18next$I18Next$replacePlaceholders, replacements, delims, str);
+		} else {
+			return key;
+		}
+	});
+var $author$project$Translations$Page$Portal$haveUpload = F4(
+	function (translations, uploadedNum, remainNum, maxNum) {
+		return A4(
+			$ChristophP$elm_i18next$I18Next$tr,
+			translations,
+			$ChristophP$elm_i18next$I18Next$Curly,
+			'page.portal.have_upload',
+			_List_fromArray(
+				[
+					_Utils_Tuple2('uploaded_num', uploadedNum),
+					_Utils_Tuple2('remain_num', remainNum),
+					_Utils_Tuple2('max_num', maxNum)
+				]));
+	});
+var $author$project$Data$Env$maxVideoNum = 100;
+var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
+var $author$project$Translations$Page$Portal$searchBoxPlaceholder = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.search_box_placeholder');
+};
+var $author$project$Component$Portal$View$Collection$projectCollectionID = 'picked-videos';
+var $author$project$Component$Portal$Msg$ConfirmDeletion = function (a) {
+	return {$: 'ConfirmDeletion', a: a};
+};
+var $toastal$either$Either$Left = function (a) {
+	return {$: 'Left', a: a};
+};
+var $author$project$Component$Portal$Msg$SelectProject = F2(
+	function (a, b) {
+		return {$: 'SelectProject', a: a, b: b};
+	});
+var $author$project$Translations$Page$Portal$btnDeleteProject = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.btn_delete_project');
+};
+var $author$project$Translations$Page$Portal$btnEditProject = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.btn_edit_project');
+};
 var $elm$html$Html$Attributes$classList = function (classes) {
 	return $elm$html$Html$Attributes$class(
 		A2(
@@ -18595,58 +18677,6 @@ var $author$project$Translations$Request$Error$badUrl = function (translations) 
 var $author$project$Translations$Request$Error$networkError = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'request.error.network_error');
 };
-var $ChristophP$elm_i18next$I18Next$Curly = {$: 'Curly'};
-var $ChristophP$elm_i18next$I18Next$delimsToTuple = function (delims) {
-	switch (delims.$) {
-		case 'Curly':
-			return _Utils_Tuple2('{{', '}}');
-		case 'Underscore':
-			return _Utils_Tuple2('__', '__');
-		default:
-			var tuple = delims.a;
-			return tuple;
-	}
-};
-var $elm$core$String$replace = F3(
-	function (before, after, string) {
-		return A2(
-			$elm$core$String$join,
-			after,
-			A2($elm$core$String$split, before, string));
-	});
-var $ChristophP$elm_i18next$I18Next$replacePlaceholders = F3(
-	function (replacements, delims, str) {
-		var _v0 = $ChristophP$elm_i18next$I18Next$delimsToTuple(delims);
-		var start = _v0.a;
-		var end = _v0.b;
-		return A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v1, acc) {
-					var key = _v1.a;
-					var value = _v1.b;
-					return A3(
-						$elm$core$String$replace,
-						_Utils_ap(
-							start,
-							_Utils_ap(key, end)),
-						value,
-						acc);
-				}),
-			str,
-			replacements);
-	});
-var $ChristophP$elm_i18next$I18Next$tr = F4(
-	function (_v0, delims, key, replacements) {
-		var translations = _v0.a;
-		var _v1 = A2($elm$core$Dict$get, key, translations);
-		if (_v1.$ === 'Just') {
-			var str = _v1.a;
-			return A3($ChristophP$elm_i18next$I18Next$replacePlaceholders, replacements, delims, str);
-		} else {
-			return key;
-		}
-	});
 var $author$project$Translations$Request$StatusCode$otherStatusCodes = F2(
 	function (translations, statusCode) {
 		return A4(
@@ -19104,6 +19134,17 @@ var $author$project$Component$Portal$View$Collection$viewCollectionPanel = F5(
 				[
 					$elm$html$Html$Attributes$class('collection-panel flex-1 px-4 pb-12 max-h-full overflow-y-auto overflow-x-hidden')
 				]));
+		var uuidList = A2(
+			$elm$core$List$map,
+			function (project) {
+				return project.uuid;
+			},
+			projects);
+		var total = $elm$core$List$length(projects);
+		var selected = $elm$core$Set$size(selectedProjects);
+		var maxNum = $author$project$Data$Env$maxVideoNum;
+		var makeCheckAllSelection = $author$project$Util$onClickStopPropagation(
+			A3($author$project$Component$Portal$Msg$CheckAll, total, selected, uuidList));
 		var itemsToDisplay = $author$project$Util$isInFactBlankString(searchStr) ? projects : A3(
 			$author$project$Data$FilterSearch$filter,
 			function ($) {
@@ -19150,6 +19191,30 @@ var $author$project$Component$Portal$View$Collection$viewCollectionPanel = F5(
 									$elm$html$Html$text(
 									$author$project$Translations$Page$Portal$addFiles(trn))
 								]))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							makeCheckAllSelection,
+							$elm$html$Html$Attributes$class('checkbox')
+						]),
+					_List_fromArray(
+						[
+							_Utils_eq(total, selected) ? $author$project$View$Icon$checkBox(24) : $author$project$View$Icon$checkBoxOutlineBlank(24)
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							A4(
+								$author$project$Translations$Page$Portal$haveUpload,
+								trn,
+								$elm$core$String$fromInt(total),
+								$elm$core$String$fromInt(maxNum - total),
+								$elm$core$String$fromInt(maxNum)))
 						])),
 					A4($author$project$Component$Portal$View$Collection$viewProjectCollection, trn, availablePresets, selectedProjects, itemsToDisplay)
 				]));
@@ -19796,15 +19861,23 @@ var $author$project$Component$Portal$View$Config$viewProjectConfig = F5(
 							]));
 				}
 			} else {
+				var x = selected.a;
+				var xs = selected.b;
+				var processedExists = A2(
+					$elm$core$List$any,
+					function (p) {
+						return _Utils_eq(p.status, $author$project$Data$Project$Concise$Processed);
+					},
+					A2($elm$core$List$cons, x, xs));
 				return A2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$class('multiple-project-configs flex flex-row justify-around items-center')
 						]),
-					_List_fromArray(
-						[
-							A2(
+					A2(
+						$elm$core$List$cons,
+						A2(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
@@ -19818,19 +19891,24 @@ var $author$project$Component$Portal$View$Config$viewProjectConfig = F5(
 									$elm$html$Html$text(
 									$author$project$Translations$Page$Portal$batchRemovePickedVideos(trn))
 								])),
-							A2(
-							$elm$html$Html$button,
-							_List_fromArray(
-								[
-									$elm$html$Html$Events$onClick($author$project$Component$Portal$Msg$StartProcessingVideos),
-									$elm$html$Html$Attributes$class('btn btn--theme w-20 h-8')
-								]),
-							_List_fromArray(
-								[
-									$elm$html$Html$text(
-									$author$project$Translations$Page$Portal$startProcessing(trn))
-								]))
-						]));
+						(!processedExists) ? _List_fromArray(
+							[
+								A2(
+								$elm$html$Html$button,
+								_List_fromArray(
+									[
+										$elm$html$Html$Events$onClick($author$project$Component$Portal$Msg$StartProcessingVideos),
+										$elm$html$Html$Attributes$class('btn btn--theme w-20 h-8')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										$author$project$Translations$Page$Portal$startProcessing(trn))
+									]))
+							]) : _List_fromArray(
+							[
+								A2($elm$html$Html$div, _List_Nil, _List_Nil)
+							])));
 			}
 		} else {
 			return wrapDisabled(_List_Nil);
@@ -19970,12 +20048,7 @@ var $author$project$Component$Portal$Main$view = F2(
 					A2(
 					$author$project$Util$viewIf,
 					model.isDisplayingUploader,
-					A4(
-						$author$project$Component$Portal$Uploader$view,
-						trn,
-						$author$project$Component$Portal$Msg$NoOp,
-						$author$project$Component$Portal$Msg$MsgForUploader($author$project$Component$Portal$Msg$CloseUploader),
-						model.items)),
+					A4($author$project$Component$Portal$Uploader$view, trn, $author$project$Component$Portal$Msg$NoOp, $author$project$Component$Portal$Msg$NoOp, model.items)),
 					A2(
 					$author$project$Util$viewIfPresent,
 					model.reviewingSubtitle,
@@ -22570,7 +22643,7 @@ var $author$project$Main$view = function (model) {
 };
 var $author$project$Main$main = $elm$browser$Browser$application(
 	{init: $author$project$Main$init, onUrlChange: $author$project$Main$onUrlChange, onUrlRequest: $author$project$Main$onUrlRequest, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
-_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Data.Project.Concise.Concise":{"args":[],"type":"{ uuid : String.String, name : String.String, hasSubtitle : Basics.Bool, params : Data.Video.Processing.Params.Params, status : Data.Project.Concise.Status }"},"Data.NativeClient.Meta":{"args":[],"type":"{ version : Data.Version.Version, isCompatible : Basics.Bool }"},"Data.Video.Processing.Params.Params":{"args":[],"type":"{ granularity : Data.Video.Processing.Params.Granularity, differentTypeMinDifference : Basics.Int, sameTypeMaxDifference : Basics.Int, similarTypeMaxDifference : Basics.Int, smoothTypeMinValue : Basics.Int, isSameCombined : Basics.Bool, shortNoneCombiningMaxDurationInMs : Basics.Int }"},"Data.Video.Processing.Preset.Preset":{"args":[],"type":"{ name : String.String, description : Maybe.Maybe String.String, params : Data.Video.Processing.Params.Params }"},"Data.Project.Project":{"args":[],"type":"{ uuid : String.String, name : String.String, workingData : Array.Array Data.Project.Content.Content }"},"Data.Project.Concise.StatusUpdate":{"args":[],"type":"{ uuid : String.String, status : Data.Project.Concise.Status }"},"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Data.Version.Version":{"args":[],"type":"{ major : Basics.Int, minor : Basics.Int, patch : Basics.Int, buildNo : Basics.Int }"},"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Data.Video.Frame.Frame":{"args":[],"type":"{ index : Basics.Int, localObjectKey : Data.File.Object.Key, time : Basics.Int }"},"Data.Video.Gif.Gif":{"args":[],"type":"{ localObjectKey : Data.File.Object.Key, fileSize : Data.FileSize.FileSize }"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"},"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"SetRoute":["Maybe.Maybe Route.Route"],"ClickedLink":["Browser.UrlRequest"],"TryReload":[],"PortalMsg":["Component.Portal.Msg.Msg"],"ProjectMsg":["Component.Project.Msg.Msg"],"NativeClientMsg":["Component.NativeClient.Msg.Msg"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Component.NativeClient.Msg.Msg":{"args":[],"tags":{"RequestMetaOfNativeClient":[],"NativeClientVersionInfoRequested":["Result.Result (API.Request.Error Data.NativeClient.MetaError) Data.NativeClient.Meta"],"WebsocketClosed":["Basics.Int"]}},"Component.Portal.Msg.Msg":{"args":[],"tags":{"ToggleExpertMode":[],"MsgForUploader":["Component.Portal.Msg.UploaderMsg"],"MsgForParams":["String.String","Data.Video.Processing.Params.Params","Component.Portal.Params.Msg"],"MsgForParamsKeeper":["Component.Portal.Msg.ParamsKeeperMsg"],"PresetsLoaded":["RemoteData.WebData (List.List Data.Video.Processing.Preset.Preset)"],"ProjectsLoaded":["RemoteData.WebData (List.List Data.Project.Concise.Concise)"],"PickFiles":[],"FilesSelected":["File.File","List.List File.File"],"SelectProject":["String.String","Basics.Bool"],"ConfirmDeletion":["Either.Either String.String ()"],"StopConfirmation":[],"DeleteProject":["String.String"],"BatchDeleteProjects":[],"ProjectsDeleted":["Set.Set String.String","Result.Result Http.Error ()"],"StartProcessingVideos":[],"VideoProcessingStarted":["Set.Set String.String","Result.Result (API.Request.Error Data.Project.Concise.ProcessingError) ()"],"ProcessingStatusUpdate":["Result.Result Json.Decode.Error Data.Project.Concise.StatusUpdate"],"StartOver":["String.String"],"SetProcessingPreset":["String.String","Data.Video.Processing.Preset.Preset"],"ProjectUpdated":["Result.Result (API.Request.Error Data.Project.Concise.UpdateError) Data.Project.Concise.Concise"],"SetSearchStr":["String.String"],"NoOp":[]}},"Component.Project.Msg.Msg":{"args":[],"tags":{"LoadProject":["String.String"],"MsgForEditing":["Component.Project.Msg.EditingMsg"],"ProjectLoaded":["Result.Result (API.Request.Error Data.Project.Error) Data.Project.Project"],"PosterLoaded":["Result.Result Http.Error String.String"],"StartPreviewing":[],"StopPreviewing":[],"ExportProject":[],"ProjectExported":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) ( Data.File.Object.Base, String.String )"],"DismissExportingErrorPrompt":[],"SeekTime":["Basics.Int"],"RequestProjectSize":[],"ProjectSizeRequested":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.FileSize.FileSize"],"JumpTo":["Basics.Int"],"NavigateToPortal":[],"StayOnPage":[],"ChangeBeforeUnloadPrompt":[],"ChangeViewType":["Component.Project.Msg.ViewType"],"SaveProject":["Maybe.Maybe Route.Route"],"ProjectSaved":["Maybe.Maybe Route.Route","Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"DismissSavingResultPrompt":[],"NoOp":[]}},"Route.Route":{"args":[],"tags":{"Home":[],"Portal":[],"Project":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Data.File.Object.Base":{"args":[],"tags":{"Local":[],"Remote":["Url.Url"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Data.Project.Content.Content":{"args":[],"tags":{"FromSegment":["Basics.Bool","Data.Project.SegmentContent.SegmentContent"],"FromUser":["Basics.Int","Basics.Bool","Data.Project.UserContent.UserContent"]}},"Component.Project.Msg.EditingMsg":{"args":[],"tags":{"ConvertToGif":["Basics.Int"],"GifProcessed":["( Basics.Int, Basics.Int )","Result.Result (API.Request.Error Data.Video.Gif.Error) Data.Video.Gif.Gif"],"RevertGif":["Basics.Int"],"AddPlainTextAfter":["Basics.Int"],"ToggleContentVisibility":["Basics.Int"],"RemoveContent":["Basics.Int"],"PreEdit":["Basics.Int"],"EditPlainText":["Basics.Int","String.String"],"FinishEditing":["Basics.Int"],"PreviewAsCover":["Data.Video.Frame.Frame"],"StopPreviewingAsCover":["Data.Video.Frame.Frame"],"MergeSections":["Basics.Int","Basics.Int","Data.Project.SegmentContent.SegmentContent"],"SplitSection":["Basics.Int","Basics.Int"],"StartMovingSection":["Basics.Int"],"StopMovingSection":[],"MoveSection":["Basics.Int","Basics.Int"],"MovingOver":["Basics.Int"],"SetKeyFrame":["Basics.Int","Basics.Int"],"UndoProject":[],"RedoProject":[],"HostMessage":["Component.Project.Msg.Msg"]}},"Either.Either":{"args":["a","b"],"tags":{"Left":["a"],"Right":["b"]}},"API.Request.Error":{"args":["e"],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int","e"],"BadBody":["Basics.Int","Json.Decode.Error"]}},"Data.Project.Error":{"args":[],"tags":{"ProjectNotFound":[]}},"Data.Project.HtmlExport.Error":{"args":[],"tags":{"MediaFilesMissing":["List.List Data.File.Object.Key"],"SourceFileNotFound":[]}},"Data.Project.Saving.Error":{"args":[],"tags":{"SourceFileNotFound":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Json.Decode.Error":{"args":[],"tags":{"Field":["String.String","Json.Decode.Error"],"Index":["Basics.Int","Json.Decode.Error"],"OneOf":["List.List Json.Decode.Error"],"Failure":["String.String","Json.Decode.Value"]}},"File.File":{"args":[],"tags":{"File":[]}},"Data.FileSize.FileSize":{"args":[],"tags":{"Bit":["Basics.Int"],"Byte":["Basics.Float"],"Kibibyte":["Basics.Float"],"Mebibyte":["Basics.Float"]}},"Data.Video.Processing.Params.Granularity":{"args":[],"tags":{"Rough":[],"Medium":[],"Detailed":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Data.NativeClient.MetaError":{"args":[],"tags":{"MalformedVersionNumber":[]}},"Component.Portal.Params.Msg":{"args":[],"tags":{"SetGranularity":["Data.Video.Processing.Params.Granularity"],"SetDifferentTypeMinDifference":["Basics.Int"],"SetSameTypeMaxDifference":["Basics.Int"],"SetSimilarTypeMaxDifference":["Basics.Int"],"SetSmoothTypeMinValue":["Basics.Int"],"SetIsSameCombined":["Basics.Bool"],"SetShortNoneCombiningMaxDurationInMs":["Basics.Int"],"NoOp":[]}},"Component.Portal.Msg.ParamsKeeperMsg":{"args":[],"tags":{"StartExportingParams":["Data.Video.Processing.Params.Params"],"CancelExportingParams":[],"ExportParams":["String.String"],"ParamsRequested":[],"ParamsSelected":["File.File"],"ParamsLoaded":["String.String"],"DismissImportingError":[]}},"Data.Project.Concise.ProcessingError":{"args":[],"tags":{"FileNotFound":[],"CannotDecodeVideo":[],"BadParameters":[],"OtherProcessingError":["String.String"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Loading":[],"Failure":["e"],"Success":["a"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Set.Set":{"args":["t"],"tags":{"Set_elm_builtin":["Dict.Dict t ()"]}},"Data.Project.Concise.Status":{"args":[],"tags":{"Uploaded":[],"Processing":["Basics.Float"],"Processed":[],"FailedToProcess":["API.Request.Error Data.Project.Concise.ProcessingError"]}},"String.String":{"args":[],"tags":{"String":[]}},"Data.Project.Concise.UpdateError":{"args":[],"tags":{"InvalidParams":[]}},"Component.Portal.Msg.UploaderMsg":{"args":[],"tags":{"UploadVideo":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","String.String"],"VideoUploading":["String.String","Http.Progress"],"VideoUploaded":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","Result.Result Http.Error Data.Project.Concise.Concise"],"PickSubtitleFor":["String.String"],"SubtitleSelected":["String.String","File.File"],"SubtitleLoaded":["String.String","String.String","String.String"],"SubtitleUploaded":["String.String","Result.Result (API.Request.Error Data.Project.Concise.SubtitleError) Data.Project.Concise.Concise"],"OpenUploader":[],"CloseUploader":[],"CloseUploaderWhenCompleted":[],"ReviewSubtitle":["String.String"],"StopReviewingSubtitle":[],"RemoveSubtitleFor":["String.String"]}},"Component.Project.Msg.ViewType":{"args":[],"tags":{"Hidden":[],"Small":[],"Normal":[],"Large":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Data.Video.Gif.Error":{"args":[],"tags":{"IntervalTooSmall":[],"SourceFileNotFound":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Data.File.Object.Key":{"args":[],"tags":{"Key":["List.List String.String"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}},"Http.Progress":{"args":[],"tags":{"Sending":["{ sent : Basics.Int, size : Basics.Int }"],"Receiving":["{ received : Basics.Int, size : Maybe.Maybe Basics.Int }"]}},"Data.Project.SegmentContent.SegmentContent":{"args":[],"tags":{"FrameSequence":["Data.Video.Segment.Segment","Maybe.Maybe Data.Video.Gif.Gif"],"GifFromVideo":["Data.Video.Gif.Gif","Data.Video.Segment.Segment"]}},"Data.Uploader.Media.Subtitle":{"args":[],"tags":{"Subtitle":["Basics.Int","File.File"]}},"Data.Project.Concise.SubtitleError":{"args":[],"tags":{"InvalidSubtitle":[]}},"Data.Project.UserContent.UserContent":{"args":[],"tags":{"PlainText":["String.String"],"Picture":["Data.File.Object.Key"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Data.Uploader.Media.Video":{"args":[],"tags":{"Video":["File.File"]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Data.Video.Segment.Segment":{"args":[],"tags":{"Segment":["Data.Video.Frame.Frame","List.List Data.Video.Frame.Frame"]}}}}})}});}(this));
+_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Data.Project.Concise.Concise":{"args":[],"type":"{ uuid : String.String, name : String.String, hasSubtitle : Basics.Bool, params : Data.Video.Processing.Params.Params, status : Data.Project.Concise.Status }"},"Data.NativeClient.Meta":{"args":[],"type":"{ version : Data.Version.Version, isCompatible : Basics.Bool }"},"Data.Video.Processing.Params.Params":{"args":[],"type":"{ granularity : Data.Video.Processing.Params.Granularity, differentTypeMinDifference : Basics.Int, sameTypeMaxDifference : Basics.Int, similarTypeMaxDifference : Basics.Int, smoothTypeMinValue : Basics.Int, isSameCombined : Basics.Bool, shortNoneCombiningMaxDurationInMs : Basics.Int }"},"Data.Video.Processing.Preset.Preset":{"args":[],"type":"{ name : String.String, description : Maybe.Maybe String.String, params : Data.Video.Processing.Params.Params }"},"Data.Project.Project":{"args":[],"type":"{ uuid : String.String, name : String.String, workingData : Array.Array Data.Project.Content.Content }"},"Data.Project.Concise.StatusUpdate":{"args":[],"type":"{ uuid : String.String, status : Data.Project.Concise.Status }"},"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Data.Version.Version":{"args":[],"type":"{ major : Basics.Int, minor : Basics.Int, patch : Basics.Int, buildNo : Basics.Int }"},"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Data.Video.Frame.Frame":{"args":[],"type":"{ index : Basics.Int, localObjectKey : Data.File.Object.Key, time : Basics.Int }"},"Data.Video.Gif.Gif":{"args":[],"type":"{ localObjectKey : Data.File.Object.Key, fileSize : Data.FileSize.FileSize }"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"},"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"SetRoute":["Maybe.Maybe Route.Route"],"ClickedLink":["Browser.UrlRequest"],"TryReload":[],"PortalMsg":["Component.Portal.Msg.Msg"],"ProjectMsg":["Component.Project.Msg.Msg"],"NativeClientMsg":["Component.NativeClient.Msg.Msg"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Component.NativeClient.Msg.Msg":{"args":[],"tags":{"RequestMetaOfNativeClient":[],"NativeClientVersionInfoRequested":["Result.Result (API.Request.Error Data.NativeClient.MetaError) Data.NativeClient.Meta"],"WebsocketClosed":["Basics.Int"]}},"Component.Portal.Msg.Msg":{"args":[],"tags":{"ToggleExpertMode":[],"MsgForUploader":["Component.Portal.Msg.UploaderMsg"],"MsgForParams":["String.String","Data.Video.Processing.Params.Params","Component.Portal.Params.Msg"],"MsgForParamsKeeper":["Component.Portal.Msg.ParamsKeeperMsg"],"PresetsLoaded":["RemoteData.WebData (List.List Data.Video.Processing.Preset.Preset)"],"ProjectsLoaded":["RemoteData.WebData (List.List Data.Project.Concise.Concise)"],"PickFiles":[],"FilesSelected":["File.File","List.List File.File"],"SelectProject":["String.String","Basics.Bool"],"CheckAll":["Basics.Int","Basics.Int","List.List String.String"],"ConfirmDeletion":["Either.Either String.String ()"],"StopConfirmation":[],"DeleteProject":["String.String"],"BatchDeleteProjects":[],"ProjectsDeleted":["Set.Set String.String","Result.Result Http.Error ()"],"StartProcessingVideos":[],"VideoProcessingStarted":["Set.Set String.String","Result.Result (API.Request.Error Data.Project.Concise.ProcessingError) ()"],"ProcessingStatusUpdate":["Result.Result Json.Decode.Error Data.Project.Concise.StatusUpdate"],"StartOver":["String.String"],"SetProcessingPreset":["String.String","Data.Video.Processing.Preset.Preset"],"ProjectUpdated":["Result.Result (API.Request.Error Data.Project.Concise.UpdateError) Data.Project.Concise.Concise"],"SetSearchStr":["String.String"],"NoOp":[]}},"Component.Project.Msg.Msg":{"args":[],"tags":{"LoadProject":["String.String"],"MsgForEditing":["Component.Project.Msg.EditingMsg"],"ProjectLoaded":["Result.Result (API.Request.Error Data.Project.Error) Data.Project.Project"],"PosterLoaded":["Result.Result Http.Error String.String"],"StartPreviewing":[],"StopPreviewing":[],"ExportProject":[],"ProjectExported":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) ( Data.File.Object.Base, String.String )"],"DismissExportingErrorPrompt":[],"SeekTime":["Basics.Int"],"RequestProjectSize":[],"ProjectSizeRequested":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.FileSize.FileSize"],"JumpTo":["Basics.Int"],"NavigateToPortal":[],"StayOnPage":[],"ChangeBeforeUnloadPrompt":[],"ChangeViewType":["Component.Project.Msg.ViewType"],"SaveProject":["Maybe.Maybe Route.Route"],"ProjectSaved":["Maybe.Maybe Route.Route","Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"DismissSavingResultPrompt":[],"NoOp":[]}},"Route.Route":{"args":[],"tags":{"Home":[],"Portal":[],"Project":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Data.File.Object.Base":{"args":[],"tags":{"Local":[],"Remote":["Url.Url"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Data.Project.Content.Content":{"args":[],"tags":{"FromSegment":["Basics.Bool","Data.Project.SegmentContent.SegmentContent"],"FromUser":["Basics.Int","Basics.Bool","Data.Project.UserContent.UserContent"]}},"Component.Project.Msg.EditingMsg":{"args":[],"tags":{"ConvertToGif":["Basics.Int"],"GifProcessed":["( Basics.Int, Basics.Int )","Result.Result (API.Request.Error Data.Video.Gif.Error) Data.Video.Gif.Gif"],"RevertGif":["Basics.Int"],"AddPlainTextAfter":["Basics.Int"],"ToggleContentVisibility":["Basics.Int"],"RemoveContent":["Basics.Int"],"PreEdit":["Basics.Int"],"EditPlainText":["Basics.Int","String.String"],"FinishEditing":["Basics.Int"],"PreviewAsCover":["Data.Video.Frame.Frame"],"StopPreviewingAsCover":["Data.Video.Frame.Frame"],"MergeSections":["Basics.Int","Basics.Int","Data.Project.SegmentContent.SegmentContent"],"SplitSection":["Basics.Int","Basics.Int"],"StartMovingSection":["Basics.Int"],"StopMovingSection":[],"MoveSection":["Basics.Int","Basics.Int"],"MovingOver":["Basics.Int"],"SetKeyFrame":["Basics.Int","Basics.Int"],"UndoProject":[],"RedoProject":[],"HostMessage":["Component.Project.Msg.Msg"]}},"Either.Either":{"args":["a","b"],"tags":{"Left":["a"],"Right":["b"]}},"API.Request.Error":{"args":["e"],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int","e"],"BadBody":["Basics.Int","Json.Decode.Error"]}},"Data.Project.Error":{"args":[],"tags":{"ProjectNotFound":[]}},"Data.Project.HtmlExport.Error":{"args":[],"tags":{"MediaFilesMissing":["List.List Data.File.Object.Key"],"SourceFileNotFound":[]}},"Data.Project.Saving.Error":{"args":[],"tags":{"SourceFileNotFound":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Json.Decode.Error":{"args":[],"tags":{"Field":["String.String","Json.Decode.Error"],"Index":["Basics.Int","Json.Decode.Error"],"OneOf":["List.List Json.Decode.Error"],"Failure":["String.String","Json.Decode.Value"]}},"File.File":{"args":[],"tags":{"File":[]}},"Data.FileSize.FileSize":{"args":[],"tags":{"Bit":["Basics.Int"],"Byte":["Basics.Float"],"Kibibyte":["Basics.Float"],"Mebibyte":["Basics.Float"]}},"Data.Video.Processing.Params.Granularity":{"args":[],"tags":{"Rough":[],"Medium":[],"Detailed":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Data.NativeClient.MetaError":{"args":[],"tags":{"MalformedVersionNumber":[]}},"Component.Portal.Params.Msg":{"args":[],"tags":{"SetGranularity":["Data.Video.Processing.Params.Granularity"],"SetDifferentTypeMinDifference":["Basics.Int"],"SetSameTypeMaxDifference":["Basics.Int"],"SetSimilarTypeMaxDifference":["Basics.Int"],"SetSmoothTypeMinValue":["Basics.Int"],"SetIsSameCombined":["Basics.Bool"],"SetShortNoneCombiningMaxDurationInMs":["Basics.Int"],"NoOp":[]}},"Component.Portal.Msg.ParamsKeeperMsg":{"args":[],"tags":{"StartExportingParams":["Data.Video.Processing.Params.Params"],"CancelExportingParams":[],"ExportParams":["String.String"],"ParamsRequested":[],"ParamsSelected":["File.File"],"ParamsLoaded":["String.String"],"DismissImportingError":[]}},"Data.Project.Concise.ProcessingError":{"args":[],"tags":{"FileNotFound":[],"CannotDecodeVideo":[],"BadParameters":[],"OtherProcessingError":["String.String"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Loading":[],"Failure":["e"],"Success":["a"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Set.Set":{"args":["t"],"tags":{"Set_elm_builtin":["Dict.Dict t ()"]}},"Data.Project.Concise.Status":{"args":[],"tags":{"Uploaded":[],"Processing":["Basics.Float"],"Processed":[],"FailedToProcess":["API.Request.Error Data.Project.Concise.ProcessingError"]}},"String.String":{"args":[],"tags":{"String":[]}},"Data.Project.Concise.UpdateError":{"args":[],"tags":{"InvalidParams":[]}},"Component.Portal.Msg.UploaderMsg":{"args":[],"tags":{"UploadVideo":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","String.String"],"VideoUploading":["String.String","Http.Progress"],"VideoUploaded":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","Result.Result Http.Error Data.Project.Concise.Concise"],"PickSubtitleFor":["String.String"],"SubtitleSelected":["String.String","File.File"],"SubtitleLoaded":["String.String","String.String","String.String"],"SubtitleUploaded":["String.String","Result.Result (API.Request.Error Data.Project.Concise.SubtitleError) Data.Project.Concise.Concise"],"OpenUploader":[],"CloseUploaderWhenCompleted":[],"ReviewSubtitle":["String.String"],"StopReviewingSubtitle":[],"RemoveSubtitleFor":["String.String"]}},"Component.Project.Msg.ViewType":{"args":[],"tags":{"Hidden":[],"Small":[],"Normal":[],"Large":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Data.Video.Gif.Error":{"args":[],"tags":{"IntervalTooSmall":[],"SourceFileNotFound":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Data.File.Object.Key":{"args":[],"tags":{"Key":["List.List String.String"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}},"Http.Progress":{"args":[],"tags":{"Sending":["{ sent : Basics.Int, size : Basics.Int }"],"Receiving":["{ received : Basics.Int, size : Maybe.Maybe Basics.Int }"]}},"Data.Project.SegmentContent.SegmentContent":{"args":[],"tags":{"FrameSequence":["Data.Video.Segment.Segment","Maybe.Maybe Data.Video.Gif.Gif"],"GifFromVideo":["Data.Video.Gif.Gif","Data.Video.Segment.Segment"]}},"Data.Uploader.Media.Subtitle":{"args":[],"tags":{"Subtitle":["Basics.Int","File.File"]}},"Data.Project.Concise.SubtitleError":{"args":[],"tags":{"InvalidSubtitle":[]}},"Data.Project.UserContent.UserContent":{"args":[],"tags":{"PlainText":["String.String"],"Picture":["Data.File.Object.Key"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Data.Uploader.Media.Video":{"args":[],"tags":{"Video":["File.File"]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Data.Video.Segment.Segment":{"args":[],"tags":{"Segment":["Data.Video.Frame.Frame","List.List Data.Video.Frame.Frame"]}}}}})}});}(this));
 },{}],"js/app.js":[function(require,module,exports) {
 "use strict";
 
