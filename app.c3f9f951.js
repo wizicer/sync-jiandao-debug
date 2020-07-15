@@ -22390,9 +22390,9 @@ var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty(
 var $author$project$Data$Env$toDownloadLink = function (env) {
 	switch (env.$) {
 		case 'Debugging':
-			return 'https://editool.blob.core.chinacloudapi.cn/devclient/editool.exe';
+			return 'https://editooltest.blob.core.chinacloudapi.cn/devclient/editool.exe';
 		case 'PreRelease':
-			return 'https://editool.blob.core.chinacloudapi.cn/qaclient/editool.exe';
+			return 'https://editooltest.blob.core.chinacloudapi.cn/qaclient/editool.exe';
 		default:
 			return 'https://editool.blob.core.chinacloudapi.cn/client/editool.exe';
 	}
