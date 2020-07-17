@@ -12942,7 +12942,7 @@ var $author$project$Request$Project$get = F2(
 							'Id',
 							$elm$json$Json$Encode$string(uuid))
 						])),
-				timeout: $elm$core$Maybe$Just(10000),
+				timeout: $elm$core$Maybe$Just(300000),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
 					_List_fromArray(
@@ -14000,7 +14000,7 @@ var $author$project$Request$Helper$deleteResource = function (r) {
 			expect: $author$project$Request$Helper$expectDeletion(r.handler),
 			headers: _List_Nil,
 			method: 'POST',
-			timeout: $elm$core$Maybe$Just(5000),
+			timeout: $elm$core$Maybe$Just(300000),
 			tracker: $elm$core$Maybe$Nothing,
 			url: r.url
 		});
@@ -15249,7 +15249,7 @@ var $author$project$Request$Project$addSubtitle = F4(
 				errorDecoder: $author$project$Data$Project$Concise$subtitleErrorDecoder,
 				handler: handler(uuid),
 				payload: A3($author$project$Data$Project$Concise$subtitleEncoder, uuid, ext, content),
-				timeout: $elm$core$Maybe$Just(10000),
+				timeout: $elm$core$Maybe$Just(300000),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
 					_List_fromArray(
@@ -15286,7 +15286,7 @@ var $author$project$Request$Project$new = F3(
 					A2($elm$json$Json$Decode$field, 'Video', $author$project$Data$Project$Concise$decoder)),
 				headers: _List_Nil,
 				method: 'POST',
-				timeout: $elm$core$Maybe$Just(300000),
+				timeout: $elm$core$Maybe$Just(3600000),
 				tracker: $elm$core$Maybe$Just(trackerID),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
@@ -15329,7 +15329,7 @@ var $author$project$Request$Project$removeSubtitle = F2(
 				payload: $author$project$Data$Project$Concise$uuidsEncoder(
 					_List_fromArray(
 						[uuid])),
-				timeout: $elm$core$Maybe$Just(10000),
+				timeout: $elm$core$Maybe$Just(300000),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
 					_List_fromArray(
@@ -15637,7 +15637,7 @@ var $author$project$Request$Project$update = F2(
 				errorDecoder: $author$project$Data$Project$Concise$updateErrorDecoder,
 				handler: handler,
 				payload: changes,
-				timeout: $elm$core$Maybe$Just(10000),
+				timeout: $elm$core$Maybe$Just(300000),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
 					_List_fromArray(
@@ -16132,7 +16132,7 @@ var $author$project$Request$Project$export = F2(
 				errorDecoder: $author$project$Data$Project$HtmlExport$errorDecoder,
 				handler: handler,
 				payload: $author$project$Data$Project$HtmlExport$encoder(project),
-				timeout: $elm$core$Maybe$Just(180000),
+				timeout: $elm$core$Maybe$Just(3600000),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
 					_List_fromArray(
@@ -16149,7 +16149,7 @@ var $author$project$Request$Project$getSize = F2(
 				errorDecoder: $author$project$Data$Project$HtmlExport$errorDecoder,
 				handler: handler,
 				payload: $author$project$Data$Project$HtmlExport$encoder(project),
-				timeout: $elm$core$Maybe$Just(30000),
+				timeout: $elm$core$Maybe$Just(1200000),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
 					_List_fromArray(
@@ -16388,7 +16388,7 @@ var $author$project$Request$Project$save = F2(
 				errorDecoder: $author$project$Data$Project$Saving$errorDecoder,
 				handler: handler,
 				payload: $author$project$Data$Project$Saving$encoder(project),
-				timeout: $elm$core$Maybe$Just(10000),
+				timeout: $elm$core$Maybe$Just(300000),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
 					_List_fromArray(
@@ -16898,7 +16898,7 @@ var $author$project$Request$Gif$process = F3(
 					$author$project$Data$Video$Gif$processConfigEncoder,
 					uuid,
 					_Utils_Tuple2(start, end)),
-				timeout: $elm$core$Maybe$Just(60000),
+				timeout: $elm$core$Maybe$Just(1200000),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
 					_List_fromArray(
@@ -19863,12 +19863,24 @@ var $author$project$Component$Portal$View$Config$viewProjectConfig = F5(
 			} else {
 				var x = selected.a;
 				var xs = selected.b;
+				var projects = A2($elm$core$List$cons, x, xs);
+				var processingExists = A2(
+					$elm$core$List$any,
+					function (p) {
+						var _v2 = p.status;
+						if (_v2.$ === 'Processing') {
+							return true;
+						} else {
+							return false;
+						}
+					},
+					projects);
 				var processedExists = A2(
 					$elm$core$List$any,
 					function (p) {
-						return _Utils_eq(p.status, $author$project$Data$Project$Concise$Processed);
+						return !_Utils_eq(p.status, $author$project$Data$Project$Concise$Uploaded);
 					},
-					A2($elm$core$List$cons, x, xs));
+					projects);
 				return A2(
 					$elm$html$Html$div,
 					_List_fromArray(
@@ -19877,7 +19889,7 @@ var $author$project$Component$Portal$View$Config$viewProjectConfig = F5(
 						]),
 					A2(
 						$elm$core$List$cons,
-						A2(
+						(!processingExists) ? A2(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
@@ -19890,7 +19902,7 @@ var $author$project$Component$Portal$View$Config$viewProjectConfig = F5(
 								[
 									$elm$html$Html$text(
 									$author$project$Translations$Page$Portal$batchRemovePickedVideos(trn))
-								])),
+								])) : A2($elm$html$Html$div, _List_Nil, _List_Nil),
 						(!processedExists) ? _List_fromArray(
 							[
 								A2(
