@@ -12955,6 +12955,7 @@ var $author$project$Component$Project$Main$init = function (uuid) {
 		$author$project$Component$Project$Model$Loading(uuid),
 		A2($author$project$Request$Project$get, $author$project$Component$Project$Msg$ProjectLoaded, uuid));
 };
+var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $author$project$Port$removeBeforeUnloadPrompt = _Platform_outgoingPort(
 	'removeBeforeUnloadPrompt',
@@ -13010,16 +13011,23 @@ var $author$project$Main$setRoute = F2(
 						A2($author$project$Route$replaceUrl, model.key, $author$project$Route$Portal));
 				case 'Portal':
 					var _v2 = maybeRoute.a;
-					return _Utils_Tuple2(
-						_Utils_update(
+					var _v3 = model.currentPage;
+					if (_v3.$ === 'Project') {
+						return _Utils_Tuple2(
 							model,
-							{currentPage: $author$project$Main$Portal}),
-						$author$project$Port$removeBeforeUnloadPrompt(_Utils_Tuple0));
+							$elm$browser$Browser$Navigation$load('/portal/'));
+					} else {
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{currentPage: $author$project$Main$Portal}),
+							$author$project$Port$removeBeforeUnloadPrompt(_Utils_Tuple0));
+					}
 				default:
 					var uuid = maybeRoute.a.a;
-					var _v3 = $author$project$Component$Project$Main$init(uuid);
-					var pageModel = _v3.a;
-					var pageCmd = _v3.b;
+					var _v4 = $author$project$Component$Project$Main$init(uuid);
+					var pageModel = _v4.a;
+					var pageCmd = _v4.b;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -13674,7 +13682,6 @@ var $author$project$Component$Project$Main$isLoaded = function (model) {
 		return false;
 	}
 };
-var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
 var $elm$browser$Browser$Navigation$reload = _Browser_reload(false);
 var $author$project$Route$reload = $elm$browser$Browser$Navigation$reload;
@@ -17860,7 +17867,7 @@ var $author$project$Component$Project$Main$updateLoaded = F4(
 						{
 							confirmNavigatingAway: $elm$core$Maybe$Just($author$project$Route$Portal)
 						}),
-					$elm$core$Platform$Cmd$none);
+					$author$project$Port$removeBeforeUnloadPrompt(_Utils_Tuple0));
 			case 'StayOnPage':
 				return _Utils_Tuple3(
 					project,
@@ -22838,10 +22845,20 @@ app.ports.scrollIntoView.subscribe(function (nodeID) {
 var promptUserBeforeUnload = function promptUserBeforeUnload(event) {
   event.preventDefault();
   event.returnValue = '';
+  /*
+      Case: Uesr click go-back button -> Prompt(leave or cancel ?) -> Cancel
+    ----------------------------------------------------------------------------------------------
+      Probs: In this case, although the "promptUserBeforeUnload" prevent the redirection, the url was changed.
+    -----------------------------------------------------------------------------------------------------------
+      Solution: To avoid the troubles brought by the changed url, we have to: (1) get the url of current page (2) push the url to history
+  */
+
+  history.pushState(null, "", window.url); // (2) push the url to history
 };
 
 app.ports.addBeforeUnloadPrompt.subscribe(function () {
   window.addEventListener('beforeunload', promptUserBeforeUnload);
+  window.url = location.pathname; // (1) get the url of currentpage
 });
 app.ports.removeBeforeUnloadPrompt.subscribe(function () {
   window.removeEventListener('beforeunload', promptUserBeforeUnload);
