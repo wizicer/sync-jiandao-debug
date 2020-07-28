@@ -20463,7 +20463,7 @@ var $author$project$Component$Project$View$Preview$viewSegmentContent = F3(
 								$author$project$Data$Project$SegmentContent$getMediaForRemote(content)));
 					}
 				}(),
-					$elm$html$Html$Attributes$class('my-1 w-full h-auto')
+					$elm$html$Html$Attributes$class('preview-img')
 				]),
 			_List_Nil);
 	});
@@ -20509,25 +20509,33 @@ var $author$project$Component$Project$View$Preview$viewUserContent = function (c
 };
 var $author$project$Component$Project$View$Preview$viewContent = F3(
 	function (uuid, base, content) {
-		_v0$2:
-		while (true) {
-			if (content.$ === 'FromSegment') {
-				if (!content.a) {
-					var segmentContent = content.b;
-					return A3($author$project$Component$Project$View$Preview$viewSegmentContent, uuid, base, segmentContent);
-				} else {
-					break _v0$2;
-				}
-			} else {
-				if (!content.b) {
-					var userContent = content.c;
-					return $author$project$Component$Project$View$Preview$viewUserContent(userContent);
-				} else {
-					break _v0$2;
-				}
-			}
-		}
-		return $elm$html$Html$text('');
+		return A2(
+			$elm$html$Html$p,
+			_List_Nil,
+			_List_fromArray(
+				[
+					function () {
+					_v0$2:
+					while (true) {
+						if (content.$ === 'FromSegment') {
+							if (!content.a) {
+								var segmentContent = content.b;
+								return A3($author$project$Component$Project$View$Preview$viewSegmentContent, uuid, base, segmentContent);
+							} else {
+								break _v0$2;
+							}
+						} else {
+							if (!content.b) {
+								var userContent = content.c;
+								return $author$project$Component$Project$View$Preview$viewUserContent(userContent);
+							} else {
+								break _v0$2;
+							}
+						}
+					}
+					return $elm$html$Html$text('');
+				}()
+				]));
 	});
 var $author$project$Component$Project$View$Preview$viewPreviewer = F2(
 	function (_v0, base) {
