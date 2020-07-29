@@ -15955,7 +15955,7 @@ var $author$project$Request$Poster$get = function (handler) {
 				_List_Nil)
 		});
 };
-var $author$project$Component$Project$Msg$Small = {$: 'Small'};
+var $author$project$Component$Project$Msg$Normal = {$: 'Normal'};
 var $author$project$Data$UndoList$UndoList = F3(
 	function (past, present, future) {
 		return {future: future, past: past, present: present};
@@ -16011,7 +16011,7 @@ var $author$project$Component$Project$Main$initLoaded = function (project) {
 			textBeingEdited: $elm$core$Maybe$Nothing,
 			userContentIndexToAssign: 1 + $author$project$Data$Project$Content$maxAssignedIndex(
 				$elm$core$Array$toList(project.workingData)),
-			viewType: $author$project$Component$Project$Msg$Small
+			viewType: $author$project$Component$Project$Msg$Normal
 		});
 };
 var $author$project$Component$Project$Msg$ProjectExported = function (a) {
@@ -18343,7 +18343,7 @@ var $author$project$Component$Portal$Uploader$view = F4(
 					A2($author$project$Component$Portal$Uploader$viewCollection, trn, items)
 				]));
 	});
-var $author$project$View$Layout$appbarHeight = '4.5rem';
+var $author$project$View$Layout$appbarHeight = '3rem';
 var $elm$html$Html$img = _VirtualDom_node('img');
 var $author$project$Route$linkTo = A2($elm$core$Basics$composeL, $elm$html$Html$Attributes$href, $author$project$Route$routeToString);
 var $elm$html$Html$Attributes$src = function (url) {
@@ -18380,7 +18380,7 @@ var $author$project$View$Layout$viewAppbar = function (action) {
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$src('/assets/logo.png'),
-										$elm$html$Html$Attributes$class('h-full w-auto')
+										$elm$html$Html$Attributes$class('h-auto w-auto')
 									]),
 								_List_Nil)
 							]));
@@ -18400,7 +18400,7 @@ var $author$project$View$Layout$viewAppbar = function (action) {
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$src('/assets/logo.png'),
-										$elm$html$Html$Attributes$class('h-full w-auto')
+										$elm$html$Html$Attributes$class('h-auto w-auto')
 									]),
 								_List_Nil)
 							]));
@@ -20681,7 +20681,7 @@ var $author$project$Component$Project$View$Preview$view = F7(
 	});
 var $author$project$Component$Project$Msg$Hidden = {$: 'Hidden'};
 var $author$project$Component$Project$Msg$Large = {$: 'Large'};
-var $author$project$Component$Project$Msg$Normal = {$: 'Normal'};
+var $author$project$Component$Project$Msg$Small = {$: 'Small'};
 var $author$project$Translations$Page$Project$ViewType$hidden = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.view_type.hidden');
 };
@@ -21380,7 +21380,7 @@ var $author$project$Component$Project$View$Content$viewPlainText = F3(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('plain-text w-1/2 lg:w-1/3')
+						$elm$html$Html$Attributes$class('plain-text w-1/2 lg:w-2/5')
 					]),
 				_List_fromArray(
 					[
@@ -21856,7 +21856,7 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('w-1/2 lg:w-1/3 p-1 relative')
+						$elm$html$Html$Attributes$class('w-1/2 lg:w-2/5 p-1 relative')
 					]),
 				_List_fromArray(
 					[
