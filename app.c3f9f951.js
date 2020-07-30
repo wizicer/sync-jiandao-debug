@@ -126,7 +126,7 @@ module.exports = {
     "error": {
       "bad_url": "请求的URL格式不正确",
       "timeout": "请求超时",
-      "network_error": "无法连接",
+      "network_error": "无法连接网络",
       "bad_status": "无法完成请求",
       "bad_body": "返回数据的格式不正确"
     },
@@ -148,16 +148,16 @@ module.exports = {
     "uploading_video": "视频上传中",
     "uploading_subtitle": "字幕上传中",
     "uploaded": "上传完成",
-    "failed_to_upload_video": "视频上传失败",
-    "failed_to_upload_subtitle": "字幕上传失败"
+    "failed_to_upload_video": "视频上传失败，请刷新本页面后重试",
+    "failed_to_upload_subtitle": "字幕上传失败，请刷新本页面后重试"
   },
   "native_client": {
     "attempting_to_launch": "尝试启动中……",
     "attempting_to_connect": "尝试连接中……",
-    "prompt_part1": "如果浏览器未提示任何信息，请",
+    "prompt_part1": "请",
     "prompt_part2": "点击此处",
-    "prompt_part3": "尝试启动，或",
-    "prompt_part4": "下载并运行EDITOOL",
+    "prompt_part3": "启动剪刀兔客户端，如尚未安装，请",
+    "prompt_part4": "下载并运行客户端",
     "prompt_part5": "。",
     "connected": "已连接",
     "incompatible": "本地客户端版本不兼容",
@@ -171,6 +171,8 @@ module.exports = {
       "page_title": "视频列表-剪刀兔",
       "add_files": "添加",
       "add_files_empty_state": "点击添加视频或字幕文件",
+      "support_video_format": "支持视频格式：mp4, flv, avi, wmv, mov, webm, mpeg, m4v, mpg",
+      "support_subtitle_format": "支持字幕格式：srt, vtt",
       "choose_presets": "选择视频处理预设",
       "start_processing": "开始",
       "remove_picked_video": "删除",
@@ -186,8 +188,8 @@ module.exports = {
       "btn_review_subtitle": "更换或移除字幕",
       "btn_add_subtitle": "添加字幕",
       "btn_delete_project": "删除项目",
-      "btn_edit_project": "进入项目",
-      "deletion_confirmation": "你确定要删除吗？",
+      "btn_edit_project": "开始编辑",
+      "deletion_confirmation": "确定要删除吗？",
       "have_upload": "已上传{{uploaded_num}}，剩余{{remain_num}}/{{max_num}}"
     },
     "project": {
@@ -212,17 +214,17 @@ module.exports = {
         "exporting_in_progress": "发布中",
         "frontend_version": "前端版本",
         "native_client_version": "Native Client 版本",
-        "project_size": "当前项目总大小",
+        "project_size": "当前图文总大小",
         "stop_previewing": "关闭"
       },
       "right_panel": {
         "hidden_content": "已删除",
         "restore_hidden_content": "恢复",
         "new_textual_content": "新增文本",
-        "project_size_label": "总大小：",
+        "project_size_label": "当前图文总大小：",
         "btn_drag_handle": "拖动",
-        "btn_convert_to_gif": "转换成GIF",
-        "btn_revert_back_to_frames": "转换成主图",
+        "btn_convert_to_gif": "开启GIF",
+        "btn_revert_back_to_frames": "关闭GIF",
         "btn_add_text": "添加文字段落",
         "btn_delete": "删除",
         "btn_merge": "合并至上个段落"
@@ -230,9 +232,9 @@ module.exports = {
       "view_type": {
         "leading_text": "选择版式：",
         "hidden": "无",
-        "small": "小",
-        "normal": "中",
-        "large": "大"
+        "small": "小图",
+        "normal": "中图",
+        "large": "大图"
       }
     }
   },
