@@ -19103,12 +19103,18 @@ var $author$project$View$Icon$add = A2($author$project$Util$flip, $author$projec
 var $author$project$Translations$Page$Portal$addFilesEmptyState = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.add_files_empty_state');
 };
+var $author$project$Translations$Page$Portal$supportSubtitleFormat = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.support_subtitle_format');
+};
+var $author$project$Translations$Page$Portal$supportVideoFormat = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.portal.support_video_format');
+};
 var $author$project$Component$Portal$View$Collection$viewProjectCollectionEmptyState = function (trn) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('w-full h-64 max-h-full flex flex-col items-center justify-center text-grey-600 cursor-pointer'),
+				$elm$html$Html$Attributes$class('w-3/5 h-80 max-h-full flex flex-col items-center justify-center cursor-pointer mt-20 border-grey-dashed'),
 				$elm$html$Html$Events$onClick($author$project$Component$Portal$Msg$PickFiles)
 			]),
 		_List_fromArray(
@@ -19127,12 +19133,34 @@ var $author$project$Component$Portal$View$Collection$viewProjectCollectionEmptyS
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('mt-8')
+						$elm$html$Html$Attributes$class('mt-8 text-blue')
 					]),
 				_List_fromArray(
 					[
 						$elm$html$Html$text(
 						$author$project$Translations$Page$Portal$addFilesEmptyState(trn))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('mt-8 text-sm')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$author$project$Translations$Page$Portal$supportVideoFormat(trn))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('text-sm')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$author$project$Translations$Page$Portal$supportSubtitleFormat(trn))
 					]))
 			]));
 };

@@ -1393,6 +1393,10 @@ a.btn:hover {
   margin-bottom: 2rem;
 }
 
+.mt-20 {
+  margin-top: 5rem;
+}
+
 .max-h-full {
   max-height: 100%;
 }
@@ -1710,6 +1714,10 @@ a.btn:hover {
   width: 33.333333%;
 }
 
+.w-3\/5 {
+  width: 60%;
+}
+
 .w-full {
   width: 100%;
 }
@@ -1753,12 +1761,20 @@ a.btn:hover {
   border: 1px solid #bdbdbd;
 }
 
+.border-grey-dashed {
+  border: 4px dashed #e2e8f0;
+}
+
 .bg-overlay {
   background-color: rgba(64, 64, 64, .5);
 }
 
 .h-7 {
   height: 1.75rem;
+}
+
+.h-80 {
+  height: 25rem;
 }
 
 .w-mobile {
