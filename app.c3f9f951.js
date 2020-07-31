@@ -18378,7 +18378,7 @@ var $author$project$View$Layout$viewAppbar = F2(
 								[
 									$elm$html$Html$Events$onClick(act),
 									$elm$html$Html$Attributes$id('logo'),
-									$elm$html$Html$Attributes$class('px-2')
+									$elm$html$Html$Attributes$class('px-2 flex')
 								]),
 							_List_fromArray(
 								[
@@ -18387,9 +18387,20 @@ var $author$project$View$Layout$viewAppbar = F2(
 									_List_fromArray(
 										[
 											$elm$html$Html$Attributes$src('/assets/logo.png'),
-											$elm$html$Html$Attributes$class('h-auto w-auto')
+											$elm$html$Html$Attributes$class('h-10 w-auto inline')
 										]),
-									_List_Nil)
+									_List_Nil),
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('text-2xl text-white mt-1 font-thin')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$logoBrand(trn))
+										]))
 								]));
 					} else {
 						return A2(
