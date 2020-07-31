@@ -1263,6 +1263,10 @@ a.btn:hover {
   flex-shrink: 0;
 }
 
+.font-thin {
+  font-weight: 200;
+}
+
 .font-bold {
   font-weight: 700;
 }
@@ -1319,6 +1323,10 @@ a.btn:hover {
   font-size: 1.125rem;
 }
 
+.text-2xl {
+  font-size: 1.5rem;
+}
+
 .my-1 {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
@@ -1351,6 +1359,10 @@ a.btn:hover {
 
 .mb-0 {
   margin-bottom: 0;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
 }
 
 .ml-1 {

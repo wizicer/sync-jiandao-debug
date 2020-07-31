@@ -122,6 +122,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 },{}],"../translation/chi.json":[function(require,module,exports) {
 module.exports = {
   "default_title": "剪刀兔",
+  "logo_brand": "剪刀兔",
   "request": {
     "error": {
       "bad_url": "请求的URL格式不正确",
@@ -18348,68 +18349,83 @@ var $author$project$Component$Portal$Uploader$view = F4(
 var $author$project$View$Layout$appbarHeight = '3rem';
 var $elm$html$Html$img = _VirtualDom_node('img');
 var $author$project$Route$linkTo = A2($elm$core$Basics$composeL, $elm$html$Html$Attributes$href, $author$project$Route$routeToString);
+var $author$project$Translations$logoBrand = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'logo_brand');
+};
 var $elm$html$Html$Attributes$src = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
 		'src',
 		_VirtualDom_noJavaScriptOrHtmlUri(url));
 };
-var $author$project$View$Layout$viewAppbar = function (action) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('w-screen flex flex-row justify-between items-stretch bg-theme-600'),
-				A2($elm$html$Html$Attributes$style, 'height', $author$project$View$Layout$appbarHeight)
-			]),
-		_List_fromArray(
-			[
-				function () {
-				if (action.$ === 'Just') {
-					var act = action.a;
-					return A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Events$onClick(act),
-								$elm$html$Html$Attributes$id('logo'),
-								$elm$html$Html$Attributes$class('px-2')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$img,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$src('/assets/logo.png'),
-										$elm$html$Html$Attributes$class('h-auto w-auto')
-									]),
-								_List_Nil)
-							]));
-				} else {
-					return A2(
-						$elm$html$Html$a,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$id('logo'),
-								$elm$html$Html$Attributes$class('px-2'),
-								$author$project$Route$linkTo($author$project$Route$Home)
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$img,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$src('/assets/logo.png'),
-										$elm$html$Html$Attributes$class('h-auto w-auto')
-									]),
-								_List_Nil)
-							]));
-				}
-			}()
-			]));
-};
+var $author$project$View$Layout$viewAppbar = F2(
+	function (trn, action) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('w-screen flex flex-row justify-between items-stretch bg-theme-600'),
+					A2($elm$html$Html$Attributes$style, 'height', $author$project$View$Layout$appbarHeight)
+				]),
+			_List_fromArray(
+				[
+					function () {
+					if (action.$ === 'Just') {
+						var act = action.a;
+						return A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick(act),
+									$elm$html$Html$Attributes$id('logo'),
+									$elm$html$Html$Attributes$class('px-2')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$img,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$src('/assets/logo.png'),
+											$elm$html$Html$Attributes$class('h-auto w-auto')
+										]),
+									_List_Nil)
+								]));
+					} else {
+						return A2(
+							$elm$html$Html$a,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$id('logo'),
+									$elm$html$Html$Attributes$class('px-2 flex'),
+									$author$project$Route$linkTo($author$project$Route$Home)
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$img,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$src('/assets/logo.png'),
+											$elm$html$Html$Attributes$class('h-10 w-auto inline')
+										]),
+									_List_Nil),
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('text-2xl text-white mt-1 font-thin')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$logoBrand(trn))
+										]))
+								]));
+					}
+				}()
+				]));
+	});
 var $author$project$View$Layout$viewBody = function (attrs) {
 	return $elm$html$Html$div(
 		_Utils_ap(
@@ -20062,7 +20078,7 @@ var $author$project$Component$Portal$Main$view = F2(
 			var availablePresets = _v0.b.a;
 			return _List_fromArray(
 				[
-					$author$project$View$Layout$viewAppbar($elm$core$Maybe$Nothing),
+					A2($author$project$View$Layout$viewAppbar, trn, $elm$core$Maybe$Nothing),
 					A2(
 					$author$project$View$Layout$viewBody,
 					_List_fromArray(
@@ -22325,7 +22341,9 @@ var $author$project$Component$Project$Main$view = F3(
 	function (trn, versions, model) {
 		return _List_fromArray(
 			[
-				$author$project$View$Layout$viewAppbar(
+				A2(
+				$author$project$View$Layout$viewAppbar,
+				trn,
 				$elm$core$Maybe$Just($author$project$Component$Project$Msg$NavigateToPortal)),
 				A2(
 				$author$project$View$Layout$viewBody,
