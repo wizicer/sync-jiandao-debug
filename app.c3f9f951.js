@@ -264,6 +264,23 @@ module.exports = {
   },
   "project_saving": {
     "source_file_not_found": "无法找到视频源文件"
+  },
+  "navbar_link": {
+    "title1": "剪刀兔官网",
+    "img_src1": "/assets/home.svg",
+    "link1": "https://www.editool.cn",
+    "title2": "常见问题",
+    "img_src2": "/assets/help.svg",
+    "link2": "https://www.editool.cn",
+    "title3": "教程",
+    "img_src3": "/assets/menu.svg",
+    "link3": "https://www.editool.cn/docs/",
+    "title4": "not_defined",
+    "img_src4": "not_defined",
+    "link4": "not_defined",
+    "title5": "not_defined",
+    "img_src5": "not_defined",
+    "link5": "not_defined"
   }
 };
 },{}],"../src/Main.elm":[function(require,module,exports) {
@@ -18348,15 +18365,88 @@ var $author$project$Component$Portal$Uploader$view = F4(
 	});
 var $author$project$View$Layout$appbarHeight = '3rem';
 var $elm$html$Html$img = _VirtualDom_node('img');
-var $author$project$Route$linkTo = A2($elm$core$Basics$composeL, $elm$html$Html$Attributes$href, $author$project$Route$routeToString);
-var $author$project$Translations$logoBrand = function (translations) {
-	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'logo_brand');
-};
 var $elm$html$Html$Attributes$src = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
 		'src',
 		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
+var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty('target');
+var $author$project$View$Layout$displayLink = F3(
+	function (linkTitle, link, imgSrc) {
+		if (link === 'not_defined') {
+			return A2($elm$html$Html$div, _List_Nil, _List_Nil);
+		} else {
+			return A2(
+				$elm$html$Html$a,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('px-2 py-1 flex'),
+						$elm$html$Html$Attributes$title(linkTitle),
+						$elm$html$Html$Attributes$target('_blank'),
+						$elm$html$Html$Attributes$href(link)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$img,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$src(imgSrc),
+								$elm$html$Html$Attributes$class('h-10 w-auto inline')
+							]),
+						_List_Nil)
+					]));
+		}
+	});
+var $author$project$Translations$NavbarLink$imgSrc1 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.img_src1');
+};
+var $author$project$Translations$NavbarLink$imgSrc2 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.img_src2');
+};
+var $author$project$Translations$NavbarLink$imgSrc3 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.img_src3');
+};
+var $author$project$Translations$NavbarLink$imgSrc4 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.img_src4');
+};
+var $author$project$Translations$NavbarLink$imgSrc5 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.img_src5');
+};
+var $author$project$Translations$NavbarLink$link1 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.link1');
+};
+var $author$project$Translations$NavbarLink$link2 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.link2');
+};
+var $author$project$Translations$NavbarLink$link3 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.link3');
+};
+var $author$project$Translations$NavbarLink$link4 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.link4');
+};
+var $author$project$Translations$NavbarLink$link5 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.link5');
+};
+var $author$project$Route$linkTo = A2($elm$core$Basics$composeL, $elm$html$Html$Attributes$href, $author$project$Route$routeToString);
+var $author$project$Translations$logoBrand = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'logo_brand');
+};
+var $author$project$Translations$NavbarLink$title1 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.title1');
+};
+var $author$project$Translations$NavbarLink$title2 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.title2');
+};
+var $author$project$Translations$NavbarLink$title3 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.title3');
+};
+var $author$project$Translations$NavbarLink$title4 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.title4');
+};
+var $author$project$Translations$NavbarLink$title5 = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'navbar_link.title5');
 };
 var $author$project$View$Layout$viewAppbar = F2(
 	function (trn, action) {
@@ -18378,7 +18468,7 @@ var $author$project$View$Layout$viewAppbar = F2(
 								[
 									$elm$html$Html$Events$onClick(act),
 									$elm$html$Html$Attributes$id('logo'),
-									$elm$html$Html$Attributes$class('px-2 flex')
+									$elm$html$Html$Attributes$class('px-2 py-1 flex')
 								]),
 							_List_fromArray(
 								[
@@ -18408,7 +18498,7 @@ var $author$project$View$Layout$viewAppbar = F2(
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$id('logo'),
-									$elm$html$Html$Attributes$class('px-2 flex'),
+									$elm$html$Html$Attributes$class('px-2 py-1 flex'),
 									$author$project$Route$linkTo($author$project$Route$Home)
 								]),
 							_List_fromArray(
@@ -18434,7 +18524,41 @@ var $author$project$View$Layout$viewAppbar = F2(
 										]))
 								]));
 					}
-				}()
+				}(),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('flex')
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$author$project$View$Layout$displayLink,
+							$author$project$Translations$NavbarLink$title1(trn),
+							$author$project$Translations$NavbarLink$link1(trn),
+							$author$project$Translations$NavbarLink$imgSrc1(trn)),
+							A3(
+							$author$project$View$Layout$displayLink,
+							$author$project$Translations$NavbarLink$title2(trn),
+							$author$project$Translations$NavbarLink$link2(trn),
+							$author$project$Translations$NavbarLink$imgSrc2(trn)),
+							A3(
+							$author$project$View$Layout$displayLink,
+							$author$project$Translations$NavbarLink$title3(trn),
+							$author$project$Translations$NavbarLink$link3(trn),
+							$author$project$Translations$NavbarLink$imgSrc3(trn)),
+							A3(
+							$author$project$View$Layout$displayLink,
+							$author$project$Translations$NavbarLink$title4(trn),
+							$author$project$Translations$NavbarLink$link4(trn),
+							$author$project$Translations$NavbarLink$imgSrc4(trn)),
+							A3(
+							$author$project$View$Layout$displayLink,
+							$author$project$Translations$NavbarLink$title5(trn),
+							$author$project$Translations$NavbarLink$link5(trn),
+							$author$project$Translations$NavbarLink$imgSrc5(trn))
+						]))
 				]));
 	});
 var $author$project$View$Layout$viewBody = function (attrs) {
@@ -20782,7 +20906,7 @@ var $author$project$Component$Project$View$LeftPanel$viewFileName = F2(
 var $author$project$Component$Project$View$LeftPanel$viewPoster = $author$project$View$Markdown$viewUnsanitized(
 	_List_fromArray(
 		[
-			$elm$html$Html$Attributes$class('md-content my-4 px-4 py-2 bg-white shadow')
+			$elm$html$Html$Attributes$class('md-content my-4 px-4 py-2 bg-white shadow text-center')
 		]));
 var $author$project$Translations$Page$Project$LeftPanel$frontendVersion = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.frontend_version');
@@ -22472,7 +22596,6 @@ var $author$project$Translations$NativeClient$promptPart4 = function (translatio
 var $author$project$Translations$NativeClient$promptPart5 = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'native_client.prompt_part5');
 };
-var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty('target');
 var $author$project$Data$Env$toDownloadLink = function (env) {
 	switch (env.$) {
 		case 'Debugging':
