@@ -216,7 +216,9 @@ module.exports = {
         "frontend_version": "前端版本",
         "native_client_version": "Native Client 版本",
         "project_size": "当前图文总大小",
-        "stop_previewing": "关闭"
+        "stop_previewing": "关闭",
+        "copy_all": "全部选中",
+        "copy_all_prompt": "按Ctrl+C复制"
       },
       "right_panel": {
         "hidden_content": "已删除",
@@ -16018,6 +16020,7 @@ var $author$project$Component$Project$Main$initLoaded = function (project) {
 			confirmNavigatingAway: $elm$core$Maybe$Nothing,
 			exportingError: $elm$core$Maybe$Nothing,
 			frameToPreview: $elm$core$Maybe$Nothing,
+			isCopied: false,
 			isExportingInProgress: false,
 			isPreviewing: false,
 			lastSaved: project,
@@ -16049,6 +16052,7 @@ var $author$project$Port$addBeforeUnloadPrompt = _Platform_outgoingPort(
 	function ($) {
 		return $elm$json$Json$Encode$null;
 	});
+var $author$project$Port$copyAll = _Platform_outgoingPort('copyAll', $elm$json$Json$Encode$string);
 var $author$project$Data$File$Object$Remote = function (a) {
 	return {$: 'Remote', a: a};
 };
@@ -17740,8 +17744,16 @@ var $author$project$Component$Project$Main$updateLoaded = F4(
 					project,
 					_Utils_update(
 						substate,
-						{isPreviewing: false, projectExported: $elm$core$Maybe$Nothing}),
+						{isCopied: false, isPreviewing: false, projectExported: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none);
+			case 'CopyAll':
+				var prompt = msg.a;
+				return _Utils_Tuple3(
+					project,
+					_Utils_update(
+						substate,
+						{isCopied: true}),
+					$author$project$Port$copyAll(prompt));
 			case 'SaveProject':
 				var redirection = msg.a;
 				return _Utils_eq(present, substate.lastSaved) ? _Utils_Tuple3(
@@ -20338,6 +20350,9 @@ var $author$project$Component$Project$Main$viewError = F2(
 var $author$project$Component$Project$Msg$ChangeViewType = function (a) {
 	return {$: 'ChangeViewType', a: a};
 };
+var $author$project$Component$Project$Msg$CopyAll = function (a) {
+	return {$: 'CopyAll', a: a};
+};
 var $author$project$Component$Project$Msg$DismissExportingErrorPrompt = {$: 'DismissExportingErrorPrompt'};
 var $author$project$Component$Project$Msg$JumpTo = function (a) {
 	return {$: 'JumpTo', a: a};
@@ -20521,6 +20536,12 @@ var $author$project$Component$Project$View$Alert$view = F6(
 				]));
 	});
 var $author$project$Data$File$Object$Local = {$: 'Local'};
+var $author$project$Translations$Page$Project$LeftPanel$copyAll = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.copy_all');
+};
+var $author$project$Translations$Page$Project$LeftPanel$copyAllPrompt = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.left_panel.copy_all_prompt');
+};
 var $author$project$Translations$Page$Project$RightPanel$projectSizeLabel = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.project_size_label');
 };
@@ -20726,6 +20747,7 @@ var $author$project$Component$Project$View$Preview$viewPreviewer = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
+					$elm$html$Html$Attributes$id('copyAllTarget'),
 					$elm$html$Html$Attributes$class('flex flex-col items-stretch justify-start')
 				]),
 			A2(
@@ -20748,8 +20770,8 @@ var $author$project$View$Markdown$viewUnsanitized = function () {
 		{sanitize: false});
 	return $elm_explorations$markdown$Markdown$toHtmlWith(opts);
 }();
-var $author$project$Component$Project$View$Preview$view = F7(
-	function (trn, noOp, stopPreviewing, projectSize, projectExported, isPreviewing, project) {
+var $author$project$Component$Project$View$Preview$view = F9(
+	function (trn, noOp, stopPreviewing, copyAll, projectSize, projectExported, isPreviewing, isCopied, project) {
 		var viewFrom = F2(
 			function (base, info) {
 				return A4(
@@ -20821,6 +20843,44 @@ var $author$project$Component$Project$View$Preview$view = F7(
 									[
 										$elm$html$Html$Attributes$class('md-content bg-white w-mobile mt-2 mb-0 p-3 bg-grey-300')
 									]))),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('md-content bg-white w-mobile mt-2 mb-0 p-3 bg-grey-300 text-center')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('btn btn--theme w-24 h-10 inline'),
+											$elm$html$Html$Events$onClick(
+											copyAll(
+												$author$project$Translations$Page$Project$LeftPanel$copyAllPrompt(trn)))
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$Page$Project$LeftPanel$copyAll(trn))
+										])),
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$classList(
+											_List_fromArray(
+												[
+													_Utils_Tuple2('hidden', !isCopied)
+												]))
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Translations$Page$Project$LeftPanel$copyAllPrompt(trn))
+										]))
+								])),
 							A2(
 							$elm$html$Html$div,
 							_List_fromArray(
@@ -22460,7 +22520,7 @@ var $author$project$Component$Project$Main$viewLoaded = F4(
 					$author$project$Component$Project$Msg$JumpTo,
 					project.uuid,
 					$author$project$Data$Project$Content$allKeyFrames(project.workingData)),
-					A7($author$project$Component$Project$View$Preview$view, trn, $author$project$Component$Project$Msg$NoOp, $author$project$Component$Project$Msg$StopPreviewing, substate.projectSize, substate.projectExported, substate.isPreviewing, project),
+					A9($author$project$Component$Project$View$Preview$view, trn, $author$project$Component$Project$Msg$NoOp, $author$project$Component$Project$Msg$StopPreviewing, $author$project$Component$Project$Msg$CopyAll, substate.projectSize, substate.projectExported, substate.isPreviewing, substate.isCopied, project),
 					A6(
 					$author$project$Component$Project$View$LeftPanel$viewConfirmNavigatingAway,
 					trn,
@@ -22852,7 +22912,7 @@ var $author$project$Main$view = function (model) {
 };
 var $author$project$Main$main = $elm$browser$Browser$application(
 	{init: $author$project$Main$init, onUrlChange: $author$project$Main$onUrlChange, onUrlRequest: $author$project$Main$onUrlRequest, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
-_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Data.Project.Concise.Concise":{"args":[],"type":"{ uuid : String.String, name : String.String, hasSubtitle : Basics.Bool, params : Data.Video.Processing.Params.Params, status : Data.Project.Concise.Status }"},"Data.NativeClient.Meta":{"args":[],"type":"{ version : Data.Version.Version, isCompatible : Basics.Bool }"},"Data.Video.Processing.Params.Params":{"args":[],"type":"{ granularity : Data.Video.Processing.Params.Granularity, differentTypeMinDifference : Basics.Int, sameTypeMaxDifference : Basics.Int, similarTypeMaxDifference : Basics.Int, smoothTypeMinValue : Basics.Int, isSameCombined : Basics.Bool, shortNoneCombiningMaxDurationInMs : Basics.Int }"},"Data.Video.Processing.Preset.Preset":{"args":[],"type":"{ name : String.String, description : Maybe.Maybe String.String, params : Data.Video.Processing.Params.Params }"},"Data.Project.Project":{"args":[],"type":"{ uuid : String.String, name : String.String, workingData : Array.Array Data.Project.Content.Content }"},"Data.Project.Concise.StatusUpdate":{"args":[],"type":"{ uuid : String.String, status : Data.Project.Concise.Status }"},"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Data.Version.Version":{"args":[],"type":"{ major : Basics.Int, minor : Basics.Int, patch : Basics.Int, buildNo : Basics.Int }"},"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Data.Video.Frame.Frame":{"args":[],"type":"{ index : Basics.Int, localObjectKey : Data.File.Object.Key, time : Basics.Int }"},"Data.Video.Gif.Gif":{"args":[],"type":"{ localObjectKey : Data.File.Object.Key, fileSize : Data.FileSize.FileSize }"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"},"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"SetRoute":["Maybe.Maybe Route.Route"],"ClickedLink":["Browser.UrlRequest"],"TryReload":[],"PortalMsg":["Component.Portal.Msg.Msg"],"ProjectMsg":["Component.Project.Msg.Msg"],"NativeClientMsg":["Component.NativeClient.Msg.Msg"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Component.NativeClient.Msg.Msg":{"args":[],"tags":{"RequestMetaOfNativeClient":[],"NativeClientVersionInfoRequested":["Result.Result (API.Request.Error Data.NativeClient.MetaError) Data.NativeClient.Meta"],"WebsocketClosed":["Basics.Int"]}},"Component.Portal.Msg.Msg":{"args":[],"tags":{"ToggleExpertMode":[],"MsgForUploader":["Component.Portal.Msg.UploaderMsg"],"MsgForParams":["String.String","Data.Video.Processing.Params.Params","Component.Portal.Params.Msg"],"MsgForParamsKeeper":["Component.Portal.Msg.ParamsKeeperMsg"],"PresetsLoaded":["RemoteData.WebData (List.List Data.Video.Processing.Preset.Preset)"],"ProjectsLoaded":["RemoteData.WebData (List.List Data.Project.Concise.Concise)"],"PickFiles":[],"FilesSelected":["File.File","List.List File.File"],"SelectProject":["String.String","Basics.Bool"],"CheckAll":["Basics.Int","Basics.Int","List.List String.String"],"ConfirmDeletion":["Either.Either String.String ()"],"StopConfirmation":[],"DeleteProject":["String.String"],"BatchDeleteProjects":[],"ProjectsDeleted":["Set.Set String.String","Result.Result Http.Error ()"],"StartProcessingVideos":[],"VideoProcessingStarted":["Set.Set String.String","Result.Result (API.Request.Error Data.Project.Concise.ProcessingError) ()"],"ProcessingStatusUpdate":["Result.Result Json.Decode.Error Data.Project.Concise.StatusUpdate"],"StartOver":["String.String"],"SetProcessingPreset":["String.String","Data.Video.Processing.Preset.Preset"],"ProjectUpdated":["Result.Result (API.Request.Error Data.Project.Concise.UpdateError) Data.Project.Concise.Concise"],"SetSearchStr":["String.String"],"NoOp":[]}},"Component.Project.Msg.Msg":{"args":[],"tags":{"LoadProject":["String.String"],"MsgForEditing":["Component.Project.Msg.EditingMsg"],"ProjectLoaded":["Result.Result (API.Request.Error Data.Project.Error) Data.Project.Project"],"PosterLoaded":["Result.Result Http.Error String.String"],"StartPreviewing":[],"StopPreviewing":[],"ExportProject":[],"ProjectExported":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) ( Data.File.Object.Base, String.String )"],"DismissExportingErrorPrompt":[],"SeekTime":["Basics.Int"],"RequestProjectSize":[],"ProjectSizeRequested":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.FileSize.FileSize"],"JumpTo":["Basics.Int"],"NavigateToPortal":[],"StayOnPage":[],"ChangeBeforeUnloadPrompt":[],"ChangeViewType":["Component.Project.Msg.ViewType"],"SaveProject":["Maybe.Maybe Route.Route"],"ProjectSaved":["Maybe.Maybe Route.Route","Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"DismissSavingResultPrompt":[],"NoOp":[]}},"Route.Route":{"args":[],"tags":{"Home":[],"Portal":[],"Project":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Data.File.Object.Base":{"args":[],"tags":{"Local":[],"Remote":["Url.Url"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Data.Project.Content.Content":{"args":[],"tags":{"FromSegment":["Basics.Bool","Data.Project.SegmentContent.SegmentContent"],"FromUser":["Basics.Int","Basics.Bool","Data.Project.UserContent.UserContent"]}},"Component.Project.Msg.EditingMsg":{"args":[],"tags":{"ConvertToGif":["Basics.Int"],"GifProcessed":["( Basics.Int, Basics.Int )","Result.Result (API.Request.Error Data.Video.Gif.Error) Data.Video.Gif.Gif"],"RevertGif":["Basics.Int"],"AddPlainTextAfter":["Basics.Int"],"ToggleContentVisibility":["Basics.Int"],"RemoveContent":["Basics.Int"],"PreEdit":["Basics.Int"],"EditPlainText":["Basics.Int","String.String"],"FinishEditing":["Basics.Int"],"PreviewAsCover":["Data.Video.Frame.Frame"],"StopPreviewingAsCover":["Data.Video.Frame.Frame"],"MergeSections":["Basics.Int","Basics.Int","Data.Project.SegmentContent.SegmentContent"],"SplitSection":["Basics.Int","Basics.Int"],"StartMovingSection":["Basics.Int"],"StopMovingSection":[],"MoveSection":["Basics.Int","Basics.Int"],"MovingOver":["Basics.Int"],"SetKeyFrame":["Basics.Int","Basics.Int"],"UndoProject":[],"RedoProject":[],"HostMessage":["Component.Project.Msg.Msg"]}},"Either.Either":{"args":["a","b"],"tags":{"Left":["a"],"Right":["b"]}},"API.Request.Error":{"args":["e"],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int","e"],"BadBody":["Basics.Int","Json.Decode.Error"]}},"Data.Project.Error":{"args":[],"tags":{"ProjectNotFound":[]}},"Data.Project.HtmlExport.Error":{"args":[],"tags":{"MediaFilesMissing":["List.List Data.File.Object.Key"],"SourceFileNotFound":[]}},"Data.Project.Saving.Error":{"args":[],"tags":{"SourceFileNotFound":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Json.Decode.Error":{"args":[],"tags":{"Field":["String.String","Json.Decode.Error"],"Index":["Basics.Int","Json.Decode.Error"],"OneOf":["List.List Json.Decode.Error"],"Failure":["String.String","Json.Decode.Value"]}},"File.File":{"args":[],"tags":{"File":[]}},"Data.FileSize.FileSize":{"args":[],"tags":{"Bit":["Basics.Int"],"Byte":["Basics.Float"],"Kibibyte":["Basics.Float"],"Mebibyte":["Basics.Float"]}},"Data.Video.Processing.Params.Granularity":{"args":[],"tags":{"Rough":[],"Medium":[],"Detailed":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Data.NativeClient.MetaError":{"args":[],"tags":{"MalformedVersionNumber":[]}},"Component.Portal.Params.Msg":{"args":[],"tags":{"SetGranularity":["Data.Video.Processing.Params.Granularity"],"SetDifferentTypeMinDifference":["Basics.Int"],"SetSameTypeMaxDifference":["Basics.Int"],"SetSimilarTypeMaxDifference":["Basics.Int"],"SetSmoothTypeMinValue":["Basics.Int"],"SetIsSameCombined":["Basics.Bool"],"SetShortNoneCombiningMaxDurationInMs":["Basics.Int"],"NoOp":[]}},"Component.Portal.Msg.ParamsKeeperMsg":{"args":[],"tags":{"StartExportingParams":["Data.Video.Processing.Params.Params"],"CancelExportingParams":[],"ExportParams":["String.String"],"ParamsRequested":[],"ParamsSelected":["File.File"],"ParamsLoaded":["String.String"],"DismissImportingError":[]}},"Data.Project.Concise.ProcessingError":{"args":[],"tags":{"FileNotFound":[],"CannotDecodeVideo":[],"BadParameters":[],"OtherProcessingError":["String.String"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Loading":[],"Failure":["e"],"Success":["a"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Set.Set":{"args":["t"],"tags":{"Set_elm_builtin":["Dict.Dict t ()"]}},"Data.Project.Concise.Status":{"args":[],"tags":{"Uploaded":[],"Processing":["Basics.Float"],"Processed":[],"FailedToProcess":["API.Request.Error Data.Project.Concise.ProcessingError"]}},"String.String":{"args":[],"tags":{"String":[]}},"Data.Project.Concise.UpdateError":{"args":[],"tags":{"InvalidParams":[]}},"Component.Portal.Msg.UploaderMsg":{"args":[],"tags":{"UploadVideo":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","String.String"],"VideoUploading":["String.String","Http.Progress"],"VideoUploaded":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","Result.Result Http.Error Data.Project.Concise.Concise"],"PickSubtitleFor":["String.String"],"SubtitleSelected":["String.String","File.File"],"SubtitleLoaded":["String.String","String.String","String.String"],"SubtitleUploaded":["String.String","Result.Result (API.Request.Error Data.Project.Concise.SubtitleError) Data.Project.Concise.Concise"],"OpenUploader":[],"CloseUploaderWhenCompleted":[],"ReviewSubtitle":["String.String"],"StopReviewingSubtitle":[],"RemoveSubtitleFor":["String.String"]}},"Component.Project.Msg.ViewType":{"args":[],"tags":{"Hidden":[],"Small":[],"Normal":[],"Large":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Data.Video.Gif.Error":{"args":[],"tags":{"IntervalTooSmall":[],"SourceFileNotFound":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Data.File.Object.Key":{"args":[],"tags":{"Key":["List.List String.String"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}},"Http.Progress":{"args":[],"tags":{"Sending":["{ sent : Basics.Int, size : Basics.Int }"],"Receiving":["{ received : Basics.Int, size : Maybe.Maybe Basics.Int }"]}},"Data.Project.SegmentContent.SegmentContent":{"args":[],"tags":{"FrameSequence":["Data.Video.Segment.Segment","Maybe.Maybe Data.Video.Gif.Gif"],"GifFromVideo":["Data.Video.Gif.Gif","Data.Video.Segment.Segment"]}},"Data.Uploader.Media.Subtitle":{"args":[],"tags":{"Subtitle":["Basics.Int","File.File"]}},"Data.Project.Concise.SubtitleError":{"args":[],"tags":{"InvalidSubtitle":[]}},"Data.Project.UserContent.UserContent":{"args":[],"tags":{"PlainText":["String.String"],"Picture":["Data.File.Object.Key"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Data.Uploader.Media.Video":{"args":[],"tags":{"Video":["File.File"]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Data.Video.Segment.Segment":{"args":[],"tags":{"Segment":["Data.Video.Frame.Frame","List.List Data.Video.Frame.Frame"]}}}}})}});}(this));
+_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Data.Project.Concise.Concise":{"args":[],"type":"{ uuid : String.String, name : String.String, hasSubtitle : Basics.Bool, params : Data.Video.Processing.Params.Params, status : Data.Project.Concise.Status }"},"Data.NativeClient.Meta":{"args":[],"type":"{ version : Data.Version.Version, isCompatible : Basics.Bool }"},"Data.Video.Processing.Params.Params":{"args":[],"type":"{ granularity : Data.Video.Processing.Params.Granularity, differentTypeMinDifference : Basics.Int, sameTypeMaxDifference : Basics.Int, similarTypeMaxDifference : Basics.Int, smoothTypeMinValue : Basics.Int, isSameCombined : Basics.Bool, shortNoneCombiningMaxDurationInMs : Basics.Int }"},"Data.Video.Processing.Preset.Preset":{"args":[],"type":"{ name : String.String, description : Maybe.Maybe String.String, params : Data.Video.Processing.Params.Params }"},"Data.Project.Project":{"args":[],"type":"{ uuid : String.String, name : String.String, workingData : Array.Array Data.Project.Content.Content }"},"Data.Project.Concise.StatusUpdate":{"args":[],"type":"{ uuid : String.String, status : Data.Project.Concise.Status }"},"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Data.Version.Version":{"args":[],"type":"{ major : Basics.Int, minor : Basics.Int, patch : Basics.Int, buildNo : Basics.Int }"},"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Data.Video.Frame.Frame":{"args":[],"type":"{ index : Basics.Int, localObjectKey : Data.File.Object.Key, time : Basics.Int }"},"Data.Video.Gif.Gif":{"args":[],"type":"{ localObjectKey : Data.File.Object.Key, fileSize : Data.FileSize.FileSize }"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"},"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"SetRoute":["Maybe.Maybe Route.Route"],"ClickedLink":["Browser.UrlRequest"],"TryReload":[],"PortalMsg":["Component.Portal.Msg.Msg"],"ProjectMsg":["Component.Project.Msg.Msg"],"NativeClientMsg":["Component.NativeClient.Msg.Msg"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Component.NativeClient.Msg.Msg":{"args":[],"tags":{"RequestMetaOfNativeClient":[],"NativeClientVersionInfoRequested":["Result.Result (API.Request.Error Data.NativeClient.MetaError) Data.NativeClient.Meta"],"WebsocketClosed":["Basics.Int"]}},"Component.Portal.Msg.Msg":{"args":[],"tags":{"ToggleExpertMode":[],"MsgForUploader":["Component.Portal.Msg.UploaderMsg"],"MsgForParams":["String.String","Data.Video.Processing.Params.Params","Component.Portal.Params.Msg"],"MsgForParamsKeeper":["Component.Portal.Msg.ParamsKeeperMsg"],"PresetsLoaded":["RemoteData.WebData (List.List Data.Video.Processing.Preset.Preset)"],"ProjectsLoaded":["RemoteData.WebData (List.List Data.Project.Concise.Concise)"],"PickFiles":[],"FilesSelected":["File.File","List.List File.File"],"SelectProject":["String.String","Basics.Bool"],"CheckAll":["Basics.Int","Basics.Int","List.List String.String"],"ConfirmDeletion":["Either.Either String.String ()"],"StopConfirmation":[],"DeleteProject":["String.String"],"BatchDeleteProjects":[],"ProjectsDeleted":["Set.Set String.String","Result.Result Http.Error ()"],"StartProcessingVideos":[],"VideoProcessingStarted":["Set.Set String.String","Result.Result (API.Request.Error Data.Project.Concise.ProcessingError) ()"],"ProcessingStatusUpdate":["Result.Result Json.Decode.Error Data.Project.Concise.StatusUpdate"],"StartOver":["String.String"],"SetProcessingPreset":["String.String","Data.Video.Processing.Preset.Preset"],"ProjectUpdated":["Result.Result (API.Request.Error Data.Project.Concise.UpdateError) Data.Project.Concise.Concise"],"SetSearchStr":["String.String"],"NoOp":[]}},"Component.Project.Msg.Msg":{"args":[],"tags":{"LoadProject":["String.String"],"MsgForEditing":["Component.Project.Msg.EditingMsg"],"ProjectLoaded":["Result.Result (API.Request.Error Data.Project.Error) Data.Project.Project"],"PosterLoaded":["Result.Result Http.Error String.String"],"StartPreviewing":[],"StopPreviewing":[],"CopyAll":["String.String"],"ExportProject":[],"ProjectExported":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) ( Data.File.Object.Base, String.String )"],"DismissExportingErrorPrompt":[],"SeekTime":["Basics.Int"],"RequestProjectSize":[],"ProjectSizeRequested":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.FileSize.FileSize"],"JumpTo":["Basics.Int"],"NavigateToPortal":[],"StayOnPage":[],"ChangeBeforeUnloadPrompt":[],"ChangeViewType":["Component.Project.Msg.ViewType"],"SaveProject":["Maybe.Maybe Route.Route"],"ProjectSaved":["Maybe.Maybe Route.Route","Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"DismissSavingResultPrompt":[],"NoOp":[]}},"Route.Route":{"args":[],"tags":{"Home":[],"Portal":[],"Project":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Data.File.Object.Base":{"args":[],"tags":{"Local":[],"Remote":["Url.Url"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Data.Project.Content.Content":{"args":[],"tags":{"FromSegment":["Basics.Bool","Data.Project.SegmentContent.SegmentContent"],"FromUser":["Basics.Int","Basics.Bool","Data.Project.UserContent.UserContent"]}},"Component.Project.Msg.EditingMsg":{"args":[],"tags":{"ConvertToGif":["Basics.Int"],"GifProcessed":["( Basics.Int, Basics.Int )","Result.Result (API.Request.Error Data.Video.Gif.Error) Data.Video.Gif.Gif"],"RevertGif":["Basics.Int"],"AddPlainTextAfter":["Basics.Int"],"ToggleContentVisibility":["Basics.Int"],"RemoveContent":["Basics.Int"],"PreEdit":["Basics.Int"],"EditPlainText":["Basics.Int","String.String"],"FinishEditing":["Basics.Int"],"PreviewAsCover":["Data.Video.Frame.Frame"],"StopPreviewingAsCover":["Data.Video.Frame.Frame"],"MergeSections":["Basics.Int","Basics.Int","Data.Project.SegmentContent.SegmentContent"],"SplitSection":["Basics.Int","Basics.Int"],"StartMovingSection":["Basics.Int"],"StopMovingSection":[],"MoveSection":["Basics.Int","Basics.Int"],"MovingOver":["Basics.Int"],"SetKeyFrame":["Basics.Int","Basics.Int"],"UndoProject":[],"RedoProject":[],"HostMessage":["Component.Project.Msg.Msg"]}},"Either.Either":{"args":["a","b"],"tags":{"Left":["a"],"Right":["b"]}},"API.Request.Error":{"args":["e"],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int","e"],"BadBody":["Basics.Int","Json.Decode.Error"]}},"Data.Project.Error":{"args":[],"tags":{"ProjectNotFound":[]}},"Data.Project.HtmlExport.Error":{"args":[],"tags":{"MediaFilesMissing":["List.List Data.File.Object.Key"],"SourceFileNotFound":[]}},"Data.Project.Saving.Error":{"args":[],"tags":{"SourceFileNotFound":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Json.Decode.Error":{"args":[],"tags":{"Field":["String.String","Json.Decode.Error"],"Index":["Basics.Int","Json.Decode.Error"],"OneOf":["List.List Json.Decode.Error"],"Failure":["String.String","Json.Decode.Value"]}},"File.File":{"args":[],"tags":{"File":[]}},"Data.FileSize.FileSize":{"args":[],"tags":{"Bit":["Basics.Int"],"Byte":["Basics.Float"],"Kibibyte":["Basics.Float"],"Mebibyte":["Basics.Float"]}},"Data.Video.Processing.Params.Granularity":{"args":[],"tags":{"Rough":[],"Medium":[],"Detailed":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Data.NativeClient.MetaError":{"args":[],"tags":{"MalformedVersionNumber":[]}},"Component.Portal.Params.Msg":{"args":[],"tags":{"SetGranularity":["Data.Video.Processing.Params.Granularity"],"SetDifferentTypeMinDifference":["Basics.Int"],"SetSameTypeMaxDifference":["Basics.Int"],"SetSimilarTypeMaxDifference":["Basics.Int"],"SetSmoothTypeMinValue":["Basics.Int"],"SetIsSameCombined":["Basics.Bool"],"SetShortNoneCombiningMaxDurationInMs":["Basics.Int"],"NoOp":[]}},"Component.Portal.Msg.ParamsKeeperMsg":{"args":[],"tags":{"StartExportingParams":["Data.Video.Processing.Params.Params"],"CancelExportingParams":[],"ExportParams":["String.String"],"ParamsRequested":[],"ParamsSelected":["File.File"],"ParamsLoaded":["String.String"],"DismissImportingError":[]}},"Data.Project.Concise.ProcessingError":{"args":[],"tags":{"FileNotFound":[],"CannotDecodeVideo":[],"BadParameters":[],"OtherProcessingError":["String.String"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Loading":[],"Failure":["e"],"Success":["a"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Set.Set":{"args":["t"],"tags":{"Set_elm_builtin":["Dict.Dict t ()"]}},"Data.Project.Concise.Status":{"args":[],"tags":{"Uploaded":[],"Processing":["Basics.Float"],"Processed":[],"FailedToProcess":["API.Request.Error Data.Project.Concise.ProcessingError"]}},"String.String":{"args":[],"tags":{"String":[]}},"Data.Project.Concise.UpdateError":{"args":[],"tags":{"InvalidParams":[]}},"Component.Portal.Msg.UploaderMsg":{"args":[],"tags":{"UploadVideo":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","String.String"],"VideoUploading":["String.String","Http.Progress"],"VideoUploaded":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","Result.Result Http.Error Data.Project.Concise.Concise"],"PickSubtitleFor":["String.String"],"SubtitleSelected":["String.String","File.File"],"SubtitleLoaded":["String.String","String.String","String.String"],"SubtitleUploaded":["String.String","Result.Result (API.Request.Error Data.Project.Concise.SubtitleError) Data.Project.Concise.Concise"],"OpenUploader":[],"CloseUploaderWhenCompleted":[],"ReviewSubtitle":["String.String"],"StopReviewingSubtitle":[],"RemoveSubtitleFor":["String.String"]}},"Component.Project.Msg.ViewType":{"args":[],"tags":{"Hidden":[],"Small":[],"Normal":[],"Large":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Data.Video.Gif.Error":{"args":[],"tags":{"IntervalTooSmall":[],"SourceFileNotFound":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Data.File.Object.Key":{"args":[],"tags":{"Key":["List.List String.String"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}},"Http.Progress":{"args":[],"tags":{"Sending":["{ sent : Basics.Int, size : Basics.Int }"],"Receiving":["{ received : Basics.Int, size : Maybe.Maybe Basics.Int }"]}},"Data.Project.SegmentContent.SegmentContent":{"args":[],"tags":{"FrameSequence":["Data.Video.Segment.Segment","Maybe.Maybe Data.Video.Gif.Gif"],"GifFromVideo":["Data.Video.Gif.Gif","Data.Video.Segment.Segment"]}},"Data.Uploader.Media.Subtitle":{"args":[],"tags":{"Subtitle":["Basics.Int","File.File"]}},"Data.Project.Concise.SubtitleError":{"args":[],"tags":{"InvalidSubtitle":[]}},"Data.Project.UserContent.UserContent":{"args":[],"tags":{"PlainText":["String.String"],"Picture":["Data.File.Object.Key"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Data.Uploader.Media.Video":{"args":[],"tags":{"Video":["File.File"]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Data.Video.Segment.Segment":{"args":[],"tags":{"Segment":["Data.Video.Frame.Frame","List.List Data.Video.Frame.Frame"]}}}}})}});}(this));
 },{}],"js/app.js":[function(require,module,exports) {
 "use strict";
 
@@ -23052,6 +23112,10 @@ app.ports.addBeforeUnloadPrompt.subscribe(function () {
 });
 app.ports.removeBeforeUnloadPrompt.subscribe(function () {
   window.removeEventListener('beforeunload', promptUserBeforeUnload);
+});
+app.ports.copyAll.subscribe(function (msg) {
+  var copyAllTarget = document.getElementById('copyAllTarget');
+  window.getSelection().selectAllChildren(copyAllTarget);
 }); // Web components
 
 var RichTextPreview = /*#__PURE__*/function (_HTMLElement) {
