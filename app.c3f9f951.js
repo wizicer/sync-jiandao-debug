@@ -13761,21 +13761,52 @@ var $author$project$Port$connectSocket = _Platform_outgoingPort(
 var $author$project$Component$NativeClient$Msg$NativeClientVersionInfoRequested = function (a) {
 	return {$: 'NativeClientVersionInfoRequested', a: a};
 };
-var $author$project$Data$Version$incrementMinor = function (version) {
-	return _Utils_update(
-		version,
-		{buildNo: version.buildNo + 1, minor: version.minor + 1, patch: 0});
-};
-var $author$project$Data$Version$initial = {buildNo: 1, major: 0, minor: 1, patch: 0};
-var $author$project$Data$Version$Platform$incrementedBy = function (history) {
-	return A3($elm$core$List$foldl, $elm$core$Basics$apL, $author$project$Data$Version$initial, history);
-};
-var $author$project$Data$Version$Platform$currentVersions = {
-	frontend: $author$project$Data$Version$Platform$incrementedBy(
-		_List_fromArray(
-			[$author$project$Data$Version$incrementMinor])),
-	projectData: $author$project$Data$Version$Platform$incrementedBy(_List_Nil)
-};
+var $author$project$Data$Version$initial = function () {
+	var localVersion = {buildNo: 1, major: 0, minor: 0, patch: 0};
+	var decode = function (str) {
+		var _v0 = A2($elm$core$String$split, '.', str);
+		if ((((_v0.b && _v0.b.b) && _v0.b.b.b) && _v0.b.b.b.b) && (!_v0.b.b.b.b.b)) {
+			var a = _v0.a;
+			var _v1 = _v0.b;
+			var b = _v1.a;
+			var _v2 = _v1.b;
+			var c = _v2.a;
+			var _v3 = _v2.b;
+			var d = _v3.a;
+			var _v4 = A2(
+				$elm$core$List$map,
+				$elm$core$String$toInt,
+				_List_fromArray(
+					[a, b, c, d]));
+			if ((((((((_v4.b && (_v4.a.$ === 'Just')) && _v4.b.b) && (_v4.b.a.$ === 'Just')) && _v4.b.b.b) && (_v4.b.b.a.$ === 'Just')) && _v4.b.b.b.b) && (_v4.b.b.b.a.$ === 'Just')) && (!_v4.b.b.b.b.b)) {
+				var major = _v4.a.a;
+				var _v5 = _v4.b;
+				var minor = _v5.a.a;
+				var _v6 = _v5.b;
+				var patch = _v6.a.a;
+				var _v7 = _v6.b;
+				var buildNo = _v7.a.a;
+				return A3(
+					$elm$core$List$foldr,
+					$elm$core$Basics$and,
+					true,
+					A2(
+						$elm$core$List$map,
+						function (n) {
+							return n >= 0;
+						},
+						_List_fromArray(
+							[major, minor, patch, buildNo]))) ? {buildNo: buildNo, major: major, minor: minor, patch: patch} : localVersion;
+			} else {
+				return localVersion;
+			}
+		} else {
+			return localVersion;
+		}
+	};
+	return decode('0.2.1548.200810');
+}();
+var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
 	function (version, isCompatible) {
 		return {isCompatible: isCompatible, version: version};
