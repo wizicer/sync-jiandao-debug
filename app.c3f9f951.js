@@ -230,7 +230,12 @@ module.exports = {
         "btn_revert_back_to_frames": "关闭GIF",
         "btn_add_text": "添加文字段落",
         "btn_delete": "删除",
-        "btn_merge": "合并至上个段落"
+        "btn_merge": "合并至上个段落",
+        "input_width": "宽度",
+        "input_fps": "帧数",
+        "lable_width": "px",
+        "lable_fps": "帧",
+        "btn_confirm": "确定"
       },
       "view_type": {
         "leading_text": "选择版式：",
@@ -13804,7 +13809,7 @@ var $author$project$Data$Version$initial = function () {
 			return localVersion;
 		}
 	};
-	return decode('0.2.1548.200810');
+	return decode('0.2.1577.200812');
 }();
 var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
@@ -16009,6 +16014,8 @@ var $author$project$Request$Poster$get = function (handler) {
 		});
 };
 var $author$project$Component$Project$Msg$Normal = {$: 'Normal'};
+var $author$project$Data$Env$defaultGifFps = 30;
+var $author$project$Data$Env$defaultGifWidth = 640;
 var $author$project$Data$UndoList$UndoList = F3(
 	function (past, present, future) {
 		return {future: future, past: past, present: present};
@@ -16050,6 +16057,7 @@ var $author$project$Component$Project$Main$initLoaded = function (project) {
 		{
 			confirmNavigatingAway: $elm$core$Maybe$Nothing,
 			exportingError: $elm$core$Maybe$Nothing,
+			fps: $elm$core$Maybe$Just($author$project$Data$Env$defaultGifFps),
 			frameToPreview: $elm$core$Maybe$Nothing,
 			isCopied: false,
 			isExportingInProgress: false,
@@ -16065,7 +16073,8 @@ var $author$project$Component$Project$Main$initLoaded = function (project) {
 			textBeingEdited: $elm$core$Maybe$Nothing,
 			userContentIndexToAssign: 1 + $author$project$Data$Project$Content$maxAssignedIndex(
 				$elm$core$Array$toList(project.workingData)),
-			viewType: $author$project$Component$Project$Msg$Normal
+			viewType: $author$project$Component$Project$Msg$Normal,
+			width: $elm$core$Maybe$Just($author$project$Data$Env$defaultGifWidth)
 		});
 };
 var $author$project$Component$Project$Msg$ProjectExported = function (a) {
@@ -16939,7 +16948,10 @@ var $author$project$Data$Video$Gif$processConfigEncoder = F2(
 						A2($elm$core$Basics$max, start, end))),
 					_Utils_Tuple2(
 					'Width',
-					$elm$json$Json$Encode$int(640))
+					$elm$json$Json$Encode$int(640)),
+					_Utils_Tuple2(
+					'Fps',
+					$elm$json$Json$Encode$float(30))
 				]));
 	});
 var $author$project$Data$Video$Gif$processedDecoder = A3(
@@ -16960,6 +16972,55 @@ var $author$project$Request$Gif$process = F3(
 					$author$project$Data$Video$Gif$processConfigEncoder,
 					uuid,
 					_Utils_Tuple2(start, end)),
+				timeout: $elm$core$Maybe$Just(1200000),
+				url: A2(
+					$author$project$Request$Helper$apiNativeClient,
+					_List_fromArray(
+						['gif']),
+					_List_Nil)
+			});
+	});
+var $author$project$Data$Video$Gif$processWithParamsConfigEncoder = F4(
+	function (uuid, _v0, gifWidth, gifFps) {
+		var start = _v0.a;
+		var end = _v0.b;
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'Id',
+					$elm$json$Json$Encode$string(uuid)),
+					_Utils_Tuple2(
+					'Start',
+					$elm$json$Json$Encode$int(
+						A2($elm$core$Basics$min, start, end))),
+					_Utils_Tuple2(
+					'End',
+					$elm$json$Json$Encode$int(
+						A2($elm$core$Basics$max, start, end))),
+					_Utils_Tuple2(
+					'Width',
+					$elm$json$Json$Encode$int(gifWidth)),
+					_Utils_Tuple2(
+					'Fps',
+					$elm$json$Json$Encode$float(gifFps))
+				]));
+	});
+var $author$project$Request$Gif$processWithParams = F5(
+	function (handler, uuid, _v0, gifWidth, gifFps) {
+		var start = _v0.a;
+		var end = _v0.b;
+		return $author$project$API$Request$post(
+			{
+				decoder: $author$project$Data$Video$Gif$processedDecoder,
+				errorDecoder: $author$project$Data$Video$Gif$errorDecoder,
+				handler: handler,
+				payload: A4(
+					$author$project$Data$Video$Gif$processWithParamsConfigEncoder,
+					uuid,
+					_Utils_Tuple2(start, end),
+					gifWidth,
+					gifFps),
 				timeout: $elm$core$Maybe$Just(1200000),
 				url: A2(
 					$author$project$Request$Helper$apiNativeClient,
@@ -17261,6 +17322,7 @@ var $author$project$Data$Video$Segment$splitAt = F2(
 				$author$project$Util$uncurry($author$project$Data$Video$Segment$Segment),
 				$elm_community$list_extra$List$Extra$unconsLast(after)));
 	});
+var $elm$core$String$toFloat = _String_toFloat;
 var $author$project$Data$Project$SegmentContent$toFrameSequence = function (content) {
 	if (content.$ === 'GifFromVideo') {
 		var gif = content.a;
@@ -17373,10 +17435,10 @@ var $author$project$Component$Project$Editing$update = F4(
 	function (key, msg, project, substate) {
 		var present = project.present;
 		var updateState = F2(
-			function (updater, _v18) {
-				var newState = _v18.a;
-				var substate_ = _v18.b;
-				var commands = _v18.c;
+			function (updater, _v21) {
+				var newState = _v21.a;
+				var substate_ = _v21.b;
+				var commands = _v21.c;
 				return _Utils_Tuple3(
 					A3($author$project$Util$flip, updater, project, newState),
 					substate_,
@@ -17390,7 +17452,7 @@ var $author$project$Component$Project$Editing$update = F4(
 				substate,
 				A2(
 					$elm$core$Task$perform,
-					function (_v17) {
+					function (_v20) {
 						return $author$project$Component$Project$Msg$HostMessage($author$project$Component$Project$Msg$ChangeBeforeUnloadPrompt);
 					},
 					$elm$core$Task$succeed(_Utils_Tuple0)));
@@ -17446,6 +17508,39 @@ var $author$project$Component$Project$Editing$update = F4(
 				} else {
 					return _Utils_Tuple3(project, substate, $elm$core$Platform$Cmd$none);
 				}
+			case 'ConvertToGifWithParams':
+				var index = msg.a;
+				var gifWidth = msg.b;
+				var gifFps = msg.c;
+				var _v5 = A2($elm$core$Array$get, index, present.workingData);
+				if ((_v5.$ === 'Just') && (_v5.a.$ === 'FromSegment')) {
+					var _v6 = _v5.a;
+					var isHidden = _v6.a;
+					var segmentContent = _v6.b;
+					var _v7 = A3(
+						$author$project$Data$Project$Content$gifTimeInterval,
+						$author$project$Data$Project$SegmentContent$getSegment(segmentContent),
+						index,
+						present.workingData);
+					var nominal = _v7.nominal;
+					var actual = _v7.actual;
+					return _Utils_Tuple3(
+						project,
+						_Utils_update(
+							substate,
+							{
+								pendingGifJobs: A2($elm$core$Set$insert, nominal, substate.pendingGifJobs)
+							}),
+						A5(
+							$author$project$Request$Gif$processWithParams,
+							$author$project$Component$Project$Msg$GifProcessed(nominal),
+							present.uuid,
+							actual,
+							gifWidth,
+							gifFps));
+				} else {
+					return _Utils_Tuple3(project, substate, $elm$core$Platform$Cmd$none);
+				}
 			case 'GifProcessed':
 				if (msg.b.$ === 'Ok') {
 					var timeInterval = msg.a;
@@ -17478,11 +17573,11 @@ var $author$project$Component$Project$Editing$update = F4(
 				}
 			case 'RevertGif':
 				var index = msg.a;
-				var _v5 = A2($elm$core$Array$get, index, present.workingData);
-				if ((_v5.$ === 'Just') && (_v5.a.$ === 'FromSegment')) {
-					var _v6 = _v5.a;
-					var isHidden = _v6.a;
-					var segmentContent = _v6.b;
+				var _v8 = A2($elm$core$Array$get, index, present.workingData);
+				if ((_v8.$ === 'Just') && (_v8.a.$ === 'FromSegment')) {
+					var _v9 = _v8.a;
+					var isHidden = _v9.a;
+					var segmentContent = _v9.b;
 					var updatedContent = A2(
 						$author$project$Data$Project$Content$FromSegment,
 						isHidden,
@@ -17498,9 +17593,9 @@ var $author$project$Component$Project$Editing$update = F4(
 				}
 			case 'AddPlainTextAfter':
 				var index = msg.a;
-				var _v7 = A2($elm_community$array_extra$Array$Extra$splitAt, index + 1, present.workingData);
-				var before = _v7.a;
-				var after = _v7.b;
+				var _v10 = A2($elm_community$array_extra$Array$Extra$splitAt, index + 1, present.workingData);
+				var before = _v10.a;
+				var after = _v10.b;
 				var updatedWorkingData = A3(
 					$author$project$Util$flip,
 					$elm$core$Array$append,
@@ -17553,10 +17648,10 @@ var $author$project$Component$Project$Editing$update = F4(
 			case 'EditPlainText':
 				var index = msg.a;
 				var plainText = msg.b;
-				var _v8 = A2($elm$core$Array$get, index, present.workingData);
-				if (((_v8.$ === 'Just') && (_v8.a.$ === 'FromUser')) && (!_v8.a.b)) {
-					var _v9 = _v8.a;
-					var userContentID = _v9.a;
+				var _v11 = A2($elm$core$Array$get, index, present.workingData);
+				if (((_v11.$ === 'Just') && (_v11.a.$ === 'FromUser')) && (!_v11.a.b)) {
+					var _v12 = _v11.a;
+					var userContentID = _v12.a;
 					return replaceState(
 						_Utils_update(
 							present,
@@ -17617,30 +17712,30 @@ var $author$project$Component$Project$Editing$update = F4(
 			case 'SplitSection':
 				var index = msg.a;
 				var frameIndex = msg.b;
-				var _v10 = A2($elm$core$Array$get, index, present.workingData);
-				if (((_v10.$ === 'Just') && (_v10.a.$ === 'FromSegment')) && (!_v10.a.a)) {
-					var _v11 = _v10.a;
-					var segmentContent = _v11.b;
-					var _v12 = A2(
+				var _v13 = A2($elm$core$Array$get, index, present.workingData);
+				if (((_v13.$ === 'Just') && (_v13.a.$ === 'FromSegment')) && (!_v13.a.a)) {
+					var _v14 = _v13.a;
+					var segmentContent = _v14.b;
+					var _v15 = A2(
 						$author$project$Data$Video$Segment$splitAt,
 						frameIndex,
 						$author$project$Data$Project$SegmentContent$getSegment(segmentContent));
-					if (_v12.$ === 'Just') {
-						var _v13 = _v12.a;
-						var first = _v13.a;
-						var second = _v13.b;
-						var _v14 = A2(
+					if (_v15.$ === 'Just') {
+						var _v16 = _v15.a;
+						var first = _v16.a;
+						var second = _v16.b;
+						var _v17 = A2(
 							$elm_community$array_extra$Array$Extra$splitAt,
 							index + 1,
 							A3(
 								$author$project$Data$Project$Content$updateSegmentBy,
 								index,
-								function (_v15) {
+								function (_v18) {
 									return first;
 								},
 								present.workingData));
-						var before = _v14.a;
-						var after = _v14.b;
+						var before = _v17.a;
+						var after = _v17.b;
 						var updatedWorkingData = A3(
 							$author$project$Util$flip,
 							$elm$core$Array$append,
@@ -17732,17 +17827,37 @@ var $author$project$Component$Project$Editing$update = F4(
 					project,
 					substate,
 					$author$project$Port$redoTrix(_Utils_Tuple0));
-			default:
+			case 'HostMessage':
 				var hmsg = msg.a;
 				return _Utils_Tuple3(
 					project,
 					substate,
 					A2(
 						$elm$core$Task$perform,
-						function (_v16) {
+						function (_v19) {
 							return $author$project$Component$Project$Msg$HostMessage(hmsg);
 						},
 						$elm$core$Task$succeed(_Utils_Tuple0)));
+			case 'ChangeWidth':
+				var newWidth = msg.a;
+				return _Utils_Tuple3(
+					project,
+					_Utils_update(
+						substate,
+						{
+							width: $elm$core$String$toInt(newWidth)
+						}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var newFps = msg.a;
+				return _Utils_Tuple3(
+					project,
+					_Utils_update(
+						substate,
+						{
+							fps: $elm$core$String$toFloat(newFps)
+						}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Component$Project$Main$updateLoaded = F4(
@@ -21700,9 +21815,19 @@ var $author$project$Component$Project$View$Content$viewPlainText = F3(
 					]))
 			]);
 	});
+var $author$project$Component$Project$Msg$ChangeFps = function (a) {
+	return {$: 'ChangeFps', a: a};
+};
+var $author$project$Component$Project$Msg$ChangeWidth = function (a) {
+	return {$: 'ChangeWidth', a: a};
+};
 var $author$project$Component$Project$Msg$ConvertToGif = function (a) {
 	return {$: 'ConvertToGif', a: a};
 };
+var $author$project$Component$Project$Msg$ConvertToGifWithParams = F3(
+	function (a, b, c) {
+		return {$: 'ConvertToGifWithParams', a: a, b: b, c: c};
+	});
 var $author$project$Component$Project$Msg$PreviewAsCover = function (a) {
 	return {$: 'PreviewAsCover', a: a};
 };
@@ -21722,6 +21847,9 @@ var $author$project$Component$Project$Msg$SplitSection = F2(
 	});
 var $author$project$Component$Project$Msg$StopPreviewingAsCover = function (a) {
 	return {$: 'StopPreviewingAsCover', a: a};
+};
+var $author$project$Translations$Page$Project$RightPanel$btnConfirm = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_confirm');
 };
 var $author$project$Translations$Page$Project$RightPanel$btnConvertToGif = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_convert_to_gif');
@@ -21784,6 +21912,22 @@ var $author$project$Data$Video$Frame$getUrl = F3(
 			base,
 			A2($author$project$Data$File$Object$fromPartialKey, friendlyUnionID, frame));
 	});
+var $author$project$Translations$Page$Project$RightPanel$inputFps = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.input_fps');
+};
+var $author$project$Translations$Page$Project$RightPanel$inputWidth = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.input_width');
+};
+var $author$project$Translations$Page$Project$RightPanel$lableFps = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.lable_fps');
+};
+var $author$project$Translations$Page$Project$RightPanel$lableWidth = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.lable_width');
+};
+var $author$project$Data$Env$maxGifFps = 60;
+var $author$project$Data$Env$maxGifWidth = 1600;
+var $author$project$Data$Env$minGifFps = 1;
+var $author$project$Data$Env$minGifWidth = 1;
 var $author$project$View$Spinner$skChase = A2(
 	$elm$html$Html$div,
 	_List_fromArray(
@@ -22013,27 +22157,28 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 		var pendingGifJobs = _v0.pendingGifJobs;
 		var frameToPreview = _v0.frameToPreview;
 		var viewType = _v0.viewType;
+		var width = _v0.width;
+		var fps = _v0.fps;
 		var segment = $author$project$Data$Project$SegmentContent$getSegment(content);
 		var viewGifBtn = function () {
-			var _v7 = _Utils_Tuple2(
+			var _v8 = _Utils_Tuple2(
 				content,
 				A2(
 					$elm$core$Set$member,
 					$author$project$Data$Video$Segment$getTimeInterval(segment),
 					pendingGifJobs));
-			if (_v7.a.$ === 'FrameSequence') {
-				if (_v7.b) {
-					var _v8 = _v7.a;
-					return A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('btn p-2')
-							]),
-						_List_fromArray(
-							[$author$project$View$Spinner$skChase]));
-				} else {
-					var _v9 = _v7.a;
+			if (_v8.b) {
+				return A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('btn p-2')
+						]),
+					_List_fromArray(
+						[$author$project$View$Spinner$skChase]));
+			} else {
+				if (_v8.a.$ === 'FrameSequence') {
+					var _v9 = _v8.a;
 					return A2(
 						$elm$html$Html$button,
 						_List_fromArray(
@@ -22048,39 +22193,45 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 							[
 								$author$project$View$Icon$videocam(24)
 							]));
+				} else {
+					var _v10 = _v8.a;
+					return A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(
+								$author$project$Component$Project$Msg$RevertGif(index)),
+								$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
+								$elm$html$Html$Attributes$title(
+								$author$project$Translations$Page$Project$RightPanel$btnRevertBackToFrames(trn))
+							]),
+						_List_fromArray(
+							[
+								$author$project$View$Icon$videocamOff(24)
+							]));
 				}
-			} else {
-				var _v10 = _v7.a;
-				return A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onClick(
-							$author$project$Component$Project$Msg$RevertGif(index)),
-							$elm$html$Html$Attributes$class('btn btn--theme btn--textual-plain p-2'),
-							$elm$html$Html$Attributes$title(
-							$author$project$Translations$Page$Project$RightPanel$btnRevertBackToFrames(trn))
-						]),
-					_List_fromArray(
-						[
-							$author$project$View$Icon$videocamOff(24)
-						]));
 			}
 		}();
+		var minWidth = $elm$core$String$fromInt($author$project$Data$Env$minGifWidth);
+		var minFps = $elm$core$String$fromFloat($author$project$Data$Env$minGifFps);
+		var maxWidth = $elm$core$String$fromInt($author$project$Data$Env$maxGifWidth);
+		var maxFps = $elm$core$String$fromFloat($author$project$Data$Env$maxGifFps);
 		var keyFrameUrl = A2(
 			$elm$core$Basics$composeR,
 			$author$project$Data$Video$Segment$getKeyFrame,
 			A2($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid));
+		var gifWidth = A2($elm$core$Maybe$withDefault, $author$project$Data$Env$defaultGifWidth, width);
+		var gifFps = A2($elm$core$Maybe$withDefault, $author$project$Data$Env$defaultGifFps, fps);
 		var coverUrl = function () {
-			var _v2 = _Utils_Tuple2(content, frameToPreview);
-			if (_v2.a.$ === 'FrameSequence') {
-				if (_v2.b.$ === 'Nothing') {
-					var _v3 = _v2.a;
-					var _v4 = _v2.b;
+			var _v3 = _Utils_Tuple2(content, frameToPreview);
+			if (_v3.a.$ === 'FrameSequence') {
+				if (_v3.b.$ === 'Nothing') {
+					var _v4 = _v3.a;
+					var _v5 = _v3.b;
 					return keyFrameUrl(segment);
 				} else {
-					var _v5 = _v2.a;
-					var frame = _v2.b.a;
+					var _v6 = _v3.a;
+					var frame = _v3.b.a;
 					return A2(
 						$elm$core$List$member,
 						frame,
@@ -22091,8 +22242,8 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 						$author$project$Data$Video$Segment$getKeyFrame(segment));
 				}
 			} else {
-				var _v6 = _v2.a;
-				var gif = _v6.a;
+				var _v7 = _v3.a;
+				var gif = _v7.a;
 				return A3($author$project$Data$Video$Gif$toUrl, $author$project$Data$File$Object$Local, uuid, gif);
 			}
 		}();
@@ -22174,17 +22325,130 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 						A2($author$project$Component$Project$View$Operation$viewAddPlainText, trn, index),
 						A2($author$project$Component$Project$View$Operation$viewToggleContentVisibility, trn, index)
 					])),
-				A2(
-				$author$project$Component$Project$View$LeftPanel$viewAllFrames,
-				segment,
-				{
-					hoverOff: $author$project$Component$Project$Msg$StopPreviewingAsCover,
-					hoverOn: $author$project$Component$Project$Msg$PreviewAsCover,
-					setKeyFrame: $author$project$Component$Project$Msg$SetKeyFrame(index),
-					splitSection: $author$project$Component$Project$Msg$SplitSection(index),
-					uuid: uuid,
-					viewType: viewType
-				})
+				function () {
+				if (content.$ === 'FrameSequence') {
+					return A2(
+						$author$project$Component$Project$View$LeftPanel$viewAllFrames,
+						segment,
+						{
+							hoverOff: $author$project$Component$Project$Msg$StopPreviewingAsCover,
+							hoverOn: $author$project$Component$Project$Msg$PreviewAsCover,
+							setKeyFrame: $author$project$Component$Project$Msg$SetKeyFrame(index),
+							splitSection: $author$project$Component$Project$Msg$SplitSection(index),
+							uuid: uuid,
+							viewType: viewType
+						});
+				} else {
+					return A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('frame-collection block')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('block')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										$author$project$Translations$Page$Project$RightPanel$inputFps(trn)),
+										A2(
+										$elm$html$Html$input,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$type_('range'),
+												A2($elm$html$Html$Attributes$attribute, 'min', minFps),
+												A2($elm$html$Html$Attributes$attribute, 'max', maxFps),
+												$elm$html$Html$Attributes$value(
+												$elm$core$String$fromFloat(gifFps)),
+												$elm$html$Html$Events$onInput($author$project$Component$Project$Msg$ChangeFps)
+											]),
+										_List_Nil),
+										A2(
+										$elm$html$Html$input,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$type_('number'),
+												A2($elm$html$Html$Attributes$attribute, 'min', minFps),
+												A2($elm$html$Html$Attributes$attribute, 'max', maxFps),
+												$elm$html$Html$Attributes$value(
+												$elm$core$String$fromFloat(gifFps)),
+												$elm$html$Html$Events$onInput($author$project$Component$Project$Msg$ChangeFps)
+											]),
+										_List_Nil),
+										A2(
+										$elm$html$Html$label,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text(
+												$author$project$Translations$Page$Project$RightPanel$lableFps(trn))
+											]))
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('block')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										$author$project$Translations$Page$Project$RightPanel$inputWidth(trn)),
+										A2(
+										$elm$html$Html$input,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$type_('range'),
+												A2($elm$html$Html$Attributes$attribute, 'min', minWidth),
+												A2($elm$html$Html$Attributes$attribute, 'max', maxWidth),
+												$elm$html$Html$Attributes$value(
+												$elm$core$String$fromInt(gifWidth)),
+												$elm$html$Html$Events$onInput($author$project$Component$Project$Msg$ChangeWidth)
+											]),
+										_List_Nil),
+										A2(
+										$elm$html$Html$input,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$type_('number'),
+												A2($elm$html$Html$Attributes$attribute, 'min', minWidth),
+												A2($elm$html$Html$Attributes$attribute, 'max', maxWidth),
+												$elm$html$Html$Attributes$value(
+												$elm$core$String$fromInt(gifWidth)),
+												$elm$html$Html$Events$onInput($author$project$Component$Project$Msg$ChangeWidth)
+											]),
+										_List_Nil),
+										A2(
+										$elm$html$Html$label,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text(
+												$author$project$Translations$Page$Project$RightPanel$lableWidth(trn))
+											]))
+									])),
+								A2(
+								$elm$html$Html$button,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('btn btn--theme w-12 h-10 mt-2'),
+										$elm$html$Html$Events$onClick(
+										A3($author$project$Component$Project$Msg$ConvertToGifWithParams, index, gifWidth, gifFps))
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										$author$project$Translations$Page$Project$RightPanel$btnConfirm(trn))
+									]))
+							]));
+				}
+			}()
 			]);
 	});
 var $author$project$Component$Project$View$Content$viewBlock = F5(
@@ -22943,7 +23207,7 @@ var $author$project$Main$view = function (model) {
 };
 var $author$project$Main$main = $elm$browser$Browser$application(
 	{init: $author$project$Main$init, onUrlChange: $author$project$Main$onUrlChange, onUrlRequest: $author$project$Main$onUrlRequest, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
-_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Data.Project.Concise.Concise":{"args":[],"type":"{ uuid : String.String, name : String.String, hasSubtitle : Basics.Bool, params : Data.Video.Processing.Params.Params, status : Data.Project.Concise.Status }"},"Data.NativeClient.Meta":{"args":[],"type":"{ version : Data.Version.Version, isCompatible : Basics.Bool }"},"Data.Video.Processing.Params.Params":{"args":[],"type":"{ granularity : Data.Video.Processing.Params.Granularity, differentTypeMinDifference : Basics.Int, sameTypeMaxDifference : Basics.Int, similarTypeMaxDifference : Basics.Int, smoothTypeMinValue : Basics.Int, isSameCombined : Basics.Bool, shortNoneCombiningMaxDurationInMs : Basics.Int }"},"Data.Video.Processing.Preset.Preset":{"args":[],"type":"{ name : String.String, description : Maybe.Maybe String.String, params : Data.Video.Processing.Params.Params }"},"Data.Project.Project":{"args":[],"type":"{ uuid : String.String, name : String.String, workingData : Array.Array Data.Project.Content.Content }"},"Data.Project.Concise.StatusUpdate":{"args":[],"type":"{ uuid : String.String, status : Data.Project.Concise.Status }"},"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Data.Version.Version":{"args":[],"type":"{ major : Basics.Int, minor : Basics.Int, patch : Basics.Int, buildNo : Basics.Int }"},"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Data.Video.Frame.Frame":{"args":[],"type":"{ index : Basics.Int, localObjectKey : Data.File.Object.Key, time : Basics.Int }"},"Data.Video.Gif.Gif":{"args":[],"type":"{ localObjectKey : Data.File.Object.Key, fileSize : Data.FileSize.FileSize }"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"},"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"SetRoute":["Maybe.Maybe Route.Route"],"ClickedLink":["Browser.UrlRequest"],"TryReload":[],"PortalMsg":["Component.Portal.Msg.Msg"],"ProjectMsg":["Component.Project.Msg.Msg"],"NativeClientMsg":["Component.NativeClient.Msg.Msg"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Component.NativeClient.Msg.Msg":{"args":[],"tags":{"RequestMetaOfNativeClient":[],"NativeClientVersionInfoRequested":["Result.Result (API.Request.Error Data.NativeClient.MetaError) Data.NativeClient.Meta"],"WebsocketClosed":["Basics.Int"]}},"Component.Portal.Msg.Msg":{"args":[],"tags":{"ToggleExpertMode":[],"MsgForUploader":["Component.Portal.Msg.UploaderMsg"],"MsgForParams":["String.String","Data.Video.Processing.Params.Params","Component.Portal.Params.Msg"],"MsgForParamsKeeper":["Component.Portal.Msg.ParamsKeeperMsg"],"PresetsLoaded":["RemoteData.WebData (List.List Data.Video.Processing.Preset.Preset)"],"ProjectsLoaded":["RemoteData.WebData (List.List Data.Project.Concise.Concise)"],"PickFiles":[],"FilesSelected":["File.File","List.List File.File"],"SelectProject":["String.String","Basics.Bool"],"CheckAll":["Basics.Int","Basics.Int","List.List String.String"],"ConfirmDeletion":["Either.Either String.String ()"],"StopConfirmation":[],"DeleteProject":["String.String"],"BatchDeleteProjects":[],"ProjectsDeleted":["Set.Set String.String","Result.Result Http.Error ()"],"StartProcessingVideos":[],"VideoProcessingStarted":["Set.Set String.String","Result.Result (API.Request.Error Data.Project.Concise.ProcessingError) ()"],"ProcessingStatusUpdate":["Result.Result Json.Decode.Error Data.Project.Concise.StatusUpdate"],"StartOver":["String.String"],"SetProcessingPreset":["String.String","Data.Video.Processing.Preset.Preset"],"ProjectUpdated":["Result.Result (API.Request.Error Data.Project.Concise.UpdateError) Data.Project.Concise.Concise"],"SetSearchStr":["String.String"],"NoOp":[]}},"Component.Project.Msg.Msg":{"args":[],"tags":{"LoadProject":["String.String"],"MsgForEditing":["Component.Project.Msg.EditingMsg"],"ProjectLoaded":["Result.Result (API.Request.Error Data.Project.Error) Data.Project.Project"],"PosterLoaded":["Result.Result Http.Error String.String"],"StartPreviewing":[],"StopPreviewing":[],"CopyAll":["String.String"],"ExportProject":[],"ProjectExported":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) ( Data.File.Object.Base, String.String )"],"DismissExportingErrorPrompt":[],"SeekTime":["Basics.Int"],"RequestProjectSize":[],"ProjectSizeRequested":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.FileSize.FileSize"],"JumpTo":["Basics.Int"],"NavigateToPortal":[],"StayOnPage":[],"ChangeBeforeUnloadPrompt":[],"ChangeViewType":["Component.Project.Msg.ViewType"],"SaveProject":["Maybe.Maybe Route.Route"],"ProjectSaved":["Maybe.Maybe Route.Route","Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"DismissSavingResultPrompt":[],"NoOp":[]}},"Route.Route":{"args":[],"tags":{"Home":[],"Portal":[],"Project":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Data.File.Object.Base":{"args":[],"tags":{"Local":[],"Remote":["Url.Url"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Data.Project.Content.Content":{"args":[],"tags":{"FromSegment":["Basics.Bool","Data.Project.SegmentContent.SegmentContent"],"FromUser":["Basics.Int","Basics.Bool","Data.Project.UserContent.UserContent"]}},"Component.Project.Msg.EditingMsg":{"args":[],"tags":{"ConvertToGif":["Basics.Int"],"GifProcessed":["( Basics.Int, Basics.Int )","Result.Result (API.Request.Error Data.Video.Gif.Error) Data.Video.Gif.Gif"],"RevertGif":["Basics.Int"],"AddPlainTextAfter":["Basics.Int"],"ToggleContentVisibility":["Basics.Int"],"RemoveContent":["Basics.Int"],"PreEdit":["Basics.Int"],"EditPlainText":["Basics.Int","String.String"],"FinishEditing":["Basics.Int"],"PreviewAsCover":["Data.Video.Frame.Frame"],"StopPreviewingAsCover":["Data.Video.Frame.Frame"],"MergeSections":["Basics.Int","Basics.Int","Data.Project.SegmentContent.SegmentContent"],"SplitSection":["Basics.Int","Basics.Int"],"StartMovingSection":["Basics.Int"],"StopMovingSection":[],"MoveSection":["Basics.Int","Basics.Int"],"MovingOver":["Basics.Int"],"SetKeyFrame":["Basics.Int","Basics.Int"],"UndoProject":[],"RedoProject":[],"HostMessage":["Component.Project.Msg.Msg"]}},"Either.Either":{"args":["a","b"],"tags":{"Left":["a"],"Right":["b"]}},"API.Request.Error":{"args":["e"],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int","e"],"BadBody":["Basics.Int","Json.Decode.Error"]}},"Data.Project.Error":{"args":[],"tags":{"ProjectNotFound":[]}},"Data.Project.HtmlExport.Error":{"args":[],"tags":{"MediaFilesMissing":["List.List Data.File.Object.Key"],"SourceFileNotFound":[]}},"Data.Project.Saving.Error":{"args":[],"tags":{"SourceFileNotFound":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Json.Decode.Error":{"args":[],"tags":{"Field":["String.String","Json.Decode.Error"],"Index":["Basics.Int","Json.Decode.Error"],"OneOf":["List.List Json.Decode.Error"],"Failure":["String.String","Json.Decode.Value"]}},"File.File":{"args":[],"tags":{"File":[]}},"Data.FileSize.FileSize":{"args":[],"tags":{"Bit":["Basics.Int"],"Byte":["Basics.Float"],"Kibibyte":["Basics.Float"],"Mebibyte":["Basics.Float"]}},"Data.Video.Processing.Params.Granularity":{"args":[],"tags":{"Rough":[],"Medium":[],"Detailed":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Data.NativeClient.MetaError":{"args":[],"tags":{"MalformedVersionNumber":[]}},"Component.Portal.Params.Msg":{"args":[],"tags":{"SetGranularity":["Data.Video.Processing.Params.Granularity"],"SetDifferentTypeMinDifference":["Basics.Int"],"SetSameTypeMaxDifference":["Basics.Int"],"SetSimilarTypeMaxDifference":["Basics.Int"],"SetSmoothTypeMinValue":["Basics.Int"],"SetIsSameCombined":["Basics.Bool"],"SetShortNoneCombiningMaxDurationInMs":["Basics.Int"],"NoOp":[]}},"Component.Portal.Msg.ParamsKeeperMsg":{"args":[],"tags":{"StartExportingParams":["Data.Video.Processing.Params.Params"],"CancelExportingParams":[],"ExportParams":["String.String"],"ParamsRequested":[],"ParamsSelected":["File.File"],"ParamsLoaded":["String.String"],"DismissImportingError":[]}},"Data.Project.Concise.ProcessingError":{"args":[],"tags":{"FileNotFound":[],"CannotDecodeVideo":[],"BadParameters":[],"OtherProcessingError":["String.String"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Loading":[],"Failure":["e"],"Success":["a"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Set.Set":{"args":["t"],"tags":{"Set_elm_builtin":["Dict.Dict t ()"]}},"Data.Project.Concise.Status":{"args":[],"tags":{"Uploaded":[],"Processing":["Basics.Float"],"Processed":[],"FailedToProcess":["API.Request.Error Data.Project.Concise.ProcessingError"]}},"String.String":{"args":[],"tags":{"String":[]}},"Data.Project.Concise.UpdateError":{"args":[],"tags":{"InvalidParams":[]}},"Component.Portal.Msg.UploaderMsg":{"args":[],"tags":{"UploadVideo":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","String.String"],"VideoUploading":["String.String","Http.Progress"],"VideoUploaded":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","Result.Result Http.Error Data.Project.Concise.Concise"],"PickSubtitleFor":["String.String"],"SubtitleSelected":["String.String","File.File"],"SubtitleLoaded":["String.String","String.String","String.String"],"SubtitleUploaded":["String.String","Result.Result (API.Request.Error Data.Project.Concise.SubtitleError) Data.Project.Concise.Concise"],"OpenUploader":[],"CloseUploaderWhenCompleted":[],"ReviewSubtitle":["String.String"],"StopReviewingSubtitle":[],"RemoveSubtitleFor":["String.String"]}},"Component.Project.Msg.ViewType":{"args":[],"tags":{"Hidden":[],"Small":[],"Normal":[],"Large":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Data.Video.Gif.Error":{"args":[],"tags":{"IntervalTooSmall":[],"SourceFileNotFound":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Data.File.Object.Key":{"args":[],"tags":{"Key":["List.List String.String"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}},"Http.Progress":{"args":[],"tags":{"Sending":["{ sent : Basics.Int, size : Basics.Int }"],"Receiving":["{ received : Basics.Int, size : Maybe.Maybe Basics.Int }"]}},"Data.Project.SegmentContent.SegmentContent":{"args":[],"tags":{"FrameSequence":["Data.Video.Segment.Segment","Maybe.Maybe Data.Video.Gif.Gif"],"GifFromVideo":["Data.Video.Gif.Gif","Data.Video.Segment.Segment"]}},"Data.Uploader.Media.Subtitle":{"args":[],"tags":{"Subtitle":["Basics.Int","File.File"]}},"Data.Project.Concise.SubtitleError":{"args":[],"tags":{"InvalidSubtitle":[]}},"Data.Project.UserContent.UserContent":{"args":[],"tags":{"PlainText":["String.String"],"Picture":["Data.File.Object.Key"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Data.Uploader.Media.Video":{"args":[],"tags":{"Video":["File.File"]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Data.Video.Segment.Segment":{"args":[],"tags":{"Segment":["Data.Video.Frame.Frame","List.List Data.Video.Frame.Frame"]}}}}})}});}(this));
+_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Data.Project.Concise.Concise":{"args":[],"type":"{ uuid : String.String, name : String.String, hasSubtitle : Basics.Bool, params : Data.Video.Processing.Params.Params, status : Data.Project.Concise.Status }"},"Data.NativeClient.Meta":{"args":[],"type":"{ version : Data.Version.Version, isCompatible : Basics.Bool }"},"Data.Video.Processing.Params.Params":{"args":[],"type":"{ granularity : Data.Video.Processing.Params.Granularity, differentTypeMinDifference : Basics.Int, sameTypeMaxDifference : Basics.Int, similarTypeMaxDifference : Basics.Int, smoothTypeMinValue : Basics.Int, isSameCombined : Basics.Bool, shortNoneCombiningMaxDurationInMs : Basics.Int }"},"Data.Video.Processing.Preset.Preset":{"args":[],"type":"{ name : String.String, description : Maybe.Maybe String.String, params : Data.Video.Processing.Params.Params }"},"Data.Project.Project":{"args":[],"type":"{ uuid : String.String, name : String.String, workingData : Array.Array Data.Project.Content.Content }"},"Data.Project.Concise.StatusUpdate":{"args":[],"type":"{ uuid : String.String, status : Data.Project.Concise.Status }"},"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Data.Version.Version":{"args":[],"type":"{ major : Basics.Int, minor : Basics.Int, patch : Basics.Int, buildNo : Basics.Int }"},"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Data.Video.Frame.Frame":{"args":[],"type":"{ index : Basics.Int, localObjectKey : Data.File.Object.Key, time : Basics.Int }"},"Data.Video.Gif.Gif":{"args":[],"type":"{ localObjectKey : Data.File.Object.Key, fileSize : Data.FileSize.FileSize }"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"},"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"SetRoute":["Maybe.Maybe Route.Route"],"ClickedLink":["Browser.UrlRequest"],"TryReload":[],"PortalMsg":["Component.Portal.Msg.Msg"],"ProjectMsg":["Component.Project.Msg.Msg"],"NativeClientMsg":["Component.NativeClient.Msg.Msg"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Component.NativeClient.Msg.Msg":{"args":[],"tags":{"RequestMetaOfNativeClient":[],"NativeClientVersionInfoRequested":["Result.Result (API.Request.Error Data.NativeClient.MetaError) Data.NativeClient.Meta"],"WebsocketClosed":["Basics.Int"]}},"Component.Portal.Msg.Msg":{"args":[],"tags":{"ToggleExpertMode":[],"MsgForUploader":["Component.Portal.Msg.UploaderMsg"],"MsgForParams":["String.String","Data.Video.Processing.Params.Params","Component.Portal.Params.Msg"],"MsgForParamsKeeper":["Component.Portal.Msg.ParamsKeeperMsg"],"PresetsLoaded":["RemoteData.WebData (List.List Data.Video.Processing.Preset.Preset)"],"ProjectsLoaded":["RemoteData.WebData (List.List Data.Project.Concise.Concise)"],"PickFiles":[],"FilesSelected":["File.File","List.List File.File"],"SelectProject":["String.String","Basics.Bool"],"CheckAll":["Basics.Int","Basics.Int","List.List String.String"],"ConfirmDeletion":["Either.Either String.String ()"],"StopConfirmation":[],"DeleteProject":["String.String"],"BatchDeleteProjects":[],"ProjectsDeleted":["Set.Set String.String","Result.Result Http.Error ()"],"StartProcessingVideos":[],"VideoProcessingStarted":["Set.Set String.String","Result.Result (API.Request.Error Data.Project.Concise.ProcessingError) ()"],"ProcessingStatusUpdate":["Result.Result Json.Decode.Error Data.Project.Concise.StatusUpdate"],"StartOver":["String.String"],"SetProcessingPreset":["String.String","Data.Video.Processing.Preset.Preset"],"ProjectUpdated":["Result.Result (API.Request.Error Data.Project.Concise.UpdateError) Data.Project.Concise.Concise"],"SetSearchStr":["String.String"],"NoOp":[]}},"Component.Project.Msg.Msg":{"args":[],"tags":{"LoadProject":["String.String"],"MsgForEditing":["Component.Project.Msg.EditingMsg"],"ProjectLoaded":["Result.Result (API.Request.Error Data.Project.Error) Data.Project.Project"],"PosterLoaded":["Result.Result Http.Error String.String"],"StartPreviewing":[],"StopPreviewing":[],"CopyAll":["String.String"],"ExportProject":[],"ProjectExported":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) ( Data.File.Object.Base, String.String )"],"DismissExportingErrorPrompt":[],"SeekTime":["Basics.Int"],"RequestProjectSize":[],"ProjectSizeRequested":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.FileSize.FileSize"],"JumpTo":["Basics.Int"],"NavigateToPortal":[],"StayOnPage":[],"ChangeBeforeUnloadPrompt":[],"ChangeViewType":["Component.Project.Msg.ViewType"],"SaveProject":["Maybe.Maybe Route.Route"],"ProjectSaved":["Maybe.Maybe Route.Route","Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"DismissSavingResultPrompt":[],"NoOp":[]}},"Route.Route":{"args":[],"tags":{"Home":[],"Portal":[],"Project":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Data.File.Object.Base":{"args":[],"tags":{"Local":[],"Remote":["Url.Url"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Data.Project.Content.Content":{"args":[],"tags":{"FromSegment":["Basics.Bool","Data.Project.SegmentContent.SegmentContent"],"FromUser":["Basics.Int","Basics.Bool","Data.Project.UserContent.UserContent"]}},"Component.Project.Msg.EditingMsg":{"args":[],"tags":{"ConvertToGif":["Basics.Int"],"ConvertToGifWithParams":["Basics.Int","Basics.Int","Basics.Float"],"GifProcessed":["( Basics.Int, Basics.Int )","Result.Result (API.Request.Error Data.Video.Gif.Error) Data.Video.Gif.Gif"],"RevertGif":["Basics.Int"],"AddPlainTextAfter":["Basics.Int"],"ToggleContentVisibility":["Basics.Int"],"RemoveContent":["Basics.Int"],"PreEdit":["Basics.Int"],"EditPlainText":["Basics.Int","String.String"],"FinishEditing":["Basics.Int"],"PreviewAsCover":["Data.Video.Frame.Frame"],"StopPreviewingAsCover":["Data.Video.Frame.Frame"],"MergeSections":["Basics.Int","Basics.Int","Data.Project.SegmentContent.SegmentContent"],"SplitSection":["Basics.Int","Basics.Int"],"StartMovingSection":["Basics.Int"],"StopMovingSection":[],"MoveSection":["Basics.Int","Basics.Int"],"MovingOver":["Basics.Int"],"SetKeyFrame":["Basics.Int","Basics.Int"],"UndoProject":[],"RedoProject":[],"HostMessage":["Component.Project.Msg.Msg"],"ChangeWidth":["String.String"],"ChangeFps":["String.String"]}},"Either.Either":{"args":["a","b"],"tags":{"Left":["a"],"Right":["b"]}},"API.Request.Error":{"args":["e"],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int","e"],"BadBody":["Basics.Int","Json.Decode.Error"]}},"Data.Project.Error":{"args":[],"tags":{"ProjectNotFound":[]}},"Data.Project.HtmlExport.Error":{"args":[],"tags":{"MediaFilesMissing":["List.List Data.File.Object.Key"],"SourceFileNotFound":[]}},"Data.Project.Saving.Error":{"args":[],"tags":{"SourceFileNotFound":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Json.Decode.Error":{"args":[],"tags":{"Field":["String.String","Json.Decode.Error"],"Index":["Basics.Int","Json.Decode.Error"],"OneOf":["List.List Json.Decode.Error"],"Failure":["String.String","Json.Decode.Value"]}},"File.File":{"args":[],"tags":{"File":[]}},"Data.FileSize.FileSize":{"args":[],"tags":{"Bit":["Basics.Int"],"Byte":["Basics.Float"],"Kibibyte":["Basics.Float"],"Mebibyte":["Basics.Float"]}},"Data.Video.Processing.Params.Granularity":{"args":[],"tags":{"Rough":[],"Medium":[],"Detailed":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Data.NativeClient.MetaError":{"args":[],"tags":{"MalformedVersionNumber":[]}},"Component.Portal.Params.Msg":{"args":[],"tags":{"SetGranularity":["Data.Video.Processing.Params.Granularity"],"SetDifferentTypeMinDifference":["Basics.Int"],"SetSameTypeMaxDifference":["Basics.Int"],"SetSimilarTypeMaxDifference":["Basics.Int"],"SetSmoothTypeMinValue":["Basics.Int"],"SetIsSameCombined":["Basics.Bool"],"SetShortNoneCombiningMaxDurationInMs":["Basics.Int"],"NoOp":[]}},"Component.Portal.Msg.ParamsKeeperMsg":{"args":[],"tags":{"StartExportingParams":["Data.Video.Processing.Params.Params"],"CancelExportingParams":[],"ExportParams":["String.String"],"ParamsRequested":[],"ParamsSelected":["File.File"],"ParamsLoaded":["String.String"],"DismissImportingError":[]}},"Data.Project.Concise.ProcessingError":{"args":[],"tags":{"FileNotFound":[],"CannotDecodeVideo":[],"BadParameters":[],"OtherProcessingError":["String.String"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Loading":[],"Failure":["e"],"Success":["a"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Set.Set":{"args":["t"],"tags":{"Set_elm_builtin":["Dict.Dict t ()"]}},"Data.Project.Concise.Status":{"args":[],"tags":{"Uploaded":[],"Processing":["Basics.Float"],"Processed":[],"FailedToProcess":["API.Request.Error Data.Project.Concise.ProcessingError"]}},"String.String":{"args":[],"tags":{"String":[]}},"Data.Project.Concise.UpdateError":{"args":[],"tags":{"InvalidParams":[]}},"Component.Portal.Msg.UploaderMsg":{"args":[],"tags":{"UploadVideo":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","String.String"],"VideoUploading":["String.String","Http.Progress"],"VideoUploaded":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","Result.Result Http.Error Data.Project.Concise.Concise"],"PickSubtitleFor":["String.String"],"SubtitleSelected":["String.String","File.File"],"SubtitleLoaded":["String.String","String.String","String.String"],"SubtitleUploaded":["String.String","Result.Result (API.Request.Error Data.Project.Concise.SubtitleError) Data.Project.Concise.Concise"],"OpenUploader":[],"CloseUploaderWhenCompleted":[],"ReviewSubtitle":["String.String"],"StopReviewingSubtitle":[],"RemoveSubtitleFor":["String.String"]}},"Component.Project.Msg.ViewType":{"args":[],"tags":{"Hidden":[],"Small":[],"Normal":[],"Large":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Data.Video.Gif.Error":{"args":[],"tags":{"IntervalTooSmall":[],"SourceFileNotFound":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Data.File.Object.Key":{"args":[],"tags":{"Key":["List.List String.String"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}},"Http.Progress":{"args":[],"tags":{"Sending":["{ sent : Basics.Int, size : Basics.Int }"],"Receiving":["{ received : Basics.Int, size : Maybe.Maybe Basics.Int }"]}},"Data.Project.SegmentContent.SegmentContent":{"args":[],"tags":{"FrameSequence":["Data.Video.Segment.Segment","Maybe.Maybe Data.Video.Gif.Gif"],"GifFromVideo":["Data.Video.Gif.Gif","Data.Video.Segment.Segment"]}},"Data.Uploader.Media.Subtitle":{"args":[],"tags":{"Subtitle":["Basics.Int","File.File"]}},"Data.Project.Concise.SubtitleError":{"args":[],"tags":{"InvalidSubtitle":[]}},"Data.Project.UserContent.UserContent":{"args":[],"tags":{"PlainText":["String.String"],"Picture":["Data.File.Object.Key"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Data.Uploader.Media.Video":{"args":[],"tags":{"Video":["File.File"]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Data.Video.Segment.Segment":{"args":[],"tags":{"Segment":["Data.Video.Frame.Frame","List.List Data.Video.Frame.Frame"]}}}}})}});}(this));
 },{}],"js/app.js":[function(require,module,exports) {
 "use strict";
 
