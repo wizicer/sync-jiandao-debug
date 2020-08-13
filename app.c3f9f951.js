@@ -278,7 +278,7 @@ module.exports = {
     "link1": "https://www.editool.cn",
     "title2": "常见问题",
     "img_src2": "/assets/help.svg",
-    "link2": "https://www.editool.cn",
+    "link2": "https://www.editool.cn/docs/faq/",
     "title3": "教程",
     "img_src3": "/assets/menu.svg",
     "link3": "https://www.editool.cn/docs/",
@@ -13809,7 +13809,7 @@ var $author$project$Data$Version$initial = function () {
 			return localVersion;
 		}
 	};
-	return decode('0.2.1594.200812');
+	return decode('0.2.1599.200813');
 }();
 var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
