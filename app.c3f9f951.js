@@ -13809,7 +13809,7 @@ var $author$project$Data$Version$initial = function () {
 			return localVersion;
 		}
 	};
-	return decode('0.2.1599.200813');
+	return decode('0.2.1618.200813');
 }();
 var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
@@ -21017,43 +21017,46 @@ var $author$project$Component$Project$View$Preview$view = F9(
 										$elm$html$Html$Attributes$class('md-content bg-white w-mobile mt-2 mb-0 p-3 bg-grey-300')
 									]))),
 							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('md-content bg-white w-mobile mt-2 mb-0 p-3 bg-grey-300 text-center')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$button,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('btn btn--theme w-24 h-10 inline'),
-											$elm$html$Html$Events$onClick(
-											copyAll(
-												$author$project$Translations$Page$Project$LeftPanel$copyAllPrompt(trn)))
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Translations$Page$Project$LeftPanel$copyAll(trn))
-										])),
-									A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$classList(
-											_List_fromArray(
-												[
-													_Utils_Tuple2('hidden', !isCopied)
-												]))
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text(
-											$author$project$Translations$Page$Project$LeftPanel$copyAllPrompt(trn))
-										]))
-								])),
+							$author$project$Util$viewIf,
+							!_Utils_eq(projectExported, $elm$core$Maybe$Nothing),
+							A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('md-content bg-white w-mobile mt-2 mb-0 p-3 bg-grey-300 text-center')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('btn btn--theme w-24 h-10 inline'),
+												$elm$html$Html$Events$onClick(
+												copyAll(
+													$author$project$Translations$Page$Project$LeftPanel$copyAllPrompt(trn)))
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text(
+												$author$project$Translations$Page$Project$LeftPanel$copyAll(trn))
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$classList(
+												_List_fromArray(
+													[
+														_Utils_Tuple2('hidden', !isCopied)
+													]))
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text(
+												$author$project$Translations$Page$Project$LeftPanel$copyAllPrompt(trn))
+											]))
+									]))),
 							A2(
 							$elm$html$Html$div,
 							_List_fromArray(
