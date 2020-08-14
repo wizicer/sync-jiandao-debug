@@ -13809,7 +13809,7 @@ var $author$project$Data$Version$initial = function () {
 			return localVersion;
 		}
 	};
-	return decode('0.2.1634.200814');
+	return decode('0.2.1644.200814');
 }();
 var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
@@ -23452,6 +23452,18 @@ document.addEventListener('keydown', function (event) {
     event.preventDefault();
   }
 }, false);
+document.addEventListener('keydown', function (event) {
+  var keyCode = {
+    keyLeft: 37,
+    keyRight: 39
+  };
+
+  if (event.keyCode == keyCode.keyLeft) {
+    setImgIndex('previous');
+  } else if (event.keyCode == keyCode.keyRight) {
+    setImgIndex('next');
+  }
+});
 app.ports.seekTime.subscribe(function (milliseconds) {
   var video = document.querySelector('video#source-file');
   video.currentTime = milliseconds / 1000;
