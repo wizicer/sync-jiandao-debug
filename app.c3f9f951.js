@@ -13809,7 +13809,7 @@ var $author$project$Data$Version$initial = function () {
 			return localVersion;
 		}
 	};
-	return decode('0.2.1620.200813');
+	return decode('0.2.1634.200814');
 }();
 var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
@@ -16064,6 +16064,7 @@ var $author$project$Component$Project$Main$initLoaded = function (project) {
 			isExportingInProgress: false,
 			isPreviewing: false,
 			lastSaved: project,
+			modalIndex: 0,
 			modalUrl: '',
 			movingOver: $elm$core$Maybe$Nothing,
 			movingSection: $elm$core$Maybe$Nothing,
@@ -16242,6 +16243,16 @@ var $elm$core$Maybe$map = F2(
 		} else {
 			return $elm$core$Maybe$Nothing;
 		}
+	});
+var $author$project$Port$nextImg = _Platform_outgoingPort(
+	'nextImg',
+	function ($) {
+		return $elm$json$Json$Encode$null;
+	});
+var $author$project$Port$prevImg = _Platform_outgoingPort(
+	'prevImg',
+	function ($) {
+		return $elm$json$Json$Encode$null;
 	});
 var $author$project$Route$pushUrl = function (key) {
 	return A2(
@@ -17864,12 +17875,13 @@ var $author$project$Component$Project$Editing$update = F4(
 						}),
 					$elm$core$Platform$Cmd$none);
 			default:
-				var url = msg.a;
+				var index = msg.a;
+				var url = msg.b;
 				return _Utils_Tuple3(
 					project,
 					_Utils_update(
 						substate,
-						{displayModal: true, modalUrl: url}),
+						{displayModal: true, modalIndex: index, modalUrl: url}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
@@ -17979,8 +17991,18 @@ var $author$project$Component$Project$Main$updateLoaded = F4(
 					project,
 					_Utils_update(
 						substate,
-						{displayModal: false}),
+						{displayModal: false, modalIndex: 0, modalUrl: ''}),
 					$elm$core$Platform$Cmd$none);
+			case 'PrevImg':
+				return _Utils_Tuple3(
+					project,
+					substate,
+					$author$project$Port$prevImg(_Utils_Tuple0));
+			case 'NextImg':
+				return _Utils_Tuple3(
+					project,
+					substate,
+					$author$project$Port$nextImg(_Utils_Tuple0));
 			case 'ExportProject':
 				var result = msg.a;
 				return _Utils_Tuple3(
@@ -20726,8 +20748,13 @@ var $author$project$Component$Project$View$Alert$view = F6(
 				]));
 	});
 var $author$project$Component$Project$Msg$CloseModal = {$: 'CloseModal'};
-var $author$project$Component$Project$View$Modal$view = F2(
-	function (displayModal, url) {
+var $author$project$Component$Project$Msg$NextImg = {$: 'NextImg'};
+var $author$project$Component$Project$Msg$PrevImg = {$: 'PrevImg'};
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
+var $author$project$View$Icon$leftArrow = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z');
+var $author$project$View$Icon$rightArrow = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z');
+var $author$project$Component$Project$View$Modal$view = F3(
+	function (displayModal, url, index) {
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -20745,6 +20772,26 @@ var $author$project$Component$Project$View$Modal$view = F2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
+							$elm$html$Html$Attributes$class('w-1/10 text-right m-8')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('text-white hover:bg-grey-500'),
+									$elm$html$Html$Events$onClick($author$project$Component$Project$Msg$PrevImg)
+								]),
+							_List_fromArray(
+								[
+									$author$project$View$Icon$leftArrow(48)
+								]))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
 							$elm$html$Html$Attributes$class('w-4/5'),
 							$elm$html$Html$Events$onClick($author$project$Component$Project$Msg$CloseModal)
 						]),
@@ -20756,9 +20803,33 @@ var $author$project$Component$Project$View$Modal$view = F2(
 								[
 									$elm$html$Html$Attributes$class('w-full'),
 									$elm$html$Html$Attributes$id('modalImg'),
+									A2(
+									$elm$html$Html$Attributes$attribute,
+									'index',
+									$elm$core$String$fromInt(index)),
 									$elm$html$Html$Attributes$src(url)
 								]),
 							_List_Nil)
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('w-1/10 text-left m-8')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('text-white hover:bg-grey-500'),
+									$elm$html$Html$Events$onClick($author$project$Component$Project$Msg$NextImg)
+								]),
+							_List_fromArray(
+								[
+									$author$project$View$Icon$rightArrow(48)
+								]))
 						]))
 				]));
 	});
@@ -20899,7 +20970,6 @@ var $author$project$Component$Project$View$Preview$viewSegmentContent = F3(
 var $author$project$Data$Project$UserContent$pictureBase = $author$project$Data$File$Object$Remote(
 	{fragment: $elm$core$Maybe$Nothing, host: 'whatever.com', path: '/path/to/', port_: $elm$core$Maybe$Nothing, protocol: $elm$url$Url$Https, query: $elm$core$Maybe$Nothing});
 var $author$project$Data$Project$UserContent$pictureUrl = $author$project$Data$File$Object$toUrl($author$project$Data$Project$UserContent$pictureBase);
-var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $author$project$View$Trix$preview = F2(
 	function (attrs, content) {
 		return A3(
@@ -21915,9 +21985,10 @@ var $author$project$Component$Project$Msg$ConvertToGifWithParams = F3(
 var $author$project$Component$Project$Msg$PreviewAsCover = function (a) {
 	return {$: 'PreviewAsCover', a: a};
 };
-var $author$project$Component$Project$Msg$PreviewImg = function (a) {
-	return {$: 'PreviewImg', a: a};
-};
+var $author$project$Component$Project$Msg$PreviewImg = F2(
+	function (a, b) {
+		return {$: 'PreviewImg', a: a, b: b};
+	});
 var $author$project$Component$Project$Msg$RevertGif = function (a) {
 	return {$: 'RevertGif', a: a};
 };
@@ -22375,9 +22446,11 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$src(coverUrl),
-								$elm$html$Html$Attributes$class('w-full object-contain select-none my-2'),
+								$elm$html$Html$Attributes$class('w-full object-contain select-none my-2 imgToPreview'),
+								$elm$html$Html$Attributes$id(
+								$elm$core$String$fromInt(index)),
 								$elm$html$Html$Events$onClick(
-								$author$project$Component$Project$Msg$PreviewImg(coverUrl))
+								A2($author$project$Component$Project$Msg$PreviewImg, index, coverUrl))
 							]),
 						_List_Nil),
 						function () {
@@ -22914,7 +22987,7 @@ var $author$project$Component$Project$Main$viewLoaded = F4(
 					substate.savingResult,
 					substate.confirmNavigatingAway),
 					A6($author$project$Component$Project$View$Alert$view, trn, $author$project$Component$Project$Msg$DismissSavingResultPrompt, $author$project$Component$Project$Msg$DismissExportingErrorPrompt, substate.exportingError, substate.savingResult, substate.isExportingInProgress),
-					A2($author$project$Component$Project$View$Modal$view, substate.displayModal, substate.modalUrl)
+					A3($author$project$Component$Project$View$Modal$view, substate.displayModal, substate.modalUrl, substate.modalIndex)
 				]));
 	});
 var $author$project$Component$Project$Main$view = F3(
@@ -23297,7 +23370,7 @@ var $author$project$Main$view = function (model) {
 };
 var $author$project$Main$main = $elm$browser$Browser$application(
 	{init: $author$project$Main$init, onUrlChange: $author$project$Main$onUrlChange, onUrlRequest: $author$project$Main$onUrlRequest, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
-_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Data.Project.Concise.Concise":{"args":[],"type":"{ uuid : String.String, name : String.String, hasSubtitle : Basics.Bool, params : Data.Video.Processing.Params.Params, status : Data.Project.Concise.Status }"},"Data.NativeClient.Meta":{"args":[],"type":"{ version : Data.Version.Version, isCompatible : Basics.Bool }"},"Data.Video.Processing.Params.Params":{"args":[],"type":"{ granularity : Data.Video.Processing.Params.Granularity, differentTypeMinDifference : Basics.Int, sameTypeMaxDifference : Basics.Int, similarTypeMaxDifference : Basics.Int, smoothTypeMinValue : Basics.Int, isSameCombined : Basics.Bool, shortNoneCombiningMaxDurationInMs : Basics.Int }"},"Data.Video.Processing.Preset.Preset":{"args":[],"type":"{ name : String.String, description : Maybe.Maybe String.String, params : Data.Video.Processing.Params.Params }"},"Data.Project.Project":{"args":[],"type":"{ uuid : String.String, name : String.String, workingData : Array.Array Data.Project.Content.Content }"},"Data.Project.Concise.StatusUpdate":{"args":[],"type":"{ uuid : String.String, status : Data.Project.Concise.Status }"},"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Data.Version.Version":{"args":[],"type":"{ major : Basics.Int, minor : Basics.Int, patch : Basics.Int, buildNo : Basics.Int }"},"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Data.Video.Frame.Frame":{"args":[],"type":"{ index : Basics.Int, localObjectKey : Data.File.Object.Key, time : Basics.Int }"},"Data.Video.Gif.Gif":{"args":[],"type":"{ localObjectKey : Data.File.Object.Key, fileSize : Data.FileSize.FileSize }"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"},"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"SetRoute":["Maybe.Maybe Route.Route"],"ClickedLink":["Browser.UrlRequest"],"TryReload":[],"PortalMsg":["Component.Portal.Msg.Msg"],"ProjectMsg":["Component.Project.Msg.Msg"],"NativeClientMsg":["Component.NativeClient.Msg.Msg"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Component.NativeClient.Msg.Msg":{"args":[],"tags":{"RequestMetaOfNativeClient":[],"NativeClientVersionInfoRequested":["Result.Result (API.Request.Error Data.NativeClient.MetaError) Data.NativeClient.Meta"],"WebsocketClosed":["Basics.Int"]}},"Component.Portal.Msg.Msg":{"args":[],"tags":{"ToggleExpertMode":[],"MsgForUploader":["Component.Portal.Msg.UploaderMsg"],"MsgForParams":["String.String","Data.Video.Processing.Params.Params","Component.Portal.Params.Msg"],"MsgForParamsKeeper":["Component.Portal.Msg.ParamsKeeperMsg"],"PresetsLoaded":["RemoteData.WebData (List.List Data.Video.Processing.Preset.Preset)"],"ProjectsLoaded":["RemoteData.WebData (List.List Data.Project.Concise.Concise)"],"PickFiles":[],"FilesSelected":["File.File","List.List File.File"],"SelectProject":["String.String","Basics.Bool"],"CheckAll":["Basics.Int","Basics.Int","List.List String.String"],"ConfirmDeletion":["Either.Either String.String ()"],"StopConfirmation":[],"DeleteProject":["String.String"],"BatchDeleteProjects":[],"ProjectsDeleted":["Set.Set String.String","Result.Result Http.Error ()"],"StartProcessingVideos":[],"VideoProcessingStarted":["Set.Set String.String","Result.Result (API.Request.Error Data.Project.Concise.ProcessingError) ()"],"ProcessingStatusUpdate":["Result.Result Json.Decode.Error Data.Project.Concise.StatusUpdate"],"StartOver":["String.String"],"SetProcessingPreset":["String.String","Data.Video.Processing.Preset.Preset"],"ProjectUpdated":["Result.Result (API.Request.Error Data.Project.Concise.UpdateError) Data.Project.Concise.Concise"],"SetSearchStr":["String.String"],"NoOp":[]}},"Component.Project.Msg.Msg":{"args":[],"tags":{"LoadProject":["String.String"],"MsgForEditing":["Component.Project.Msg.EditingMsg"],"ProjectLoaded":["Result.Result (API.Request.Error Data.Project.Error) Data.Project.Project"],"PosterLoaded":["Result.Result Http.Error String.String"],"StartPreviewing":[],"StopPreviewing":[],"CopyAll":["String.String"],"ExportProject":["Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"ProjectExported":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) ( Data.File.Object.Base, String.String )"],"DismissExportingErrorPrompt":[],"SeekTime":["Basics.Int"],"RequestProjectSize":[],"ProjectSizeRequested":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.FileSize.FileSize"],"JumpTo":["Basics.Int"],"NavigateToPortal":[],"StayOnPage":[],"ChangeBeforeUnloadPrompt":[],"ChangeViewType":["Component.Project.Msg.ViewType"],"SaveProject":["Maybe.Maybe Route.Route"],"SaveAndExportProject":[],"ProjectSaved":["Maybe.Maybe Route.Route","Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"DismissSavingResultPrompt":[],"NoOp":[],"CloseModal":[]}},"Route.Route":{"args":[],"tags":{"Home":[],"Portal":[],"Project":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Data.File.Object.Base":{"args":[],"tags":{"Local":[],"Remote":["Url.Url"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Data.Project.Content.Content":{"args":[],"tags":{"FromSegment":["Basics.Bool","Data.Project.SegmentContent.SegmentContent"],"FromUser":["Basics.Int","Basics.Bool","Data.Project.UserContent.UserContent"]}},"Component.Project.Msg.EditingMsg":{"args":[],"tags":{"ConvertToGif":["Basics.Int"],"ConvertToGifWithParams":["Basics.Int","Basics.Int","Basics.Float"],"GifProcessed":["( Basics.Int, Basics.Int )","Result.Result (API.Request.Error Data.Video.Gif.Error) Data.Video.Gif.Gif"],"RevertGif":["Basics.Int"],"AddPlainTextAfter":["Basics.Int"],"ToggleContentVisibility":["Basics.Int"],"RemoveContent":["Basics.Int"],"PreEdit":["Basics.Int"],"EditPlainText":["Basics.Int","String.String"],"FinishEditing":["Basics.Int"],"PreviewAsCover":["Data.Video.Frame.Frame"],"StopPreviewingAsCover":["Data.Video.Frame.Frame"],"MergeSections":["Basics.Int","Basics.Int","Data.Project.SegmentContent.SegmentContent"],"SplitSection":["Basics.Int","Basics.Int"],"StartMovingSection":["Basics.Int"],"StopMovingSection":[],"MoveSection":["Basics.Int","Basics.Int"],"MovingOver":["Basics.Int"],"SetKeyFrame":["Basics.Int","Basics.Int"],"UndoProject":[],"RedoProject":[],"HostMessage":["Component.Project.Msg.Msg"],"ChangeWidth":["String.String"],"ChangeFps":["String.String"],"PreviewImg":["String.String"]}},"Either.Either":{"args":["a","b"],"tags":{"Left":["a"],"Right":["b"]}},"API.Request.Error":{"args":["e"],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int","e"],"BadBody":["Basics.Int","Json.Decode.Error"]}},"Data.Project.Error":{"args":[],"tags":{"ProjectNotFound":[]}},"Data.Project.HtmlExport.Error":{"args":[],"tags":{"MediaFilesMissing":["List.List Data.File.Object.Key"],"SourceFileNotFound":[]}},"Data.Project.Saving.Error":{"args":[],"tags":{"SourceFileNotFound":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Json.Decode.Error":{"args":[],"tags":{"Field":["String.String","Json.Decode.Error"],"Index":["Basics.Int","Json.Decode.Error"],"OneOf":["List.List Json.Decode.Error"],"Failure":["String.String","Json.Decode.Value"]}},"File.File":{"args":[],"tags":{"File":[]}},"Data.FileSize.FileSize":{"args":[],"tags":{"Bit":["Basics.Int"],"Byte":["Basics.Float"],"Kibibyte":["Basics.Float"],"Mebibyte":["Basics.Float"]}},"Data.Video.Processing.Params.Granularity":{"args":[],"tags":{"Rough":[],"Medium":[],"Detailed":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Data.NativeClient.MetaError":{"args":[],"tags":{"MalformedVersionNumber":[]}},"Component.Portal.Params.Msg":{"args":[],"tags":{"SetGranularity":["Data.Video.Processing.Params.Granularity"],"SetDifferentTypeMinDifference":["Basics.Int"],"SetSameTypeMaxDifference":["Basics.Int"],"SetSimilarTypeMaxDifference":["Basics.Int"],"SetSmoothTypeMinValue":["Basics.Int"],"SetIsSameCombined":["Basics.Bool"],"SetShortNoneCombiningMaxDurationInMs":["Basics.Int"],"NoOp":[]}},"Component.Portal.Msg.ParamsKeeperMsg":{"args":[],"tags":{"StartExportingParams":["Data.Video.Processing.Params.Params"],"CancelExportingParams":[],"ExportParams":["String.String"],"ParamsRequested":[],"ParamsSelected":["File.File"],"ParamsLoaded":["String.String"],"DismissImportingError":[]}},"Data.Project.Concise.ProcessingError":{"args":[],"tags":{"FileNotFound":[],"CannotDecodeVideo":[],"BadParameters":[],"OtherProcessingError":["String.String"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Loading":[],"Failure":["e"],"Success":["a"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Set.Set":{"args":["t"],"tags":{"Set_elm_builtin":["Dict.Dict t ()"]}},"Data.Project.Concise.Status":{"args":[],"tags":{"Uploaded":[],"Processing":["Basics.Float"],"Processed":[],"FailedToProcess":["API.Request.Error Data.Project.Concise.ProcessingError"]}},"String.String":{"args":[],"tags":{"String":[]}},"Data.Project.Concise.UpdateError":{"args":[],"tags":{"InvalidParams":[]}},"Component.Portal.Msg.UploaderMsg":{"args":[],"tags":{"UploadVideo":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","String.String"],"VideoUploading":["String.String","Http.Progress"],"VideoUploaded":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","Result.Result Http.Error Data.Project.Concise.Concise"],"PickSubtitleFor":["String.String"],"SubtitleSelected":["String.String","File.File"],"SubtitleLoaded":["String.String","String.String","String.String"],"SubtitleUploaded":["String.String","Result.Result (API.Request.Error Data.Project.Concise.SubtitleError) Data.Project.Concise.Concise"],"OpenUploader":[],"CloseUploaderWhenCompleted":[],"ReviewSubtitle":["String.String"],"StopReviewingSubtitle":[],"RemoveSubtitleFor":["String.String"]}},"Component.Project.Msg.ViewType":{"args":[],"tags":{"Hidden":[],"Small":[],"Normal":[],"Large":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Data.Video.Gif.Error":{"args":[],"tags":{"IntervalTooSmall":[],"SourceFileNotFound":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Data.File.Object.Key":{"args":[],"tags":{"Key":["List.List String.String"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}},"Http.Progress":{"args":[],"tags":{"Sending":["{ sent : Basics.Int, size : Basics.Int }"],"Receiving":["{ received : Basics.Int, size : Maybe.Maybe Basics.Int }"]}},"Data.Project.SegmentContent.SegmentContent":{"args":[],"tags":{"FrameSequence":["Data.Video.Segment.Segment","Maybe.Maybe Data.Video.Gif.Gif"],"GifFromVideo":["Data.Video.Gif.Gif","Data.Video.Segment.Segment"]}},"Data.Uploader.Media.Subtitle":{"args":[],"tags":{"Subtitle":["Basics.Int","File.File"]}},"Data.Project.Concise.SubtitleError":{"args":[],"tags":{"InvalidSubtitle":[]}},"Data.Project.UserContent.UserContent":{"args":[],"tags":{"PlainText":["String.String"],"Picture":["Data.File.Object.Key"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Data.Uploader.Media.Video":{"args":[],"tags":{"Video":["File.File"]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Data.Video.Segment.Segment":{"args":[],"tags":{"Segment":["Data.Video.Frame.Frame","List.List Data.Video.Frame.Frame"]}}}}})}});}(this));
+_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$value)({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Data.Project.Concise.Concise":{"args":[],"type":"{ uuid : String.String, name : String.String, hasSubtitle : Basics.Bool, params : Data.Video.Processing.Params.Params, status : Data.Project.Concise.Status }"},"Data.NativeClient.Meta":{"args":[],"type":"{ version : Data.Version.Version, isCompatible : Basics.Bool }"},"Data.Video.Processing.Params.Params":{"args":[],"type":"{ granularity : Data.Video.Processing.Params.Granularity, differentTypeMinDifference : Basics.Int, sameTypeMaxDifference : Basics.Int, similarTypeMaxDifference : Basics.Int, smoothTypeMinValue : Basics.Int, isSameCombined : Basics.Bool, shortNoneCombiningMaxDurationInMs : Basics.Int }"},"Data.Video.Processing.Preset.Preset":{"args":[],"type":"{ name : String.String, description : Maybe.Maybe String.String, params : Data.Video.Processing.Params.Params }"},"Data.Project.Project":{"args":[],"type":"{ uuid : String.String, name : String.String, workingData : Array.Array Data.Project.Content.Content }"},"Data.Project.Concise.StatusUpdate":{"args":[],"type":"{ uuid : String.String, status : Data.Project.Concise.Status }"},"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Data.Version.Version":{"args":[],"type":"{ major : Basics.Int, minor : Basics.Int, patch : Basics.Int, buildNo : Basics.Int }"},"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Data.Video.Frame.Frame":{"args":[],"type":"{ index : Basics.Int, localObjectKey : Data.File.Object.Key, time : Basics.Int }"},"Data.Video.Gif.Gif":{"args":[],"type":"{ localObjectKey : Data.File.Object.Key, fileSize : Data.FileSize.FileSize }"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"},"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"SetRoute":["Maybe.Maybe Route.Route"],"ClickedLink":["Browser.UrlRequest"],"TryReload":[],"PortalMsg":["Component.Portal.Msg.Msg"],"ProjectMsg":["Component.Project.Msg.Msg"],"NativeClientMsg":["Component.NativeClient.Msg.Msg"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Component.NativeClient.Msg.Msg":{"args":[],"tags":{"RequestMetaOfNativeClient":[],"NativeClientVersionInfoRequested":["Result.Result (API.Request.Error Data.NativeClient.MetaError) Data.NativeClient.Meta"],"WebsocketClosed":["Basics.Int"]}},"Component.Portal.Msg.Msg":{"args":[],"tags":{"ToggleExpertMode":[],"MsgForUploader":["Component.Portal.Msg.UploaderMsg"],"MsgForParams":["String.String","Data.Video.Processing.Params.Params","Component.Portal.Params.Msg"],"MsgForParamsKeeper":["Component.Portal.Msg.ParamsKeeperMsg"],"PresetsLoaded":["RemoteData.WebData (List.List Data.Video.Processing.Preset.Preset)"],"ProjectsLoaded":["RemoteData.WebData (List.List Data.Project.Concise.Concise)"],"PickFiles":[],"FilesSelected":["File.File","List.List File.File"],"SelectProject":["String.String","Basics.Bool"],"CheckAll":["Basics.Int","Basics.Int","List.List String.String"],"ConfirmDeletion":["Either.Either String.String ()"],"StopConfirmation":[],"DeleteProject":["String.String"],"BatchDeleteProjects":[],"ProjectsDeleted":["Set.Set String.String","Result.Result Http.Error ()"],"StartProcessingVideos":[],"VideoProcessingStarted":["Set.Set String.String","Result.Result (API.Request.Error Data.Project.Concise.ProcessingError) ()"],"ProcessingStatusUpdate":["Result.Result Json.Decode.Error Data.Project.Concise.StatusUpdate"],"StartOver":["String.String"],"SetProcessingPreset":["String.String","Data.Video.Processing.Preset.Preset"],"ProjectUpdated":["Result.Result (API.Request.Error Data.Project.Concise.UpdateError) Data.Project.Concise.Concise"],"SetSearchStr":["String.String"],"NoOp":[]}},"Component.Project.Msg.Msg":{"args":[],"tags":{"LoadProject":["String.String"],"MsgForEditing":["Component.Project.Msg.EditingMsg"],"ProjectLoaded":["Result.Result (API.Request.Error Data.Project.Error) Data.Project.Project"],"PosterLoaded":["Result.Result Http.Error String.String"],"StartPreviewing":[],"StopPreviewing":[],"CopyAll":["String.String"],"ExportProject":["Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"ProjectExported":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) ( Data.File.Object.Base, String.String )"],"DismissExportingErrorPrompt":[],"SeekTime":["Basics.Int"],"RequestProjectSize":[],"ProjectSizeRequested":["Result.Result (API.Request.Error Data.Project.HtmlExport.Error) Data.FileSize.FileSize"],"JumpTo":["Basics.Int"],"NavigateToPortal":[],"StayOnPage":[],"ChangeBeforeUnloadPrompt":[],"ChangeViewType":["Component.Project.Msg.ViewType"],"SaveProject":["Maybe.Maybe Route.Route"],"SaveAndExportProject":[],"ProjectSaved":["Maybe.Maybe Route.Route","Result.Result (API.Request.Error Data.Project.Saving.Error) ()"],"DismissSavingResultPrompt":[],"NoOp":[],"CloseModal":[],"PrevImg":[],"NextImg":[]}},"Route.Route":{"args":[],"tags":{"Home":[],"Portal":[],"Project":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Data.File.Object.Base":{"args":[],"tags":{"Local":[],"Remote":["Url.Url"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Data.Project.Content.Content":{"args":[],"tags":{"FromSegment":["Basics.Bool","Data.Project.SegmentContent.SegmentContent"],"FromUser":["Basics.Int","Basics.Bool","Data.Project.UserContent.UserContent"]}},"Component.Project.Msg.EditingMsg":{"args":[],"tags":{"ConvertToGif":["Basics.Int"],"ConvertToGifWithParams":["Basics.Int","Basics.Int","Basics.Float"],"GifProcessed":["( Basics.Int, Basics.Int )","Result.Result (API.Request.Error Data.Video.Gif.Error) Data.Video.Gif.Gif"],"RevertGif":["Basics.Int"],"AddPlainTextAfter":["Basics.Int"],"ToggleContentVisibility":["Basics.Int"],"RemoveContent":["Basics.Int"],"PreEdit":["Basics.Int"],"EditPlainText":["Basics.Int","String.String"],"FinishEditing":["Basics.Int"],"PreviewAsCover":["Data.Video.Frame.Frame"],"StopPreviewingAsCover":["Data.Video.Frame.Frame"],"MergeSections":["Basics.Int","Basics.Int","Data.Project.SegmentContent.SegmentContent"],"SplitSection":["Basics.Int","Basics.Int"],"StartMovingSection":["Basics.Int"],"StopMovingSection":[],"MoveSection":["Basics.Int","Basics.Int"],"MovingOver":["Basics.Int"],"SetKeyFrame":["Basics.Int","Basics.Int"],"UndoProject":[],"RedoProject":[],"HostMessage":["Component.Project.Msg.Msg"],"ChangeWidth":["String.String"],"ChangeFps":["String.String"],"PreviewImg":["Basics.Int","String.String"]}},"Either.Either":{"args":["a","b"],"tags":{"Left":["a"],"Right":["b"]}},"API.Request.Error":{"args":["e"],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int","e"],"BadBody":["Basics.Int","Json.Decode.Error"]}},"Data.Project.Error":{"args":[],"tags":{"ProjectNotFound":[]}},"Data.Project.HtmlExport.Error":{"args":[],"tags":{"MediaFilesMissing":["List.List Data.File.Object.Key"],"SourceFileNotFound":[]}},"Data.Project.Saving.Error":{"args":[],"tags":{"SourceFileNotFound":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"Json.Decode.Error":{"args":[],"tags":{"Field":["String.String","Json.Decode.Error"],"Index":["Basics.Int","Json.Decode.Error"],"OneOf":["List.List Json.Decode.Error"],"Failure":["String.String","Json.Decode.Value"]}},"File.File":{"args":[],"tags":{"File":[]}},"Data.FileSize.FileSize":{"args":[],"tags":{"Bit":["Basics.Int"],"Byte":["Basics.Float"],"Kibibyte":["Basics.Float"],"Mebibyte":["Basics.Float"]}},"Data.Video.Processing.Params.Granularity":{"args":[],"tags":{"Rough":[],"Medium":[],"Detailed":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Data.NativeClient.MetaError":{"args":[],"tags":{"MalformedVersionNumber":[]}},"Component.Portal.Params.Msg":{"args":[],"tags":{"SetGranularity":["Data.Video.Processing.Params.Granularity"],"SetDifferentTypeMinDifference":["Basics.Int"],"SetSameTypeMaxDifference":["Basics.Int"],"SetSimilarTypeMaxDifference":["Basics.Int"],"SetSmoothTypeMinValue":["Basics.Int"],"SetIsSameCombined":["Basics.Bool"],"SetShortNoneCombiningMaxDurationInMs":["Basics.Int"],"NoOp":[]}},"Component.Portal.Msg.ParamsKeeperMsg":{"args":[],"tags":{"StartExportingParams":["Data.Video.Processing.Params.Params"],"CancelExportingParams":[],"ExportParams":["String.String"],"ParamsRequested":[],"ParamsSelected":["File.File"],"ParamsLoaded":["String.String"],"DismissImportingError":[]}},"Data.Project.Concise.ProcessingError":{"args":[],"tags":{"FileNotFound":[],"CannotDecodeVideo":[],"BadParameters":[],"OtherProcessingError":["String.String"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Loading":[],"Failure":["e"],"Success":["a"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Set.Set":{"args":["t"],"tags":{"Set_elm_builtin":["Dict.Dict t ()"]}},"Data.Project.Concise.Status":{"args":[],"tags":{"Uploaded":[],"Processing":["Basics.Float"],"Processed":[],"FailedToProcess":["API.Request.Error Data.Project.Concise.ProcessingError"]}},"String.String":{"args":[],"tags":{"String":[]}},"Data.Project.Concise.UpdateError":{"args":[],"tags":{"InvalidParams":[]}},"Component.Portal.Msg.UploaderMsg":{"args":[],"tags":{"UploadVideo":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","String.String"],"VideoUploading":["String.String","Http.Progress"],"VideoUploaded":["Data.Uploader.Media.Video","Maybe.Maybe Data.Uploader.Media.Subtitle","Result.Result Http.Error Data.Project.Concise.Concise"],"PickSubtitleFor":["String.String"],"SubtitleSelected":["String.String","File.File"],"SubtitleLoaded":["String.String","String.String","String.String"],"SubtitleUploaded":["String.String","Result.Result (API.Request.Error Data.Project.Concise.SubtitleError) Data.Project.Concise.Concise"],"OpenUploader":[],"CloseUploaderWhenCompleted":[],"ReviewSubtitle":["String.String"],"StopReviewingSubtitle":[],"RemoveSubtitleFor":["String.String"]}},"Component.Project.Msg.ViewType":{"args":[],"tags":{"Hidden":[],"Small":[],"Normal":[],"Large":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":[]}},"Data.Video.Gif.Error":{"args":[],"tags":{"IntervalTooSmall":[],"SourceFileNotFound":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Data.File.Object.Key":{"args":[],"tags":{"Key":["List.List String.String"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}},"Http.Progress":{"args":[],"tags":{"Sending":["{ sent : Basics.Int, size : Basics.Int }"],"Receiving":["{ received : Basics.Int, size : Maybe.Maybe Basics.Int }"]}},"Data.Project.SegmentContent.SegmentContent":{"args":[],"tags":{"FrameSequence":["Data.Video.Segment.Segment","Maybe.Maybe Data.Video.Gif.Gif"],"GifFromVideo":["Data.Video.Gif.Gif","Data.Video.Segment.Segment"]}},"Data.Uploader.Media.Subtitle":{"args":[],"tags":{"Subtitle":["Basics.Int","File.File"]}},"Data.Project.Concise.SubtitleError":{"args":[],"tags":{"InvalidSubtitle":[]}},"Data.Project.UserContent.UserContent":{"args":[],"tags":{"PlainText":["String.String"],"Picture":["Data.File.Object.Key"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Data.Uploader.Media.Video":{"args":[],"tags":{"Video":["File.File"]}},"Dict.NColor":{"args":[],"tags":{"Red":[],"Black":[]}},"Data.Video.Segment.Segment":{"args":[],"tags":{"Segment":["Data.Video.Frame.Frame","List.List Data.Video.Frame.Frame"]}}}}})}});}(this));
 },{}],"js/app.js":[function(require,module,exports) {
 "use strict";
 
@@ -23501,6 +23574,44 @@ app.ports.removeBeforeUnloadPrompt.subscribe(function () {
 app.ports.copyAll.subscribe(function (msg) {
   var copyAllTarget = document.getElementById('copyAllTarget');
   window.getSelection().selectAllChildren(copyAllTarget);
+});
+
+function setImgIndex(action) {
+  var imgToPreview = document.getElementsByClassName('imgToPreview');
+  var len = imgToPreview.length;
+  var imgArr = new Array(len);
+  var modalImg = document.getElementById('modalImg');
+  var index = modalImg.getAttribute('index');
+
+  for (var i = 0; i < len; i++) {
+    imgArr[i] = imgToPreview[i].id;
+  }
+
+  var pos = imgArr.indexOf(index);
+
+  switch (action) {
+    case 'next':
+      var newIndex = imgArr[(pos + 1) % len];
+      break;
+
+    case 'previous':
+      var newIndex = imgArr[(pos - 1 + len) % len];
+      break;
+
+    default:
+      var newIndex = index;
+      break;
+  }
+
+  modalImg.setAttribute('index', newIndex);
+  modalImg.src = document.getElementById(newIndex).src;
+}
+
+app.ports.prevImg.subscribe(function () {
+  setImgIndex('previous');
+});
+app.ports.nextImg.subscribe(function () {
+  setImgIndex('next');
 }); // Web components
 
 var RichTextPreview = /*#__PURE__*/function (_HTMLElement) {
