@@ -13809,7 +13809,7 @@ var $author$project$Data$Version$initial = function () {
 			return localVersion;
 		}
 	};
-	return decode('0.2.1644.200814');
+	return decode('0.2.1649.200817');
 }();
 var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
@@ -20751,6 +20751,7 @@ var $author$project$Component$Project$Msg$CloseModal = {$: 'CloseModal'};
 var $author$project$Component$Project$Msg$NextImg = {$: 'NextImg'};
 var $author$project$Component$Project$Msg$PrevImg = {$: 'PrevImg'};
 var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
+var $author$project$View$Icon$close = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z');
 var $author$project$View$Icon$leftArrow = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z');
 var $author$project$View$Icon$rightArrow = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z');
 var $author$project$Component$Project$View$Modal$view = F3(
@@ -20792,7 +20793,7 @@ var $author$project$Component$Project$View$Modal$view = F3(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('w-4/5'),
+							$elm$html$Html$Attributes$class('w-4/5 text-center'),
 							$elm$html$Html$Events$onClick($author$project$Component$Project$Msg$CloseModal)
 						]),
 					_List_fromArray(
@@ -20801,7 +20802,7 @@ var $author$project$Component$Project$View$Modal$view = F3(
 							$elm$html$Html$img,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('w-full'),
+									$elm$html$Html$Attributes$class('inline'),
 									$elm$html$Html$Attributes$id('modalImg'),
 									A2(
 									$elm$html$Html$Attributes$attribute,
@@ -20829,6 +20830,26 @@ var $author$project$Component$Project$View$Modal$view = F3(
 							_List_fromArray(
 								[
 									$author$project$View$Icon$rightArrow(48)
+								]))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('h-full object-top')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('text-white hover:bg-grey-500 object-right-top'),
+									$elm$html$Html$Events$onClick($author$project$Component$Project$Msg$CloseModal)
+								]),
+							_List_fromArray(
+								[
+									$author$project$View$Icon$close(48)
 								]))
 						]))
 				]));

@@ -1449,6 +1449,14 @@ a.btn:hover {
   object-fit: contain;
 }
 
+.object-right-top {
+  object-position: right top;
+}
+
+.object-top {
+  object-position: top;
+}
+
 .opacity-25 {
   opacity: 0.25;
 }
