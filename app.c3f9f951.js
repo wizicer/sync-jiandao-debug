@@ -217,8 +217,8 @@ module.exports = {
         "native_client_version": "Native Client 版本",
         "project_size": "当前图文总大小",
         "stop_previewing": "关闭",
-        "copy_all": "全部选中",
-        "copy_all_prompt": "按Ctrl+C复制"
+        "copy_all": "复制至外网",
+        "copy_all_prompt": "按【Ctrl+C】复制内容，然后【Ctrl+V】粘贴至其他平台编辑器内。"
       },
       "right_panel": {
         "hidden_content": "已删除",
@@ -232,7 +232,7 @@ module.exports = {
         "btn_delete": "删除",
         "btn_merge": "合并至上个段落",
         "input_width": "宽度",
-        "input_fps": "帧数",
+        "input_fps": "fps",
         "lable_width": "px",
         "lable_fps": "帧",
         "btn_confirm": "确定"
@@ -276,11 +276,11 @@ module.exports = {
     "title1": "剪刀兔官网",
     "img_src1": "/assets/home.svg",
     "link1": "https://www.editool.cn",
-    "title2": "常见问题",
+    "title2": "常见问答",
     "img_src2": "/assets/help.svg",
     "link2": "https://www.editool.cn/docs/faq/",
     "title3": "教程",
-    "img_src3": "/assets/menu.svg",
+    "img_src3": "/assets/library_books.svg",
     "link3": "https://www.editool.cn/docs/",
     "title4": "not_defined",
     "img_src4": "not_defined",
@@ -13812,7 +13812,7 @@ var $author$project$Data$Version$initial = function () {
 			return localVersion;
 		}
 	};
-	return decode('0.2.1664.200818');
+	return decode('0.2.1676.200818');
 }();
 var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
@@ -18676,7 +18676,7 @@ var $author$project$View$Layout$displayLink = F3(
 				$elm$html$Html$a,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('px-2 py-1 flex'),
+						$elm$html$Html$Attributes$class('px-2 py-2 flex'),
 						$elm$html$Html$Attributes$title(linkTitle),
 						$elm$html$Html$Attributes$target('_blank'),
 						$elm$html$Html$Attributes$href(link)
@@ -18688,7 +18688,7 @@ var $author$project$View$Layout$displayLink = F3(
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$src(imgSrc),
-								$elm$html$Html$Attributes$class('h-10 w-auto inline')
+								$elm$html$Html$Attributes$class('h-8 w-auto inline')
 							]),
 						_List_Nil)
 					]));
@@ -22612,7 +22612,7 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('frame-collection block')
+								$elm$html$Html$Attributes$class('frame-collection items-center')
 							]),
 						_List_fromArray(
 							[
@@ -22620,108 +22620,130 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('block')
+										$elm$html$Html$Attributes$class('inline-block')
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text(
-										$author$project$Translations$Page$Project$RightPanel$inputFps(trn)),
 										A2(
-										$elm$html$Html$input,
+										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$type_('range'),
-												A2($elm$html$Html$Attributes$attribute, 'min', minFps),
-												A2($elm$html$Html$Attributes$attribute, 'max', maxFps),
-												$elm$html$Html$Attributes$value(
-												$author$project$Data$Video$Gif$toFpsStr(gif)),
-												$elm$html$Html$Events$onInput(
-												A2($author$project$Component$Project$Msg$ChangeFps, gif, index))
+												$elm$html$Html$Attributes$class('block')
 											]),
-										_List_Nil),
-										A2(
-										$elm$html$Html$input,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$type_('number'),
-												A2($elm$html$Html$Attributes$attribute, 'min', minFps),
-												A2($elm$html$Html$Attributes$attribute, 'max', maxFps),
-												$elm$html$Html$Attributes$value(
-												$author$project$Data$Video$Gif$toFpsStr(gif)),
-												$elm$html$Html$Events$onInput(
-												A2($author$project$Component$Project$Msg$ChangeFps, gif, index))
-											]),
-										_List_Nil),
-										A2(
-										$elm$html$Html$label,
-										_List_Nil,
 										_List_fromArray(
 											[
 												$elm$html$Html$text(
-												$author$project$Translations$Page$Project$RightPanel$lableFps(trn))
+												$author$project$Translations$Page$Project$RightPanel$inputFps(trn)),
+												A2(
+												$elm$html$Html$input,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('h-1 ml-2 mr-2'),
+														$elm$html$Html$Attributes$type_('range'),
+														A2($elm$html$Html$Attributes$attribute, 'min', minFps),
+														A2($elm$html$Html$Attributes$attribute, 'max', maxFps),
+														$elm$html$Html$Attributes$value(
+														$author$project$Data$Video$Gif$toFpsStr(gif)),
+														$elm$html$Html$Events$onInput(
+														A2($author$project$Component$Project$Msg$ChangeFps, gif, index))
+													]),
+												_List_Nil),
+												A2(
+												$elm$html$Html$input,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('border-solid border border-grey-300 w-16 mr-2 pl-2'),
+														$elm$html$Html$Attributes$type_('number'),
+														A2($elm$html$Html$Attributes$attribute, 'min', minFps),
+														A2($elm$html$Html$Attributes$attribute, 'max', maxFps),
+														$elm$html$Html$Attributes$value(
+														$author$project$Data$Video$Gif$toFpsStr(gif)),
+														$elm$html$Html$Events$onInput(
+														A2($author$project$Component$Project$Msg$ChangeFps, gif, index))
+													]),
+												_List_Nil),
+												A2(
+												$elm$html$Html$label,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text(
+														$author$project$Translations$Page$Project$RightPanel$lableFps(trn))
+													]))
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('block')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text(
+												$author$project$Translations$Page$Project$RightPanel$inputWidth(trn)),
+												A2(
+												$elm$html$Html$input,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('h-1 ml-2 mr-2'),
+														$elm$html$Html$Attributes$type_('range'),
+														A2($elm$html$Html$Attributes$attribute, 'min', minWidth),
+														A2($elm$html$Html$Attributes$attribute, 'max', maxWidth),
+														$elm$html$Html$Attributes$value(
+														$author$project$Data$Video$Gif$toWidthStr(gif)),
+														$elm$html$Html$Events$onInput(
+														A2($author$project$Component$Project$Msg$ChangeWidth, gif, index))
+													]),
+												_List_Nil),
+												A2(
+												$elm$html$Html$input,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('border-solid border border-grey-300 w-16 mr-2 pl-2'),
+														$elm$html$Html$Attributes$type_('number'),
+														A2($elm$html$Html$Attributes$attribute, 'min', minWidth),
+														A2($elm$html$Html$Attributes$attribute, 'max', maxWidth),
+														$elm$html$Html$Attributes$value(
+														$author$project$Data$Video$Gif$toWidthStr(gif)),
+														$elm$html$Html$Events$onInput(
+														A2($author$project$Component$Project$Msg$ChangeWidth, gif, index))
+													]),
+												_List_Nil),
+												A2(
+												$elm$html$Html$label,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text(
+														$author$project$Translations$Page$Project$RightPanel$lableWidth(trn))
+													]))
 											]))
 									])),
 								A2(
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('block')
+										$elm$html$Html$Attributes$class('inline-block')
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text(
-										$author$project$Translations$Page$Project$RightPanel$inputWidth(trn)),
 										A2(
-										$elm$html$Html$input,
+										$elm$html$Html$button,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$type_('range'),
-												A2($elm$html$Html$Attributes$attribute, 'min', minWidth),
-												A2($elm$html$Html$Attributes$attribute, 'max', maxWidth),
-												$elm$html$Html$Attributes$value(
-												$author$project$Data$Video$Gif$toWidthStr(gif)),
-												$elm$html$Html$Events$onInput(
-												A2($author$project$Component$Project$Msg$ChangeWidth, gif, index))
+												$elm$html$Html$Attributes$class('btn btn--theme w-12 h-10 ml-4 inline'),
+												$elm$html$Html$Events$onClick(
+												A3(
+													$author$project$Component$Project$Msg$ConvertToGifWithParams,
+													index,
+													$author$project$Data$Video$Gif$getWidth(gif),
+													$author$project$Data$Video$Gif$getFps(gif)))
 											]),
-										_List_Nil),
-										A2(
-										$elm$html$Html$input,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$type_('number'),
-												A2($elm$html$Html$Attributes$attribute, 'min', minWidth),
-												A2($elm$html$Html$Attributes$attribute, 'max', maxWidth),
-												$elm$html$Html$Attributes$value(
-												$author$project$Data$Video$Gif$toWidthStr(gif)),
-												$elm$html$Html$Events$onInput(
-												A2($author$project$Component$Project$Msg$ChangeWidth, gif, index))
-											]),
-										_List_Nil),
-										A2(
-										$elm$html$Html$label,
-										_List_Nil,
 										_List_fromArray(
 											[
 												$elm$html$Html$text(
-												$author$project$Translations$Page$Project$RightPanel$lableWidth(trn))
+												$author$project$Translations$Page$Project$RightPanel$btnConfirm(trn))
 											]))
-									])),
-								A2(
-								$elm$html$Html$button,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('btn btn--theme w-12 h-10 mt-2'),
-										$elm$html$Html$Events$onClick(
-										A3(
-											$author$project$Component$Project$Msg$ConvertToGifWithParams,
-											index,
-											$author$project$Data$Video$Gif$getWidth(gif),
-											$author$project$Data$Video$Gif$getFps(gif)))
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text(
-										$author$project$Translations$Page$Project$RightPanel$btnConfirm(trn))
 									]))
 							]));
 				}
