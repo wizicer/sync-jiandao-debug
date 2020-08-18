@@ -232,9 +232,9 @@ module.exports = {
         "btn_delete": "删除",
         "btn_merge": "合并至上个段落",
         "input_width": "宽度",
-        "input_fps": "fps",
+        "input_fps": "帧率",
         "lable_width": "px",
-        "lable_fps": "帧",
+        "lable_fps": "fps",
         "btn_confirm": "确定"
       },
       "view_type": {
@@ -13812,7 +13812,7 @@ var $author$project$Data$Version$initial = function () {
 			return localVersion;
 		}
 	};
-	return decode('0.2.1676.200818');
+	return decode('0.2.1678.200818');
 }();
 var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
