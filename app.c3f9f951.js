@@ -13812,7 +13812,7 @@ var $author$project$Data$Version$initial = function () {
 			return localVersion;
 		}
 	};
-	return decode('0.2.1678.200818');
+	return decode('0.2.1869.201012');
 }();
 var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
@@ -16666,7 +16666,7 @@ var $elm$core$Array$append = F2(
 						bTree)));
 		}
 	});
-var $author$project$Data$Env$defaultGifFps = 30;
+var $author$project$Data$Env$defaultGifFps = 20;
 var $elm$core$String$toFloat = _String_toFloat;
 var $author$project$Data$Video$Gif$changeGifFps = F2(
 	function (newFps, gif) {
@@ -16695,7 +16695,7 @@ var $author$project$Data$Project$Content$changeGifFps = F3(
 			return content;
 		}
 	});
-var $author$project$Data$Env$defaultGifWidth = 640;
+var $author$project$Data$Env$defaultGifWidth = 480;
 var $author$project$Data$Video$Gif$changeGifWidth = F2(
 	function (newWidth, gif) {
 		return _Utils_update(
@@ -17026,10 +17026,10 @@ var $author$project$Data$Video$Gif$processConfigEncoder = F2(
 						A2($elm$core$Basics$max, start, end))),
 					_Utils_Tuple2(
 					'Width',
-					$elm$json$Json$Encode$int(640)),
+					$elm$json$Json$Encode$int(480)),
 					_Utils_Tuple2(
 					'Fps',
-					$elm$json$Json$Encode$float(30))
+					$elm$json$Json$Encode$float(20))
 				]));
 	});
 var $author$project$Data$Video$Gif$processedDecoder = A5(
