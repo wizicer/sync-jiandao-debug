@@ -1718,6 +1718,10 @@ a.btn:hover {
   color: rgba(66, 66, 66, var(--text-opacity));
 }
 
+.underline {
+  text-decoration: underline;
+}
+
 .select-none {
   user-select: none;
 }

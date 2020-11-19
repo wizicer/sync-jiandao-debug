@@ -235,7 +235,8 @@ module.exports = {
         "input_fps": "帧率",
         "lable_width": "px",
         "lable_fps": "fps",
-        "btn_confirm": "确定"
+        "btn_confirm": "确定",
+        "video_download_link": "另存为小视频"
       },
       "view_type": {
         "leading_text": "选择版式：",
@@ -13812,7 +13813,7 @@ var $author$project$Data$Version$initial = function () {
 			return localVersion;
 		}
 	};
-	return decode('0.2.1869.201012');
+	return decode('0.2.2031.201119');
 }();
 var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
@@ -22188,6 +22189,7 @@ var $author$project$Data$Env$maxGifFps = 60;
 var $author$project$Data$Env$maxGifWidth = 1600;
 var $author$project$Data$Env$minGifFps = 1;
 var $author$project$Data$Env$minGifWidth = 1;
+var $elm$regex$Regex$replace = _Regex_replaceAtMost(_Regex_infinity);
 var $author$project$View$Spinner$skChase = A2(
 	$elm$html$Html$div,
 	_List_fromArray(
@@ -22222,6 +22224,9 @@ var $author$project$Data$Video$Gif$toUrl = F3(
 var $author$project$Data$Video$Gif$toWidthStr = function (_v0) {
 	var width = _v0.width;
 	return $elm$core$String$fromInt(width);
+};
+var $author$project$Translations$Page$Project$RightPanel$videoDownloadLink = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.video_download_link');
 };
 var $author$project$View$Icon$videocam = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z');
 var $author$project$View$Icon$videocamOff = A2($author$project$Util$flip, $author$project$View$Icon$materialIconSimple, 'M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z');
@@ -22427,13 +22432,13 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 		var viewType = _v0.viewType;
 		var segment = $author$project$Data$Project$SegmentContent$getSegment(content);
 		var viewGifBtn = function () {
-			var _v8 = _Utils_Tuple2(
+			var _v10 = _Utils_Tuple2(
 				content,
 				A2(
 					$elm$core$Set$member,
 					$author$project$Data$Video$Segment$getTimeInterval(segment),
 					pendingGifJobs));
-			if (_v8.b) {
+			if (_v10.b) {
 				return A2(
 					$elm$html$Html$button,
 					_List_fromArray(
@@ -22443,8 +22448,8 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 					_List_fromArray(
 						[$author$project$View$Spinner$skChase]));
 			} else {
-				if (_v8.a.$ === 'FrameSequence') {
-					var _v9 = _v8.a;
+				if (_v10.a.$ === 'FrameSequence') {
+					var _v11 = _v10.a;
 					return A2(
 						$elm$html$Html$button,
 						_List_fromArray(
@@ -22460,7 +22465,7 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 								$author$project$View$Icon$videocam(24)
 							]));
 				} else {
-					var _v10 = _v8.a;
+					var _v12 = _v10.a;
 					return A2(
 						$elm$html$Html$button,
 						_List_fromArray(
@@ -22487,15 +22492,15 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 			$author$project$Data$Video$Segment$getKeyFrame,
 			A2($author$project$Data$Video$Frame$getUrl, $author$project$Data$File$Object$Local, uuid));
 		var coverUrl = function () {
-			var _v3 = _Utils_Tuple2(content, frameToPreview);
-			if (_v3.a.$ === 'FrameSequence') {
-				if (_v3.b.$ === 'Nothing') {
-					var _v4 = _v3.a;
-					var _v5 = _v3.b;
+			var _v5 = _Utils_Tuple2(content, frameToPreview);
+			if (_v5.a.$ === 'FrameSequence') {
+				if (_v5.b.$ === 'Nothing') {
+					var _v6 = _v5.a;
+					var _v7 = _v5.b;
 					return keyFrameUrl(segment);
 				} else {
-					var _v6 = _v3.a;
-					var frame = _v3.b.a;
+					var _v8 = _v5.a;
+					var frame = _v5.b.a;
 					return A2(
 						$elm$core$List$member,
 						frame,
@@ -22506,8 +22511,8 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 						$author$project$Data$Video$Segment$getKeyFrame(segment));
 				}
 			} else {
-				var _v7 = _v3.a;
-				var gif = _v7.a;
+				var _v9 = _v5.a;
+				var gif = _v9.a;
 				return A3($author$project$Data$Video$Gif$toUrl, $author$project$Data$File$Object$Local, uuid, gif);
 			}
 		}();
@@ -22608,6 +22613,24 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 						});
 				} else {
 					var gif = content.a;
+					var convertLink = function (match) {
+						var _v4 = match.submatches;
+						if (_v4.b) {
+							var first = _v4.a;
+							return 'video' + (A2($elm$core$Maybe$withDefault, '', first) + '.mp4');
+						} else {
+							return '';
+						}
+					};
+					var replaceToVideo = function (string) {
+						var _v3 = $elm$regex$Regex$fromString('gif((_(\\d*)){2})((_(\\d*)){7})\\.gif');
+						if (_v3.$ === 'Nothing') {
+							return string;
+						} else {
+							var regex = _v3.a;
+							return A3($elm$regex$Regex$replace, regex, convertLink, string);
+						}
+					};
 					return A2(
 						$elm$html$Html$div,
 						_List_fromArray(
@@ -22743,6 +22766,29 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 											[
 												$elm$html$Html$text(
 												$author$project$Translations$Page$Project$RightPanel$btnConfirm(trn))
+											]))
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('block mt-2')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$a,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('w-12 h-10 btn--theme btn--textual-plain underline'),
+												$elm$html$Html$Attributes$href(
+												replaceToVideo(coverUrl)),
+												$elm$html$Html$Attributes$target('_blank')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text(
+												$author$project$Translations$Page$Project$RightPanel$videoDownloadLink(trn))
 											]))
 									]))
 							]));
