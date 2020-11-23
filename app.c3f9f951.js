@@ -236,7 +236,8 @@ module.exports = {
         "lable_width": "px",
         "lable_fps": "fps",
         "btn_confirm": "确定",
-        "video_download_link": "另存为小视频"
+        "video_download_link": "另存为小视频",
+        "gif_download_link": "另存为GIF"
       },
       "view_type": {
         "leading_text": "选择版式：",
@@ -13813,7 +13814,7 @@ var $author$project$Data$Version$initial = function () {
 			return localVersion;
 		}
 	};
-	return decode('0.2.2031.201119');
+	return decode('0.2.2047.201123');
 }();
 var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
@@ -22110,6 +22111,9 @@ var $author$project$Translations$Page$Project$RightPanel$btnConvertToGif = funct
 var $author$project$Translations$Page$Project$RightPanel$btnRevertBackToFrames = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.btn_revert_back_to_frames');
 };
+var $elm$html$Html$Attributes$download = function (fileName) {
+	return A2($elm$html$Html$Attributes$stringProperty, 'download', fileName);
+};
 var $author$project$Util$formatTimeInSeconds = function (time) {
 	var toPaddedString = A2(
 		$elm$core$Basics$composeR,
@@ -22172,6 +22176,9 @@ var $author$project$Data$Video$Frame$getUrl = F3(
 var $author$project$Data$Video$Gif$getWidth = function (_v0) {
 	var width = _v0.width;
 	return width;
+};
+var $author$project$Translations$Page$Project$RightPanel$gifDownloadLink = function (translations) {
+	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.gif_download_link');
 };
 var $author$project$Translations$Page$Project$RightPanel$inputFps = function (translations) {
 	return A2($ChristophP$elm_i18next$I18Next$t, translations, 'page.project.right_panel.input_fps');
@@ -22772,7 +22779,37 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('block mt-2')
+										$elm$html$Html$Attributes$class('block w-full mt-2')
+									]),
+								_List_Nil),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('block w-full')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$a,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('w-12 h-10 btn--theme btn--textual-plain underline'),
+												$elm$html$Html$Attributes$href(coverUrl),
+												$elm$html$Html$Attributes$target('_blank'),
+												$elm$html$Html$Attributes$download('')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text(
+												$author$project$Translations$Page$Project$RightPanel$gifDownloadLink(trn))
+											]))
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('block w-full')
 									]),
 								_List_fromArray(
 									[
@@ -22783,7 +22820,8 @@ var $author$project$Component$Project$View$Content$viewSegmentContent = F6(
 												$elm$html$Html$Attributes$class('w-12 h-10 btn--theme btn--textual-plain underline'),
 												$elm$html$Html$Attributes$href(
 												replaceToVideo(coverUrl)),
-												$elm$html$Html$Attributes$target('_blank')
+												$elm$html$Html$Attributes$target('_blank'),
+												$elm$html$Html$Attributes$download('')
 											]),
 										_List_fromArray(
 											[
