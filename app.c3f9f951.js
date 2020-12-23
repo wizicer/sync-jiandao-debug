@@ -13814,7 +13814,7 @@ var $author$project$Data$Version$initial = function () {
 			return localVersion;
 		}
 	};
-	return decode('0.2.2047.201123');
+	return decode('0.2.2146.201223');
 }();
 var $author$project$Data$Version$Platform$currentVersions = {frontend: $author$project$Data$Version$initial, projectData: $author$project$Data$Version$initial};
 var $author$project$Data$NativeClient$Meta = F2(
